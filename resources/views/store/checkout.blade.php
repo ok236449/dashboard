@@ -116,7 +116,7 @@
                                         <tr>
                                             <th>Tax (0%)</th>
                                             tax="{{env('TAX')}}"
-                                            <td>$tax</td>
+                                            <td>tax={{env('TAX')}}</td>
                                         </tr>
                                         <tr>
                                             <th>Quantity:</th>
