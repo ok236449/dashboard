@@ -119,11 +119,11 @@
                                         </tr>
                                         <tr>
                                             <th>Quantity:</th>
-                                            <td>{{$product->price}}</td>
+                                            <td>{{$product}}</td>
                                         </tr>
                                         <tr>
                                             <th>Total:</th>
-                                            <td>{{$product->formatCurrency()}}</td>
+                                            <td>{{($product->formatCurrency())+((env('TAX_PERCENTAGE'))*($product->price)+(env('TAX_FIXED')))}}</td>
                                         </tr>
                                     </table>
                                 </div>
