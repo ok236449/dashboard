@@ -119,7 +119,7 @@
                                         </tr>
                                         <tr>
                                             <th>Quantity:</th>
-                                            <td>{{$product}}</td>
+                                            <td>{{$product->price}}</td>
                                         </tr>
                                         <tr>
                                             <th>Total:</th>
