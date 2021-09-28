@@ -119,7 +119,7 @@
                                         </tr>
                                         <tr>
                                             <th>Quantity:</th>
-                                            <td>1</td>
+                                            <td>$product</td>
                                         </tr>
                                         <tr>
                                             <th>Total:</th>
