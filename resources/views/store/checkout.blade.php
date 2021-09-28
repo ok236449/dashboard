@@ -119,7 +119,7 @@
                                         </tr>
                                         <tr>
                                             <th>Quantity:</th>
-                                            <td>{{calculateTax}}</td>
+                                            <td>{{(((env('TAX_PERCENTAGE'))*($product->price))/100+(env('TAX_FIXED')))</td>
                                         </tr>
                                         <tr>
                                             <th>Total:</th>
