@@ -123,7 +123,7 @@
                                         </tr>
                                         <tr>
                                             <th>Total:</th>
-                                            <td>{{$product=($product->price)+((env('TAX_PERCENTAGE'))*($product->price)+(env('TAX_FIXED')))}}</td>
+                                            <td>{{($product->price)+((env('TAX_PERCENTAGE'))*($product->price)+(env('TAX_FIXED')))}}</td>
                                         </tr>
                                     </table>
                                 </div>
