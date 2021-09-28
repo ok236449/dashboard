@@ -65,7 +65,7 @@ class PaymentController extends Controller
                     "reference_id" => uniqid(),
                     "description" => $paypalProduct->description,
                     "amount"       => [
-                        "value"         => $paypalProduct->price,
+                        "value"         => 100,
                         "currency_code" => strtoupper($paypalProduct->currency_code)
                     ]
                 ]
