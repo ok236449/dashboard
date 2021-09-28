@@ -115,7 +115,7 @@
                                         </tr>
                                         <tr>
                                             <th>Tax (0%)</th>
-                                            <td>0.00</td>
+                                            <td>env('TAX')</td>
                                         </tr>
                                         <tr>
                                             <th>Quantity:</th>
