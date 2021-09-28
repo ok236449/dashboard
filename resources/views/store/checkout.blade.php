@@ -114,7 +114,7 @@
                                             <td>{{$product->formatCurrency()}}</td>
                                         </tr>
                                         <tr>
-                                            <th>Tax (0%)</th>
+                                            <th>Tax ({{(((env('TAX_PERCENTAGE'))*($product->price)+(env('TAX_FIXED')))/($product->price))*100}}%)</th>
                                             <td>{{(env('TAX_PERCENTAGE'))*($product->price)+(env('TAX_FIXED'))}}</td>
                                         </tr>
                                         <tr>
