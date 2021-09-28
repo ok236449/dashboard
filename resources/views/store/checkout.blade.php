@@ -115,7 +115,7 @@
                                         </tr>
                                         <tr>
                                             <th>Tax (0%)</th>
-                                            <td>{{(env('TAX_PERCENTAGE'))+(env('TAX_FIXED'))}}</td>
+                                            <td>{{(env('TAX_PERCENTAGE'))*($product->price)+(env('TAX_FIXED'))}}</td>
                                         </tr>
                                         <tr>
                                             <th>Quantity:</th>
