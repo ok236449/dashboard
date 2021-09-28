@@ -56,8 +56,4 @@ class Payment extends Model
         $formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
         return $formatter->formatCurrency($this->price, $this->currency_code);
     }
-    public function CalculateTax($product)
-    {
-        return 1.5*($product->price);
-    }
 }
