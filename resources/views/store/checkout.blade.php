@@ -119,7 +119,7 @@
                                         </tr>
                                         <tr>
                                             <th>Quantity:</th>
-                                            <td>{{$product}}</td>
+                                            <td>{{calculateTax($product)}}</td>
                                         </tr>
                                         <tr>
                                             <th>Total:</th>
