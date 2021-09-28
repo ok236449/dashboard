@@ -65,7 +65,7 @@ class PaymentController extends Controller
                     "reference_id" => uniqid(),
                     "description" => $paypalProduct->description,
                     "amount"       => [
-                        "value"         => (($product->price)+((env('TAX_PERCENTAGE'))*($product->price))/100+(env('TAX_FIXED'))),
+                        "value"         => (($paypalProduct->price)+((env('TAX_PERCENTAGE'))*($paypalProduct->price))/100+(env('TAX_FIXED'))),
                         "currency_code" => strtoupper($paypalProduct->currency_code)
                     ]
                 ]
