@@ -56,9 +56,4 @@ class Payment extends Model
         $formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
         return $formatter->formatCurrency($this->price, $this->currency_code);
     }
-    public function formatTax($locale = 'en_US')
-    {
-        $formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
-        return $formatter->formatTax($this->price, $this->currency_code);
-    }
 }
