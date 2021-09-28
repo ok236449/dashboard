@@ -115,11 +115,11 @@
                                         </tr>
                                         <tr>
                                             <th>Tax ({{((((env('TAX_PERCENTAGE'))*($product->price))/100+(env('TAX_FIXED')))/($product->price))*100}}%)</th>
-                                            <td>x</td>
+                                            <td>{{(((env('TAX_PERCENTAGE'))*($product->price))/100+(env('TAX_FIXED')))}}</td>
                                         </tr>
                                         <tr>
                                             <th>Quantity:</th>
-                                            <td>{{(((env('TAX_PERCENTAGE'))*($product->price))/100+(env('TAX_FIXED')))</td>
+                                            <td>1</td>
                                         </tr>
                                         <tr>
                                             <th>Total:</th>
