@@ -59,7 +59,7 @@
                             @endforeach
                             </tbody>
                         </table>
-                        </br><i class="fas fa-info-circle"></i> Pokud Vám nevyhovuje platba přes PayPal, nebo se chcete vyhnout poplatku, kontaktujte majitele na discordu.</br>Paypal si účtuje poplatek 10Kč/0,35€ + 3,4% z platby. Z tohoto důvodu je to u menších balíčků bráno v potaz.
+                        </br><i class="fas fa-info-circle"></i> Pokud Vám nevyhovuje platba přes PayPal, nebo se chcete vyhnout poplatku, kontaktujte majitele na <a href="https://discord.gg/kF5F8ss4wU">discordu</a>.</br>Paypal si účtuje poplatek 10Kč/0,35€ + 3,4% z platby. Z tohoto důvodu je to u menších balíčků bráno v potaz.
                     </div>
                 </div>
 
