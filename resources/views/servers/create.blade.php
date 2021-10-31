@@ -46,7 +46,7 @@
                                     </div>
                                 @enderror
 
-                                </br><small>Název serveru slouží pouze pro vaši orientaci v případě, že budete mít serverů víc.</small>
+                                <small>Název serveru slouží pouze pro vaši orientaci v případě, že budete mít serverů víc.</small>
 
                             </div>
                             <div class="form-group">
@@ -108,7 +108,7 @@
                                         Please fill out this field.
                                     </div>
                                 @enderror
-                                </br><small>Seznam her a minimální/doporučené konfigurace k nim najdete <a href="http://home.vagonbrei.eu/seznam-her">zde</a>.
+                                <small>Seznam her a minimální/doporučené konfigurace k nim najdete <a href="http://home.vagonbrei.eu/seznam-her">zde</a>.
                                 V případě Minecraftu se nainstaluje nejnovější verze, jak ji změnit včetně Javy naleznete <a href="http://home.vagonbrei.eu/uprava-serveru">zde</a>.</small>
 
                             </div>
@@ -137,7 +137,7 @@
                                         Please fill out this field.
                                     </div>
                                 @enderror
-                                </br><small>Bližší informace ohledně balíčku naleznete <a href="http://home.vagonbrei.eu/cenik">zde</a>.
+                                <small>Bližší informace ohledně balíčku naleznete <a href="http://home.vagonbrei.eu/cenik">zde</a>.
                                 Pokud zvolíte příliš malý balíček, některé druhy serveru nepoběží správně, nebo se nemusí ani nainstalovat.</small>
                             </div>
                             <div class="form-group text-right">
