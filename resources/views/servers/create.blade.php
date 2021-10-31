@@ -46,7 +46,7 @@
                                     </div>
                                 @enderror
 
-                                \nNázev serveru slouží pouze pro vaši orientaci v případě, že budete mít serverů víc.
+                                </br>Název serveru slouží pouze pro vaši orientaci v případě, že budete mít serverů víc.
 
                             </div>
                             <div class="form-group">
@@ -108,7 +108,7 @@
                                         Please fill out this field.
                                     </div>
                                 @enderror
-                                \nSeznam her a minimální/doporučené konfigurace k nim najdete <a href="http://home.vagonbrei.eu/seznam-her">zde</a>.
+                                </br>Seznam her a minimální/doporučené konfigurace k nim najdete <a href="http://home.vagonbrei.eu/seznam-her">zde</a>.
                                 V případě Minecraftu se nainstaluje nejnovější verze, jak ji změnit včetně Javy naleznete <a href="http://home.vagonbrei.eu/uprava-serveru">zde</a>.
 
                             </div>
