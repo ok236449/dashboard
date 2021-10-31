@@ -106,6 +106,7 @@
                                         Please fill out this field.
                                     </div>
                                 @enderror
+                                Seznam her a minimální/doporučené konfigurace k nim najdete <a href="http://home.vagonbrei.eu/seznam-her">zde</a>.
                             </div>
                             <div class="form-group">
                                 <label for="product_id">* Resource Configuration</label>
@@ -132,6 +133,7 @@
                                         Please fill out this field.
                                     </div>
                                 @enderror
+                                Bližší informace ohledně balíčku naleznete <a href="http://home.vagonbrei.eu/cenik">zde</a>.
                             </div>
                             <div class="form-group text-right">
                                 <input type="submit" class="btn btn-primary mt-3" value="Submit"
