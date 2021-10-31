@@ -65,18 +65,18 @@ class WelcomeMessage extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            'title'   => "Getting started!",
+            'title'   => "Začínáme!",
             'content' => "
-               <p>Hello <strong>{$this->user->name}</strong>, Welcome to our dashboard!</p>
-                <h5>Verification</h5>
-                <p>Please remember that you can verify your E-Mail address and Link/Verify your Discord-Account</p>
+               <p>Dobrý den <strong>{$this->user->name}</strong>, vítejte na našem storu</p>
+                <h5>Verifikace</h5>
+                <p>Prosím ověřte si emailovou adresu. Dostanete na ni upozornění v případě nedostatku kreditů.</p>
                 <p>
                   ".WelcomeMessage::AdditionalLines()."
                 </p>
-                <h5>Information</h5>
-                <p>This dashboard can be used to create and delete servers.<br /> These servers can be used and managed on our pterodactyl panel.<br /> If you have any questions, please join our Discord server and #create-a-ticket.</p>
-                <p>We hope you can enjoy this hosting experience and if you have any suggestions please let us know!</p>
-                <p>Regards,<br />" . config('app.name', 'Laravel') . "</p>
+                <h5>Informace</h5>
+                <p>Tento web můžete používat na správu vašich serverů.<br /> Tyto servery můžete spravovat na našem panelu.<br /> Pokud máte jakýkoliv dotaz, kontaktujte nás prosím.</p>
+                <p>Doufáme, že budete spokojeni s naším hostingem. Máte li nějaké návrhy na zlepšení, nebojte se dát vědět.</p>
+                <p>S přáním hezkého dne,<br />" . config('app.name', 'Laravel') . "</p>
             ",
         ];
     }
