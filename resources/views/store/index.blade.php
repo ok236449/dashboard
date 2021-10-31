@@ -57,6 +57,7 @@
                                     </td>
                                 </tr>
                             @endforeach
+                            <i class="fas fa-info-circle"></i> Pokud Vám nevyhovuje platba přes PayPal, nebo se chcete vyhnout poplatku, kontaktujte majitele na discordu. Po domluvě je možná také platba na účet nebo pomocí PaySafeCard. Paypal si účtuje poplatek 10Kč/0,35€ + 3,4% z platby. Z tohoto důvodu je to u menších balíčků bráno v potaz.
                             </tbody>
                         </table>
                     </div>
