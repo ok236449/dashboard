@@ -46,7 +46,7 @@
                                     </div>
                                 @enderror
 
-                                Název serveru slouží pouze pro vaši orientaci v případě, že budete mít serverů víc.
+                                \nNázev serveru slouží pouze pro vaši orientaci v případě, že budete mít serverů víc.
 
                             </div>
                             <div class="form-group">
@@ -108,10 +108,9 @@
                                         Please fill out this field.
                                     </div>
                                 @enderror
-                                
-                                Seznam her a minimální/doporučené konfigurace k nim najdete <a href="http://home.vagonbrei.eu/seznam-her">zde</a>.
+                                \nSeznam her a minimální/doporučené konfigurace k nim najdete <a href="http://home.vagonbrei.eu/seznam-her">zde</a>.
                                 V případě Minecraftu se nainstaluje nejnovější verze, jak ji změnit včetně Javy naleznete <a href="http://home.vagonbrei.eu/uprava-serveru">zde</a>.
-                                
+
                             </div>
                             <div class="form-group">
                                 <label for="product_id">* Resource Configuration</label>
@@ -138,9 +137,8 @@
                                         Please fill out this field.
                                     </div>
                                 @enderror
-                                
-                                Bližší informace ohledně balíčku naleznete <a href="http://home.vagonbrei.eu/cenik">zde</a>.
-                                Pokud zvolíte příliš malý balíček, některé druhy serveru se nemusí ani nainstalovat. Prozatím bohužel nelze balíček změnit, je nutné server smazat a znova vytvořit. Vybírejte proto prosím s rozumem.
+                                \nBližší informace ohledně balíčku naleznete <a href="http://home.vagonbrei.eu/cenik">zde</a>.
+                                Pokud zvolíte příliš malý balíček, některé druhy serveru nepoběží správně, nebo se nemusí ani nainstalovat.
                             </div>
                             <div class="form-group text-right">
                                 <input type="submit" class="btn btn-primary mt-3" value="Submit"
