@@ -137,7 +137,7 @@
                                         Please fill out this field.
                                     </div>
                                 @enderror
-                                <break>Bližší informace ohledně balíčku naleznete <a href="http://home.vagonbrei.eu/cenik">zde</a>.
+                                \brBližší informace ohledně balíčku naleznete <a href="http://home.vagonbrei.eu/cenik">zde</a>.
                                 Pokud zvolíte příliš malý balíček, některé druhy serveru nepoběží správně, nebo se nemusí ani nainstalovat.
                             </div>
                             <div class="form-group text-right">
