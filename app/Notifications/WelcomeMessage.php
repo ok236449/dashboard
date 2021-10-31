@@ -37,7 +37,25 @@ class WelcomeMessage extends Notification implements ShouldQueue
     {
         return ['database'];
     }
+    public function AdditionalLines() 
+        {
+            $AdditionalLine = "";
+            if(Configuration::getValueByKey('CREDITS_REWARD_AFTER_VERIFY_EMAIL') != 0) {
+                $AdditionalLine .= "Verifying your E-Mail Address will grant you ".Configuration::getValueByKey('CREDITS_REWARD_AFTER_VERIFY_EMAIL')." additional " . Configuration::getValueByKey('CREDITS_DISPLAY_NAME') . " <br />";
+            }
+            if(Configuration::getValueByKey('SERVER_LIMIT_REWARD_AFTER_VERIFY_EMAIL') != 0) {
+                $AdditionalLine .= "Verifying your Mail will also increase your Server Limit by " . Configuration::getValueByKey('SERVER_LIMIT_REWARD_AFTER_VERIFY_EMAIL') . " <br />";
+            }
+            $AdditionalLine .="<br />";
+            if(Configuration::getValueByKey('CREDITS_REWARD_AFTER_VERIFY_DISCORD') != 0) {
+                $AdditionalLine .=  "You can also verify your discord account to get another " . Configuration::getValueByKey('CREDITS_REWARD_AFTER_VERIFY_DISCORD') . " " . Configuration::getValueByKey('CREDITS_DISPLAY_NAME') . " <br />";
+            }
+            if(Configuration::getValueByKey('SERVER_LIMIT_REWARD_AFTER_VERIFY_DISCORD') != 0) {
+                $AdditionalLine .=  "Verifying Discord will also increase your Server Limit by " . Configuration::getValueByKey('SERVER_LIMIT_REWARD_AFTER_VERIFY_DISCORD') . " <br />";
+            }
 
+            return $AdditionalLine;
+        }
     /**
      * Get the array representation of the notification.
      *
@@ -51,7 +69,10 @@ class WelcomeMessage extends Notification implements ShouldQueue
             'content' => "
                <p>Hello <strong>{$this->user->name}</strong>, Welcome to our dashboard!</p>
                 <h5>Verification</h5>
-                <p>Please verify your email address to get " . Configuration::getValueByKey('CREDITS_REWARD_AFTER_VERIFY_EMAIL') . " extra credits and increase your server limit to " . Configuration::getValueByKey('SERVER_LIMIT_REWARD_AFTER_VERIFY_EMAIL') . "<br />You can also verify your discord account to get another " . Configuration::getValueByKey('CREDITS_REWARD_AFTER_VERIFY_DISCORD') . " credits and to increase your server limit again with " . Configuration::getValueByKey('SERVER_LIMIT_REWARD_AFTER_VERIFY_DISCORD') . "</p>
+                <p>Please remember that you can verify your E-Mail address and Link/Verify your Discord-Account</p>
+                <p>
+                  ".WelcomeMessage::AdditionalLines()."
+                </p>
                 <h5>Information</h5>
                 <p>This dashboard can be used to create and delete servers.<br /> These servers can be used and managed on our pterodactyl panel.<br /> If you have any questions, please join our Discord server and #create-a-ticket.</p>
                 <p>We hope you can enjoy this hosting experience and if you have any suggestions please let us know!</p>
