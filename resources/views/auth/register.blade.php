@@ -8,7 +8,7 @@
                 <a href="{{route('welcome')}}" class="h1"><b class="mr-1">{{config('app.name', 'Laravel')}}</b></a>
             </div>
             <div class="card-body">
-                <p class="login-box-msg">Register a new membership</p>
+                <p class="login-box-msg">Registrace nového uživatele</p>
 
                 <form method="POST" action="{{ route('register') }}">
 
@@ -28,7 +28,7 @@
                     <div class="form-group">
                         <div class="input-group">
                             <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}"
-                                   placeholder="Username" required autocomplete="name" autofocus>
+                                   placeholder="Uživatelské jméno" required autocomplete="name" autofocus>
                             <div class="input-group-append">
                                 <div class="input-group-text">
                                     <span class="fas fa-user"></span>
@@ -62,14 +62,14 @@
 
                     <div class="form-group">
                         <div class="input-group mb-3">
-                            <input type="password" class="form-control @error('password') is-invalid @enderror" placeholder="Password" name="password" required autocomplete="new-password">
+                            <input type="password" class="form-control @error('password') is-invalid @enderror" placeholder="Heslo" name="password" required autocomplete="new-password">
                             <div class="input-group-append">
                                 <div class="input-group-text">
                                     <span class="fas fa-lock"></span>
                                 </div>
                             </div>
                         </div>
-                        @error('password')
+                        @error('heslo')
                         <span class="text-danger" role="alert">
                                 <small><strong>{{ $message }}</strong></small>
                             </span>
@@ -77,7 +77,7 @@
                     </div>
 
                     <div class="input-group mb-3">
-                        <input type="password" class="form-control" name="password_confirmation" placeholder="Retype password" required autocomplete="new-password">
+                        <input type="password" class="form-control" name="password_confirmation" placeholder="Heslo znovu" required autocomplete="new-password">
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -87,7 +87,7 @@
 
                     <div class="input-group mb-3">
                         {!! htmlFormSnippet() !!}
-                        @error('g-recaptcha-response')
+                        @error('g-recaptcha')
                         <span class="text-danger" role="alert">
                                 <small><strong>{{ $message }}</strong></small>
                             </span>
@@ -99,7 +99,7 @@
 {{--                            <div class="icheck-primary">--}}
 {{--                                <input type="checkbox" id="agreeTerms" name="terms" value="agree">--}}
 {{--                                <label for="agreeTerms">--}}
-{{--                                    I agree to the <a href="#">terms</a>--}}
+{{--                                    Souhlasím s <a href="http://home.vagonbrei.eu/podminky-uziti">podmínkami</a>--}}
 {{--                                </label>--}}
 {{--                            </div>--}}
                         </div>
@@ -122,7 +122,7 @@
 {{--                    </a>--}}
 {{--                </div>--}}
 
-                <a href="{{route('login')}}" class="text-center">I already have a membership</a>
+                <a href="{{route('login')}}" class="text-center">Už mám účet</a>
             </div>
             <!-- /.form-box -->
         </div><!-- /.card -->
