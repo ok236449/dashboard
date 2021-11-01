@@ -10,7 +10,7 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a class="text-muted" href="">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a class="text-muted" href="">Přehled</a></li>
                     </ol>
                 </div>
             </div>
@@ -28,7 +28,7 @@
                         <span class="info-box-icon bg-info elevation-1"><i class="fas fa-server"></i></span>
 
                         <div class="info-box-content">
-                            <span class="info-box-text">Servers</span>
+                            <span class="info-box-text">Počet serverů</span>
                             <span class="info-box-number">{{Auth::user()->servers()->count()}}</span>
                         </div>
                         <!-- /.info-box-content -->
@@ -41,7 +41,7 @@
                         <span class="info-box-icon bg-secondary elevation-1"><i class="fas fa-coins"></i></span>
 
                         <div class="info-box-content">
-                            <span class="info-box-text">{{CREDITS_DISPLAY_NAME}}</span>
+                            <span class="info-box-text">Počet {{CREDITS_DISPLAY_NAME}}</span>
                             <span class="info-box-number">{{Auth::user()->Credits()}}</span>
                         </div>
                         <!-- /.info-box-content -->
@@ -58,8 +58,8 @@
                         <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-chart-line"></i></span>
 
                         <div class="info-box-content">
-                            <span class="info-box-text">{{CREDITS_DISPLAY_NAME}} usage</span>
-                            <span class="info-box-number">{{number_format($useage, 2, '.', '')}} <sup>per month</sup></span>
+                            <span class="info-box-text">Využití {{CREDITS_DISPLAY_NAME}}</span>
+                            <span class="info-box-number">{{number_format($useage, 2, '.', '')}} <sup>za měsíc</sup></span>
                         </div>
                         <!-- /.info-box-content -->
                     </div>
@@ -80,15 +80,15 @@
                             <i class="fas fa-hourglass-half"></i></span>
 
                         <div class="info-box-content">
-                            <span class="info-box-text">Out of {{CREDITS_DISPLAY_NAME}} in </span>
+                            <span class="info-box-text">Dostatek {{CREDITS_DISPLAY_NAME}} na</span>
                             @if(number_format((Auth::user()->Credits()*30)/$useage,2,'.','') < "1")
                                 @if(number_format(Auth::user()->Credits()/($useage/30/24),2,'.','') < "1")
-                                    <span class="info-box-number">You ran out of Credits </span>
+                                    <span class="info-box-number">Došly Vám kredity!</span>
                                 @else
-                                    <span class="info-box-number">{{number_format(Auth::user()->Credits()/($useage/30/24),0,'.','')}} <sup> hours</sup></span>
+                                    <span class="info-box-number">{{number_format(Auth::user()->Credits()/($useage/30/24),0,'.','')}} <sup> hodin</sup></span>
                                 @endif
                             @else
-                               <span class="info-box-number">{{number_format((Auth::user()->Credits()*30)/$useage,0,'.','')}} <sup> days</sup></span>
+                               <span class="info-box-number">{{number_format((Auth::user()->Credits()*30)/$useage,0,'.','')}} <sup> dní</sup></span>
                             @endif
                         </div>
                         <!-- /.info-box-content -->
@@ -107,7 +107,7 @@
                         <div class="card-header">
                             <h3 class="card-title">
                                 <i class="fas fa-link mr-2"></i>
-                                Useful Links
+                                Užitečné odkazy
                             </h3>
                         </div>
                         <!-- /.card-header -->
@@ -135,7 +135,7 @@
                         <div class="card-header">
                             <h3 class="card-title">
                                 <i class="fas fa-history mr-2"></i>
-                                Activity Log
+                                Historie akcí
                             </h3>
                         </div>
                         <!-- /.card-header -->
