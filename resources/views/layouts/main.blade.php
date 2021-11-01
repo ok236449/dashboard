@@ -45,6 +45,9 @@
                 <a href="https://panel.vagonbrei.eu" class="nav-link">Panel</a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
+                <a href="https://phpmyadmin.vagonbrei.eu" class="nav-link">PhpMyAdmin</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
                 <a href="{{env('DISCORD_INVITE_URL')}}" class="nav-link" target="__blank">Discord</a>
             </li>
         </ul>
