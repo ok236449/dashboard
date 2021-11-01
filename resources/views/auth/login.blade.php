@@ -51,7 +51,7 @@
                             </div>
 
                         </div>
-                        @error('heslo')
+                        @error('password')
                         <span class="text-danger" role="alert">
                                 <small><strong>{{ $message }}</strong></small>
                             </span>
@@ -60,7 +60,7 @@
 
                     <div class="input-group mb-3">
                         {!! htmlFormSnippet() !!}
-                        @error('g-recaptcha')
+                        @error('g-recaptcha-response')
                         <span class="text-danger" role="alert">
                                 <small><strong>{{ $message }}</strong></small>
                             </span>

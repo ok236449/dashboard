@@ -37,7 +37,7 @@
                                 <span class="fas fa-lock"></span>
                             </div>
                         </div>
-                        @error('heslo')
+                        @error('password')
                         <span class="text-danger" role="alert">
                                 <small><strong>{{ $message }}</strong></small>
                             </span>
