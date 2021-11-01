@@ -170,8 +170,8 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col">
-                                                    <div class="form-group"><label>Potvrdit <span>
-                                                                class="d-none d-xl-inline">Nové heslo</span></label>
+                                                    <div class="form-group"><label>Potvrdit nové heslo<span
+                                                                class="d-none d-xl-inline"></span></label>
                                                         <input
                                                             class="form-control @error('new_password_confirmation') is-invalid @enderror"
                                                             name="new_password_confirmation" type="password"
