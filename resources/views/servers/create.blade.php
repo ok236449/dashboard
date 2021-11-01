@@ -46,7 +46,7 @@
                                     </div>
                                 @enderror
 
-                                <small><i class="fas fa-info-circle"></i>Název serveru slouží pouze pro vaši orientaci v případě, že budete mít serverů víc.</small>
+                                <small><i class="fas fa-info-circle"></i> Název serveru slouží pouze pro vaši orientaci v případě, že budete mít serverů víc.</small>
 
                             </div>
                             <div class="form-group">
@@ -67,7 +67,7 @@
 
                                     <select id="node_id" name="node_id" required="required"
                                         class="custom-select @error('node_id') is-invalid @enderror">
-                                        <option selected disabled hidden value="">Prosím zvolte</option>    
+                                        <option selected disabled hidden value="">Prosím zvolte...</option>    
                                         @foreach ($locations as $location)
                                             <optgroup label="{{ $location->name }}">
                                                 @foreach ($location->nodes as $node)
@@ -92,7 +92,7 @@
                                 <div>
                                     <select id="egg_id" name="egg_id" required="required"
                                         class="custom-select @error('egg_id') is-invalid @enderror">
-                                       <option selected disabled hidden value="">Prosím zvolte</option>    
+                                       <option selected disabled hidden value="">Prosím zvolte...</option>    
                                         @foreach ($nests as $nest)
                                             <optgroup label="{{ $nest->name }}">
                                                 @foreach ($nest->eggs as $egg)
@@ -108,7 +108,7 @@
                                     Prosím vyplňte toto pole.
                                     </div>
                                 @enderror
-                                <small><i class="fas fa-info-circle"></i>Seznam her a minimální/doporučené konfigurace k nim najdete <a href="http://home.vagonbrei.eu/seznam-her">zde</a>.
+                                <small><i class="fas fa-info-circle"></i> Seznam her a minimální/doporučené konfigurace k nim najdete <a href="http://home.vagonbrei.eu/seznam-her">zde</a>.
                                 V případě Minecraftu se nainstaluje nejnovější verze, jak ji změnit včetně Javy naleznete <a href="http://home.vagonbrei.eu/uprava-serveru">zde</a>.</small>
 
                             </div>
@@ -117,7 +117,7 @@
                                 <div>
                                     <select id="product_id" name="product_id" required="required"
                                         class="custom-select @error('product_id') is-invalid @enderror">
-                                        <option selected disabled hidden value="">Prosím zvolte</option>    
+                                        <option selected disabled hidden value="">Prosím zvolte...</option>    
                                         @foreach ($products as $product)
                                             <option value="{{ $product->id }}" @if ($product->minimum_credits == -1 && Auth::user()->credits >= $minimum_credits)
                                             @elseif ($product->minimum_credits != -1 && Auth::user()->credits >=
@@ -137,7 +137,7 @@
                                     Prosím vyplňte toto pole.
                                     </div>
                                 @enderror
-                                <small><i class="fas fa-info-circle"></i>Bližší informace ohledně balíčku naleznete <a href="http://home.vagonbrei.eu/cenik">zde</a>.
+                                <small><i class="fas fa-info-circle"></i> Bližší informace ohledně balíčku naleznete <a href="http://home.vagonbrei.eu/cenik">zde</a>.
                                 Pokud zvolíte příliš malý balíček, některé druhy serveru nepoběží správně, nebo se nemusí ani nainstalovat.</small>
                             </div>
                             <div class="form-group text-right">
