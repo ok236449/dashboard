@@ -170,7 +170,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col">
-                                                    <div class="form-group"><label>Potvrdit <span
+                                                    <div class="form-group"><label>Potvrdit <span>
                                                                 class="d-none d-xl-inline">Nové heslo</span></label>
                                                         <input
                                                             class="form-control @error('new_password_confirmation') is-invalid @enderror"
@@ -196,7 +196,7 @@
                                                                 <p>Ověřením discord účtu získáte
                                                                     <b><i
                                                                             class="fa fa-coins mx-1"></i>{{$credits_reward_after_verify_discord}}
-                                                                    </b> {{CREDITS_DISPLAY_NAME}}.</br>K ověření prosím použijte účet, který používáte na našem discordu. Po ověření dostanete také roli "Ověřený" a přístup k dalším kanálům na serveru.
+                                                                    </b> {{CREDITS_DISPLAY_NAME}}.</br><small>K ověření prosím použijte účet, který používáte na našem discordu. Po ověření dostanete také roli "Ověřený" a přístup k dalším kanálům na serveru.</small>
                                                                 </p>
                                                             @endif
                                                         </div>
