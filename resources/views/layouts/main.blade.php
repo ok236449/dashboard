@@ -61,7 +61,7 @@
                     @endif
                 </a>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                    <span class="dropdown-item dropdown-header">{{Auth::user()->unreadNotifications->count()}} Notifikace</span>
+                    <span class="dropdown-item dropdown-header">{{Auth::user()->unreadNotifications->count()}} Notifikací</span>
                     <div class="dropdown-divider"></div>
 
                     @foreach(Auth::user()->unreadNotifications->sortBy('created_at')->take(5) as $notification)
@@ -69,7 +69,7 @@
                             <span class="d-inline-block text-truncate" style="max-width: 150px;"><i
                                     class="fas fa-envelope mr-2"></i>{{$notification->data['title']}}</span>
                             <span
-                                class="float-right text-muted text-sm">{{$notification->created_at->longAbsoluteDiffForHumans()}} ago</span>
+                                class="float-right text-muted text-sm">{{$notification->created_at->longAbsoluteDiffForHumans()}} zpět</span>
                         </a>
                     @endforeach
 
