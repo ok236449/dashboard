@@ -61,7 +61,7 @@
                     @endif
                 </a>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                    <span class="dropdown-item dropdown-header">{{Auth::user()->unreadNotifications->count()}} Notifications</span>
+                    <span class="dropdown-item dropdown-header">{{Auth::user()->unreadNotifications->count()}} Notifikace</span>
                     <div class="dropdown-divider"></div>
 
                     @foreach(Auth::user()->unreadNotifications->sortBy('created_at')->take(5) as $notification)
@@ -74,8 +74,7 @@
                     @endforeach
 
                     <div class="dropdown-divider"></div>
-                    <a href="{{route('notifications.index')}}" class="dropdown-item dropdown-footer">See All
-                        Notifications</a>
+                    <a href="{{route('notifications.index')}}" class="dropdown-item dropdown-footer">Zobrazit všechny notifikace</a>
                 </div>
             </li>
 

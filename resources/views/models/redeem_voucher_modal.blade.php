@@ -5,7 +5,7 @@
 
             <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title">Využít voucheru</h4>
+                <h4 class="modal-title">Využít voucher</h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
 
