@@ -6,7 +6,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Servers</h1>
+                    <h1>Servery</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -26,6 +26,7 @@
 
             <!-- CUSTOM CONTENT -->
             <div class="d-flex justify-content-between mb-3">
+            <div></div>
                 <a @if(Auth::user()->Servers->count() >= Auth::user()->server_limit) disabled="disabled" title="Bylo dosaženo limitu počtu vašich serverů!" @endif href="{{route('servers.create')}}" class="btn @if(Auth::user()->Servers->count() >= Auth::user()->server_limit) disabled @endif btn-primary"><i class="fa fa-plus mr-2"></i>Vytvořit server</a>
             </div>
 
