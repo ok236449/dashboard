@@ -177,7 +177,7 @@
                             <a href="{{route('admin.users.index')}}"
                                class="nav-link @if(Request::routeIs('admin.users.*')) active @endif">
                                 <i class="nav-icon fas fa-users"></i>
-                                <p>Uživvatelé</p>
+                                <p>Uživatelé</p>
                             </a>
                         </li>
 
@@ -318,7 +318,7 @@
     </div>
     <!-- /.content-wrapper -->
     <footer class="main-footer">
-        <strong>Copyright &copy; 2021-{{date('Y')}} <a href="{{url('/')}}">{{env('APP_NAME' , 'Laravel')}}</a>.</strong>
+        Copyright &copy; 2021-{{date('Y')}} <strong><a href="{{url('/')}}">{{env('APP_NAME' , 'Laravel')}}</a>.</strong>
         Všechna práva vyhrazena. Používáme <a href="https://controlpanel.gg">ControlPanel</a>. Verze <b>{{config('app')['version']}}</b>
     </footer>
 

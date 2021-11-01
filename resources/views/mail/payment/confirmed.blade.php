@@ -1,18 +1,18 @@
 @component('mail::message')
-# Thank you for your purchase!
-Your payment has been confirmed; Your credit balance has been updated.<br>
+# Děkujeme za nákup!
+Vaše platba byla úspěšná, kredity byly aktualizovány.<br>
 
-# Details
+# Detaily
 ___
-### Payment ID: **{{$payment->id}}**<br>
-### Status:     **{{$payment->status}}**<br>
-### Price:      **{{$payment->formatCurrency()}}**<br>
-### Type:       **{{$payment->type}}**<br>
-### Amount:     **{{$payment->amount}}**<br>
-### Balance:    **{{$payment->user->credits}}**<br>
-### User ID:    **{{$payment->user_id}}**<br>
+### ID Platby:      **{{$payment->id}}**<br>
+### Stav:           **{{$payment->status}}**<br>
+### Cena:           **{{$payment->formatCurrency()}}**<br>
+### Typ:            **{{$payment->type}}**<br>
+### Množství:       **{{$payment->amount}}**<br>
+### Stav kreditů:   **{{$payment->user->credits}}**<br>
+### ID uživatele:   **{{$payment->user_id}}**<br>
 
 <br>
-Thanks,<br>
+Děkujeme,<br>
 {{ config('app.name') }}
 @endcomponent
