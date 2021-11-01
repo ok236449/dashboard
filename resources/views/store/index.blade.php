@@ -34,7 +34,7 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title"><i class="fa fa-coins mr-2"></i>{{CREDITS_DISPLAY_NAME}}</h5>
+                        <h5 class="card-title"><i class="fa fa-coins mr-2"></i>Balíčky nákupu {{CREDITS_DISPLAY_NAME}}</h5>
                     </div>
                     <div class="card-body">
                         <table class="table table-striped table-responsive-sm">
