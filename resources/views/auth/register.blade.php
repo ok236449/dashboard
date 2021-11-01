@@ -99,7 +99,7 @@
                             <div class="icheck-primary">
                                 <input type="checkbox" required id="agreeTerms" name="terms" value="agree">
                                 <label for="agreeTerms">
-                                    Souhlasím s <a href="http://home.vagonbrei.eu/podminky-uziti">podmínkami</a>
+                                    Souhlasím s <a href="http://home.vagonbrei.eu/podminky-uziti">podmínkami užití</a>
                                 </label>
                             </div>
                         </div>
