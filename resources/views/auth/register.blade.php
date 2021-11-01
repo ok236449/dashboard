@@ -96,12 +96,12 @@
 
                     <div class="row">
                         <div class="col-8">
-                            <div class="icheck-primary">
-                                <input type="checkbox" id="agreeTerms" name="terms" value="agree">
-                                <label for="agreeTerms">
-                                    Souhlasím s <a href="http://home.vagonbrei.eu/podminky-uziti">podmínkami</a>
-                                </label>
-                            </div>
+{{--                            <div class="icheck-primary">--}}
+{{--                                <input type="checkbox" id="agreeTerms" name="terms" value="agree">--}}
+{{--                                <label for="agreeTerms">--}}
+{{--                                    Souhlasím s <a href="http://home.vagonbrei.eu/podminky-uziti">podmínkami</a>--}}
+{{--                                </label>--}}
+{{--                            </div>--}}
                         </div>
                         <!-- /.col -->
                         <div class="col-4">
