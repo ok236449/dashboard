@@ -39,7 +39,10 @@
                 <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
-                <a href="{{route('home')}}" class="nav-link">Home</a>
+                <a href="http://home.vagonbrei.eu" class="nav-link">Home</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="https://panel.vagonbrei.eu" class="nav-link">Panel</a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
                 <a href="{{env('DISCORD_INVITE_URL')}}" class="nav-link" target="__blank">Discord</a>
@@ -89,7 +92,7 @@
                 <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                     <a class="dropdown-item" href="{{route('profile.index')}}">
                         <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Profile
+                        Profil
                     </a>
                     {{--                    <a class="dropdown-item" href="#">--}}
                     {{--                        <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>--}}
@@ -99,20 +102,20 @@
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{{route('users.logbackin')}}">
                             <i class="fas fa-sign-in-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                            Log back in
+                            Přihlásit se zpět za sebe
                         </a>
                     @endif
                     <a class="dropdown-item" data-toggle="modal" data-target="#redeemVoucherModal"
                        href="javascript:void(0)">
                         <i class="fas fa-money-check-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Redeem code
+                        Využít voucher
                     </a>
                     <div class="dropdown-divider"></div>
                     <form method="post" action="{{route('logout')}}">
                         @csrf
                         <button class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                             <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                            Logout
+                            Odhlásit se
                         </button>
                     </form>
                 </div>
@@ -142,7 +145,7 @@
                     <li class="nav-item">
                         <a href="{{route('home')}}" class="nav-link @if(Request::routeIs('home')) active @endif">
                             <i class="nav-icon fa fa-home"></i>
-                            <p>Dashboard</p>
+                            <p>Přehled</p>
                         </a>
                     </li>
 
@@ -150,7 +153,7 @@
                         <a href="{{route('servers.index')}}"
                            class="nav-link @if(Request::routeIs('servers.*')) active @endif">
                             <i class="nav-icon fa fa-server"></i>
-                            <p>Servers
+                            <p>Servery
                                 <span
                                     class="badge badge-info right">{{Auth::user()->servers()->count()}} / {{Auth::user()->server_limit}}</span>
                             </p>
@@ -162,7 +165,7 @@
                             <a href="{{route('store.index')}}"
                                class="nav-link @if(Request::routeIs('store.*') || Request::routeIs('checkout')) active @endif">
                                 <i class="nav-icon fa fa-coins"></i>
-                                <p>Store</p>
+                                <p>Dokoupit kredity</p>
                             </a>
                         </li>
                     @endif
@@ -174,7 +177,7 @@
                             <a href="{{route('admin.users.index')}}"
                                class="nav-link @if(Request::routeIs('admin.users.*')) active @endif">
                                 <i class="nav-icon fas fa-users"></i>
-                                <p>Users</p>
+                                <p>Uživvatelé</p>
                             </a>
                         </li>
 
@@ -182,7 +185,7 @@
                             <a href="{{route('admin.servers.index')}}"
                                class="nav-link @if(Request::routeIs('admin.servers.*')) active @endif">
                                 <i class="nav-icon fas fa-server"></i>
-                                <p>Servers</p>
+                                <p>Všechny servery</p>
                             </a>
                         </li>
 
@@ -190,7 +193,7 @@
                             <a href="{{route('admin.products.index')}}"
                                class="nav-link @if(Request::routeIs('admin.products.*')) active @endif">
                                 <i class="nav-icon fas fa-sliders-h"></i>
-                                <p>Products</p>
+                                <p>Balíčky</p>
                             </a>
                         </li>
 
@@ -198,7 +201,7 @@
                             <a href="{{route('admin.store.index')}}"
                                class="nav-link @if(Request::routeIs('admin.store.*')) active @endif">
                                 <i class="nav-icon fas fa-shopping-basket"></i>
-                                <p>Store</p>
+                                <p>Nastavení obchodu</p>
                             </a>
                         </li>
 
@@ -206,7 +209,7 @@
                             <a href="{{route('admin.vouchers.index')}}"
                                class="nav-link @if(Request::routeIs('admin.vouchers.*')) active @endif">
                                 <i class="nav-icon fas fa-money-check-alt"></i>
-                                <p>Vouchers</p>
+                                <p>Vouchery</p>
                             </a>
                         </li>
 
@@ -228,13 +231,13 @@
                             </a>
                         </li>
 
-                        <li class="nav-header">Logs</li>
+                        <li class="nav-header">Historie</li>
 
                         <li class="nav-item">
                             <a href="{{route('admin.payments.index')}}"
                                class="nav-link @if(Request::routeIs('admin.payments.*')) active @endif">
                                 <i class="nav-icon fas fa-money-bill-wave"></i>
-                                <p>Payments
+                                <p>Platby
                                     <span class="badge badge-success right">{{\App\Models\Payment::count()}}</span>
                                 </p>
                             </a>
@@ -244,7 +247,7 @@
                             <a href="{{route('admin.activitylogs.index')}}"
                                class="nav-link @if(Request::routeIs('admin.activitylogs.*')) active @endif">
                                 <i class="nav-icon fas fa-clipboard-list"></i>
-                                <p>Activity Logs</p>
+                                <p>Historie aktivity</p>
                             </a>
                         </li>
 
@@ -263,17 +266,17 @@
                             <a href="{{route('admin.usefullinks.index')}}"
                                class="nav-link @if(Request::routeIs('admin.usefullinks.*')) active @endif">
                                 <i class="nav-icon fas fa-link"></i>
-                                <p>Useful Links</p>
+                                <p>Užitečné linky</p>
                             </a>
                         </li>
 
-                        <li class="nav-header">Settings</li>
+                        <li class="nav-header">Nastavení</li>
 
                         <li class="nav-item">
                             <a href="{{route('admin.configurations.index')}}"
                                class="nav-link @if(Request::routeIs('admin.configurations.*')) active @endif">
                                 <i class="nav-icon fas fa-cogs"></i>
-                                <p>Configurations</p>
+                                <p>Konfigurace</p>
                             </a>
                         </li>
 
@@ -281,7 +284,7 @@
                             <a href="{{route('admin.settings.index')}}"
                                class="nav-link @if(Request::routeIs('admin.settings.*')) active @endif">
                                 <i class="nav-icon fas fa-tools"></i>
-                                <p>Settings</p>
+                                <p>Nastavení ikony</p>
                             </a>
                         </li>
 
@@ -301,12 +304,10 @@
         @if(!Auth::user()->hasVerifiedEmail())
             @if(Auth::user()->created_at->diffInHours(now(), false) > 1)
                 <div class="alert alert-warning p-2 m-2">
-                    <h5><i class="icon fas fa-exclamation-circle"></i> Warning!</h5>
-                    You have not yet verified your email address <a class="text-primary"
-                                                                    href="{{route('verification.send')}}">Click here to
-                        resend
-                        verification email</a> <br>
-                    Please contact support If you didn't receive your verification email.
+                    <h5><i class="icon fas fa-exclamation-circle"></i> Varování!</h5>
+                    Ještě nemáte ověřenou emailovou adresu. <a class="text-primary"
+                                                                    href="{{route('verification.send')}}">Klikněte zde pro opětovné zaslání ověřovacího linku.</a> <br>
+                    Prosím kontaktujte podporu v případě, že vám nebyl ověřovací link doručen.
                 </div>
             @endif
         @endif
@@ -318,8 +319,7 @@
     <!-- /.content-wrapper -->
     <footer class="main-footer">
         <strong>Copyright &copy; 2021-{{date('Y')}} <a href="{{url('/')}}">{{env('APP_NAME' , 'Laravel')}}</a>.</strong>
-        All rights
-        reserved. Powered by <a href="https://controlpanel.gg">ControlPanel</a>. Version <b>{{config('app')['version']}}</b>
+        Všechna práva vyhrazena. Používáme <a href="https://controlpanel.gg">ControlPanel</a>. Verze <b>{{config('app')['version']}}</b>
     </footer>
 
     <!-- Control Sidebar -->
@@ -365,7 +365,7 @@
     @if(Session::has('error'))
     Swal.fire({
         icon: 'error',
-        title: 'Oops...',
+        title: 'Jejda...',
         html: '{{Session::get('error')}}',
     })
     @endif
@@ -373,7 +373,7 @@
     @if(Session::has('success'))
     Swal.fire({
         icon: 'success',
-        title: '{{Session::get('success')}}',
+        title: '{{Session::get('Úspěch!')}}',
         position: 'top-end',
         showConfirmButton: false,
         background: '#343a40',

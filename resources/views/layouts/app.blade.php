@@ -29,7 +29,7 @@
     @if(Session::has('error'))
     Swal.fire({
         icon: 'error',
-        title: 'Oops...',
+        title: 'Jejda...',
         html: '{{Session::get('error')}}',
     })
     @endif
@@ -37,7 +37,7 @@
     @if(Session::has('success'))
     Swal.fire({
         icon: 'success',
-        title: '{{Session::get('success')}}',
+        title: '{{Session::get('Úspěch!')}}',
         position: 'top-end',
         showConfirmButton: false,
         background : '#343a40',
