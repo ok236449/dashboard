@@ -52,7 +52,7 @@
                                 <tr>
                                     <td>{{$product->formatCurrency()}}</td>
                                     <td>{{strtolower($product->type) == 'credits' ? CREDITS_DISPLAY_NAME : $product->type}}</td>
-                                    <td><i class="fa fa-coins mr-2"></i>{{$product->display}}</td>
+                                    <td><i class="fa fa-coins mr-2"></i>Nákup {{$product->display}}</td>
                                     <td><a href="{{route('checkout' , $product->id)}}" class="btn btn-info">Zakoupit</a>
                                     </td>
                                 </tr>
