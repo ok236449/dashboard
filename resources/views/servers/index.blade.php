@@ -95,9 +95,9 @@
 
 
                             <div class="card-footer d-flex justify-content-between">
-                                <a href="{{env('PTERODACTYL_URL' , 'http://localhost')}}/server/{{$server->identifier}}"  target="__blank" class="btn btn-info mx-3 w-100"><i class="fas fa-tasks mr-2"></i></brake>Spravovat</a>
+                                <a href="{{env('PTERODACTYL_URL' , 'http://localhost')}}/server/{{$server->identifier}}"  target="__blank" class="btn btn-info mx-3 w-100"><i class="fas fa-tasks mr-2"></i>Spravovat</a>
                                 @if(!empty(env('PHPMYADMIN_URL')))
-                                    <a href="{{env('PHPMYADMIN_URL' , 'http://localhost')}}" target="__blank" class="btn btn-info mx-3 w-100" ><i class="fas fa-database mr-2"></i>PhpMyAdmin</a>
+                                    <a href="{{env('PHPMYADMIN_URL' , 'http://localhost')}}" target="__blank" class="btn btn-info mx-3 w-100" ><i class="fas fa-database mr-2"></i>Databáze</a>
                                 @endif
                             </div>
 
