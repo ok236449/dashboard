@@ -107,7 +107,7 @@
 
                                 <div class="table-responsive">
                                     <table class="table">
-                                        /*<tr>
+                                        <!--<tr>
                                             <th style="width:50%">Subtotal:</th>
                                             <td>{{$product->formatCurrency()}}</td>
                                         </tr>
@@ -118,7 +118,7 @@
                                         <tr>
                                             <th>Quantity:</th>
                                             <td>1</td>
-                                        </tr>*/
+                                        </tr>-->
                                         <tr>
                                             <th>Celkem:</th>
                                             <td>{{$product->formatCurrency()}}</td>
