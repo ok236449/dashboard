@@ -311,7 +311,6 @@
                                                                     href="{{route('verification.send')}}">Klikněte zde pro opětovné zaslání ověřovacího linku.</a> <br>
                     Prosím kontaktujte podporu v případě, že vám nebyl ověřovací link doručen.
                 </div>
-            @endif
             @else
                 <div class="alert alert-warning p-2 m-2">
                     <h5><i class="fas fa-envelope"></i> Varování!</h5>
