@@ -313,6 +313,16 @@
                 </div>
             @endif
         @endif
+        @if(is_null(Auth::user()->discordUser))
+            @if(Auth::user()->created_at->diffInHours(now(), false) > 1)
+                <div class="alert alert-warning p-2 m-2">
+                    <h5><i class="icon fas fa-exclamation-circle"></i> Varování!</h5>
+                    Ještě nemáte ověřený discord. <a class="text-primary"
+                                                                    href="{{route('auth.redirect')}}">Klikněte zde pro přihlášení pomocí discordu.</a> <br>
+                    Prosím kontaktujte podporu v případě, že se vám nedaří discord ověřit.
+                </div>
+            @endif
+        @endif
 
         @yield('content')
 
