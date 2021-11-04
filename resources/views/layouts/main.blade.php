@@ -306,12 +306,20 @@
         @if(!Auth::user()->hasVerifiedEmail())
             @if(Auth::user()->created_at->diffInHours(now(), false) > 1)
                 <div class="alert alert-warning p-2 m-2">
-                    <h5><i class="fas fa-envelope"></i>Varování!</h5>
+                    <h5><i class="fas fa-envelope"></i> Varování!</h5>
                     Ještě nemáte ověřenou emailovou adresu. <a class="text-primary"
                                                                     href="{{route('verification.send')}}">Klikněte zde pro opětovné zaslání ověřovacího linku.</a> <br>
                     Prosím kontaktujte podporu v případě, že vám nebyl ověřovací link doručen.
                 </div>
             @endif
+            @else
+                <div class="alert alert-warning p-2 m-2">
+                    <h5><i class="fas fa-envelope"></i> Varování!</h5>
+                    Na email vám byl zaslán link pro ověření emailové adresy. Prosím ověřte si ji.<br>
+                    Prosím kontaktujte podporu v případě, že vám nebyl ověřovací link doručen.
+                </div>
+            @endif
+            
         @endif
         @if(is_null(Auth::user()->discordUser))
             @if(Auth::user()->created_at->diffInHours(now(), false) > 1)
