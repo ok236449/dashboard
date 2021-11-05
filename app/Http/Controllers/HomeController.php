@@ -25,6 +25,10 @@ class HomeController extends Controller
         return view('home')->with([
             'useage' => $usage,
             'useful_links' => UsefulLink::all()->sortBy('id'),
+        ]);
+        return view('profile.index')->with([
+            'user' => Auth::user(),
+            'credits_reward_after_verify_discord' => Configuration::getValueByKey('CREDITS_REWARD_AFTER_VERIFY_DISCORD'),
             'force_email_verification' => Configuration::getValueByKey('FORCE_EMAIL_VERIFICATION'),
             'force_discord_verification' => Configuration::getValueByKey('FORCE_DISCORD_VERIFICATION'),
         ]);
