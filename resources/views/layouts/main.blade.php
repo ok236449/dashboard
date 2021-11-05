@@ -321,7 +321,7 @@
             
             @endif
         @endif
-        @if((is_null(Auth::user()->discordUser))&&(strtolower($force_discord_verification) == 'true'))
+        @if(is_null(Auth::user()->discordUser))
             <div class="alert alert-warning p-2 m-2">
                 <h5><i class="fab fa-discord mr-2"></i>Varování!</h5>
                 Ještě nemáte ověřený discord. <a class="text-primary"
