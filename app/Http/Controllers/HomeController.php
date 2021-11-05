@@ -26,9 +26,5 @@ class HomeController extends Controller
             'useage' => $usage,
             'useful_links' => UsefulLink::all()->sortBy('id')
         ]);
-        return view('layouts.main')->with([
-            'force_email_verification' => Configuration::getValueByKey('FORCE_EMAIL_VERIFICATION'),
-            'force_discord_verification' => Configuration::getValueByKey('FORCE_DISCORD_VERIFICATION'),
-        ]);
     }
 }

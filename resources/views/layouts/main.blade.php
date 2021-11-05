@@ -1,5 +1,3 @@
-@extends('layouts.main')
-
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -304,7 +302,7 @@
     <!-- Content Wrapper. Contains page content -->
 
     <div class="content-wrapper">
-        @if(!Auth::user()->hasVerifiedEmail() && strtolower($force_email_verification) == 'true')
+        @if(!Auth::user()->hasVerifiedEmail())
             @if(Auth::user()->created_at->diffInHours(now(), false) > 1)
                 <div class="alert alert-warning p-2 m-2">
                     <h5><i class="fas fa-envelope"></i> Varování!</h5>
