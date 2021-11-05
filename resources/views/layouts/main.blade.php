@@ -302,7 +302,7 @@
     <!-- Content Wrapper. Contains page content -->
 
     <div class="content-wrapper">
-        @if(!Auth::user()->hasVerifiedEmail() && strtolower($force_email_verification) == 'true')
+        @if(()Configuration::getValueByKey('FORCE_EMAIL_VERIFICATION')) == true)
             @if(!Auth::user()->hasVerifiedEmail())
                 @if(Auth::user()->created_at->diffInHours(now(), false) > 1)
                     <div class="alert alert-warning p-2 m-2">
