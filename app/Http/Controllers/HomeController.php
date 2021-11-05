@@ -27,7 +27,7 @@ class HomeController extends Controller
             'useful_links' => UsefulLink::all()->sortBy('id')
         ]);
     }
-    public function index()
+    public function index2()
     {
         return view('profile.index')->with([
             'user' => Auth::user(),
