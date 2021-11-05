@@ -26,10 +26,7 @@ class HomeController extends Controller
             'useage' => $usage,
             'useful_links' => UsefulLink::all()->sortBy('id')
         ]);
-    }
-    public function index2()
-    {
-        return view('profile.index')->with([
+        return view('layouts.index')->with([
             'user' => Auth::user(),
             'credits_reward_after_verify_discord' => Configuration::getValueByKey('CREDITS_REWARD_AFTER_VERIFY_DISCORD'),
             'force_email_verification' => Configuration::getValueByKey('FORCE_EMAIL_VERIFICATION'),
