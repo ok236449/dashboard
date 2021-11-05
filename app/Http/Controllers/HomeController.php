@@ -26,11 +26,14 @@ class HomeController extends Controller
             'useage' => $usage,
             'useful_links' => UsefulLink::all()->sortBy('id')
         ]);
-        return view('layouts.index')->with([
-            'user' => Auth::user(),
-            'credits_reward_after_verify_discord' => Configuration::getValueByKey('CREDITS_REWARD_AFTER_VERIFY_DISCORD'),
-            'force_email_verification' => Configuration::getValueByKey('FORCE_EMAIL_VERIFICATION'),
-            'force_discord_verification' => Configuration::getValueByKey('FORCE_DISCORD_VERIFICATION'),
-        ]);
     }
+}
+public function index()
+{
+    return view('layouts.main')->with([
+        'user' => Auth::user(),
+        'credits_reward_after_verify_discord' => Configuration::getValueByKey('CREDITS_REWARD_AFTER_VERIFY_DISCORD'),
+        'force_email_verification' => Configuration::getValueByKey('FORCE_EMAIL_VERIFICATION'),
+        'force_discord_verification' => Configuration::getValueByKey('FORCE_DISCORD_VERIFICATION'),
+    ]);
 }
