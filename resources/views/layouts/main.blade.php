@@ -302,7 +302,7 @@
     <!-- Content Wrapper. Contains page content -->
 
     <div class="content-wrapper">
-        @if(()Configuration::getValueByKey('FORCE_EMAIL_VERIFICATION')) == true)
+        <!--@if(()Configuration::getValueByKey('FORCE_EMAIL_VERIFICATION')) == true)-->
             @if(!Auth::user()->hasVerifiedEmail())
                 @if(Auth::user()->created_at->diffInHours(now(), false) > 1)
                     <div class="alert alert-warning p-2 m-2">
@@ -320,7 +320,7 @@
                 @endif
             
             @endif
-        @endif
+        
         @if(is_null(Auth::user()->discordUser))
             <div class="alert alert-warning p-2 m-2">
                 <h5><i class="fab fa-discord mr-2"></i>Varování!</h5>
