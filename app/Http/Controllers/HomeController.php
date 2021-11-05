@@ -28,7 +28,7 @@ class HomeController extends Controller
         ]);
     }
 }
-public function index()
+public function index2()
 {
     return view('layouts.main')->with([
         'user' => Auth::user(),
