@@ -98,7 +98,7 @@
                                 <img src="https://www.paypalobjects.com/digitalassets/c/website/logo/full-text/pp_fc_hl.svg" alt="Paypal">
 
                                 <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
-                                    {{__('Zakoupením souhlasíte s <a href="http://home.vagonbrei.eu/podminky-uziti">podmínkami užití.')}}</a>
+                                    {{__('Zakoupením souhlasíte s <a href="http://home.vagonbrei.eu/podminky-uziti">podmínkami užití. </a>')}}</a>
                                 </p>
                             </div>
                             <!-- /.col -->
