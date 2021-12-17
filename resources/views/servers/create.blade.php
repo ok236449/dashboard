@@ -95,7 +95,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="nest">{{__('Hra')}}</label>
+                                        <label for="nest">{{__('Software/hra')}}</label>
                                         <select class="custom-select"
                                                 required
                                                 name="nest"
@@ -202,7 +202,7 @@
                                 <li x-show="selectedNestObject.name"
                                     class="list-group-item d-flex justify-content-between lh-condensed">
                                     <div>
-                                        <h6 class="my-0">{{__('Hra')}}</h6>
+                                        <h6 class="my-0">{{__('Software')}}</h6>
                                         <small x-text="selectedNestObject?.name ?? '{{__('Nevybráno')}}'"
                                                class="text-muted"></small>
                                     </div>
@@ -267,7 +267,7 @@
                             </ul>
                             <ul class="list-group mb-3">
                                 <li class="list-group-item d-flex justify-content-between">
-                                    <span>{{__('Měsíčně')}} {{CREDITS_DISPLAY_NAME}}</span>
+                                    <span>{{__('Měsíčně')}} {{CREDITS_DISPLAY_NAME}}:</span>
                                     <strong>
                                         <i x-show="selectedProductObject?.price" class="fas fa-coins"></i>
                                         <span x-text="selectedProductObject?.price ?? ''"></span>
