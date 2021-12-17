@@ -185,7 +185,7 @@
                                     </template>
                                 </select>
                             </div>
-                            </br><i class="fas fa-info-circle"></i> Pokud po zvolení distribuce tabulka zšedne a nejde dále ovládat, smažte prosím cache vašeho prohlížeče.
+                            <small><i class="fas fa-info-circle"></i> Pokud po zvolení distribuce tabulka zšedne a nejde dále ovládat, smažte prosím cache vašeho prohlížeče.</small>
                         </div>
                     </div>
                 </div>
