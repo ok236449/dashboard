@@ -268,7 +268,7 @@
                             </ul>
                             <ul class="list-group mb-3">
                                 <li class="list-group-item d-flex justify-content-between">
-                                    <span>{{CREDITS_DISPLAY_NAME}} {{__('za měsíc')}}</span>
+                                    <span>{{__('Měsíčně')}} {{CREDITS_DISPLAY_NAME}}</span>
                                     <strong>
                                         <i x-show="selectedProductObject?.price" class="fas fa-coins"></i>
                                         <span x-text="selectedProductObject?.price ?? ''"></span>
