@@ -189,6 +189,8 @@
 
                         </div>
                     </div>
+                    </br><i class="fas fa-info-circle"></i> Pokud po zvolení distribuce tabulka zšedne a nejde dále ovládat, smažte prosím cache vašeho prohlížeče.
+
                 </div>
                 <div class="col-md-4 mb-4">
                     <div class="card">
@@ -226,8 +228,8 @@
                                 <li class="list-group-item">
                                     <div>
                                         <h6 class="my-0">{{__('Prostředky')}}</h6>
-                                        <b><small x-text="selectedProductObject?.name ?? '{{__('No selection')}}'"
-                                               class="text-muted"></small></b>
+                                        <small x-text="selectedProductObject?.name ?? '{{__('No selection')}}'"
+                                               class="text-muted"></small>
                                     </div>
 
                                     <template x-if="selectedProductObject?.name">
