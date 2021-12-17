@@ -28,7 +28,7 @@
                     <div class="form-group">
                         <div class="input-group">
                             <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}"
-                                   placeholder="Uživatelské jméno" required autocomplete="name" autofocus>
+                                   placeholder="{{__('Uživatelské jméno')}}" required autocomplete="name" autofocus>
                             <div class="input-group-append">
                                 <div class="input-group-text">
                                     <span class="fas fa-user"></span>
@@ -45,7 +45,7 @@
 
                     <div class="form-group">
                         <div class="input-group mb-3">
-                            <input type="email" name="email" class="form-control  @error('email') is-invalid @enderror" placeholder="Email"
+                            <input type="email" name="email" class="form-control  @error('email') is-invalid @enderror" placeholder="{{__('Email')}}"
                                    value="{{ old('email') }}" required autocomplete="email">
                             <div class="input-group-append">
                                 <div class="input-group-text">
@@ -62,7 +62,7 @@
 
                     <div class="form-group">
                         <div class="input-group mb-3">
-                            <input type="password" class="form-control @error('password') is-invalid @enderror" placeholder="Heslo" name="password" required autocomplete="new-password">
+                            <input type="password" class="form-control @error('password') is-invalid @enderror" placeholder="{{__('Heslo')}}" name="password" required autocomplete="new-password">
                             <div class="input-group-append">
                                 <div class="input-group-text">
                                     <span class="fas fa-lock"></span>
@@ -77,7 +77,7 @@
                     </div>
 
                     <div class="input-group mb-3">
-                        <input type="password" class="form-control" name="password_confirmation" placeholder="Heslo znovu" required autocomplete="new-password">
+                        <input type="password" class="form-control" name="password_confirmation" placeholder="{{__('Heslo znovu')}}" required autocomplete="new-password">
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -105,7 +105,7 @@
                         </div>
                         <!-- /.col -->
                         <div class="col-4">
-                            <button type="submit" class="btn btn-primary btn-block">Register</button>
+                            <button type="submit" class="btn btn-primary">{{__('Register')}}</button>
                         </div>
                         <!-- /.col -->
                     </div>

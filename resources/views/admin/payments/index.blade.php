@@ -6,12 +6,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Payments</h1>
+                    <h1>{{__('Payments')}}</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{route('home')}}">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a class="text-muted" href="{{route('admin.payments.index')}}">Payments</a>
+                        <li class="breadcrumb-item"><a class="text-muted" href="{{route('admin.payments.index')}}">{{__('Payments')}}</a>
                         </li>
                     </ol>
                 </div>
@@ -26,21 +26,24 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title"><i class="fas fa-money-bill-wave mr-2"></i>Payments</h5>
+                    <h5 class="card-title"><i class="fas fa-money-bill-wave mr-2"></i>{{__('Payments')}}</h5>
                 </div>
 
                 <div class="card-body table-responsive">
                     <table id="datatable" class="table table-striped">
                         <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>User</th>
-                            <th>Type</th>
-                            <th>Amount</th>
-                            <th>Price</th>
-                            <th>Payment_ID</th>
-                            <th>Payer_ID</th>
-                            <th>Created at</th>
+                            <th>{{__('ID')}}</th>
+                            <th>{{__('User')}}</th>
+                            <th>{{__('Type')}}</th>
+                            <th>{{__('Amount')}}</th>
+                            <th>{{__('Product Price')}}</th>
+                            <th>{{__('Tax')}}</th>
+                            <th>{{__('Tax')}}(%)</th>
+                            <th>{{__('Total Price')}}</th>
+                            <th>{{__('Payment_ID')}}</th>
+                            <th>{{__('Payer_ID')}}</th>
+                            <th>{{__('Created at')}}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -58,6 +61,9 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             $('#datatable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.11.3/i18n/{{config("app.datatable_locale")}}.json'
+                },
                 processing: true,
                 serverSide: true,
                 stateSave: true,
@@ -68,6 +74,9 @@
                     {data: 'type'},
                     {data: 'amount'},
                     {data: 'price'},
+                    {data: 'tax_value'},
+                    {data: 'tax_percent'},
+                    {data: 'total_price'},
                     {data: 'payment_id'},
                     {data: 'payer_id'},
                     {data: 'created_at'},

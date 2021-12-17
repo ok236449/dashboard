@@ -13,12 +13,12 @@
                         {{ session('status') }}
                     </div>
                 @endif
-                <p class="login-box-msg">Zapomenuté heslo? Zde si můžete jednoduše vytvořit nové.</p>
+                <p class="login-box-msg">{{__('Zapomenuté heslo? Zde si můžete jednoduše vytvořit nové.')}}</p>
                 <form method="POST" action="{{ route('password.email') }}">
                     @csrf
 
                     <div class="input-group mb-3">
-                        <input type="email" class="form-control @error('email') is-invalid @enderror" placeholder="Email" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+                        <input type="email" class="form-control @error('email') is-invalid @enderror" placeholder="{{__('Email')}}" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-envelope"></span>
@@ -34,13 +34,13 @@
 
                     <div class="row">
                         <div class="col-12">
-                            <button type="submit" class="btn btn-primary btn-block">Požádat o nové heslo</button>
+                            <button type="submit" class="btn btn-primary btn-block">{{__('Požádat o nové heslo')}}</button>
                         </div>
                         <!-- /.col -->
                     </div>
                 </form>
                 <p class="mt-3 mb-1">
-                    <a href="{{route('login')}}">Přihlásit se</a>
+                    <a href="{{route('login')}}">{{__('Přihlásit se')}}</a>
                 </p>
             </div>
             <!-- /.login-card-body -->

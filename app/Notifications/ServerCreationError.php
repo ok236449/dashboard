@@ -46,7 +46,7 @@ class ServerCreationError extends Notification
     public function toArray($notifiable)
     {
         return [
-            'title' => "Chyba při vytváření serveru",
+            'title' => __("Chyba při vytváření serveru"),
             'content' => "
                 <p>Dobrý den <strong>{$this->server->User->name}</strong>, nastala neočekávaná chyba...</p>
                 <p>Nasrala chyba při vytváření serveru na našem panelu. Pokud čtete tuto zprávu, kontaktujte prosím majitele.</p>

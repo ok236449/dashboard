@@ -10,6 +10,9 @@ use Illuminate\Notifications\Notification;
 
 class ConfirmPaymentNotification extends Notification implements ShouldQueue
 {
+
+    //THIS IS BASICALLY NOT USED ANYMORE WITH INVOICENOTIFICATION IN PLACE
+
     use Queueable;
 
     private Payment $payment;
@@ -44,7 +47,7 @@ class ConfirmPaymentNotification extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('Potvrzení platby')
+            ->subject(__('Potvrzení platby'))
             ->markdown('mail.payment.confirmed' , ['payment' => $this->payment]);
     }
 
@@ -57,8 +60,8 @@ class ConfirmPaymentNotification extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            'title'   => "Potvrzení platby",
-            'content' => "Touto zprávou potvrzujeme úspěšnou platbu na našem storu. Děkujeme!",
+            'title'   => __("Potvrzení platby"),
+            'content' => __("Touto zprávou potvrzujeme úspěšnou platbu na našem storu. Děkujeme!"),
         ];
     }
 }

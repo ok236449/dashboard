@@ -6,7 +6,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Dashboard</h1>
+                    <h1>{{__('Dashboard')}}</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -91,13 +91,13 @@
                                <span class="info-box-number">{{number_format((Auth::user()->Credits()*30)/$useage,0,'.','')}} <sup> dní</sup></span>
                             @endif
                         </div>
-                        <!-- /.info-box-content -->
-                    </div>
                     <!-- /.info-box -->
+                @endif
                 </div>
                 <!-- /.col -->
-            @endif
+
             </div>
+
 
 
 

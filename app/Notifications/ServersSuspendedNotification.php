@@ -42,11 +42,11 @@ class ServersSuspendedNotification extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->subject('Vaše servery byly pozastaveny!')
-                    ->greeting('Vaše servery byly pozastaveny!')
-                    ->line("Pro automatické obnovení serverů je potřeba zakoupit další kredity.")
-                    ->action('Zakoupit kredity', route('store.index'))
-                    ->line('Pokud máte nějaké dotazy, ozvěte se.');
+        ->subject('Vaše servery byly pozastaveny!')
+        ->greeting('Vaše servery byly pozastaveny!')
+        ->line("Pro automatické obnovení serverů je potřeba zakoupit další kredity.")
+        ->action('Zakoupit kredity', route('store.index'))
+        ->line('Pokud máte nějaké dotazy, ozvěte se.');
     }
 
     /**

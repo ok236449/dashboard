@@ -7,12 +7,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Dokoupit kredity</h1>
+                    <h1>{{__('Dokoupit kredity')}}</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a class="" href="{{route('home')}}">Přehled</a></li>
-                        <li class="breadcrumb-item"><a class="text-muted" href="{{route('store.index')}}">Dokoupit kredity</a></li>
+                        <li class="breadcrumb-item"><a class="" href="{{route('home')}}">{{__('Přehled')}}</a></li>
+                        <li class="breadcrumb-item"><a class="text-muted" href="{{route('store.index')}}">{{__('Dokoupit kredity')}}</a></li>
                     </ol>
                 </div>
             </div>
@@ -26,7 +26,7 @@
 
             <div class="text-right mb-3">
                 <button type="button" data-toggle="modal" data-target="#redeemVoucherModal" class="btn btn-primary">
-                    <i class="fas fa-money-check-alt mr-2"></i>Využít voucher
+                    <i class="fas fa-money-check-alt mr-2"></i>{{__('Využít voucher')}}
                 </button>
             </div>
 
@@ -40,9 +40,9 @@
                         <table class="table table-striped table-responsive-sm">
                             <thead>
                             <tr>
-                                <th>Cena</th>
-                                <th>Typ</th>
-                                <th>Množství kreditů</th>
+                                <th>{{__('Cena')}}</th>
+                                <th>{{__('Typ')}}</th>
+                                <th>{{__('Množství kreditů')}}</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -50,10 +50,10 @@
                             <?php /** @var $product PaypalProduct */?>
                             @foreach($products as $product)
                                 <tr>
-                                    <td>{{$product->formatCurrency()}}</td>
-                                    <td>Nákup {{strtolower($product->type) == 'credits' ? CREDITS_DISPLAY_NAME : $product->type}}</td>
+                                    <td>{{$product->formatToCurrency($product->price)}}</td>
+                                    <td>{{strtolower($product->type) == 'credits' ? CREDITS_DISPLAY_NAME : $product->type}}</td>
                                     <td><i class="fa fa-coins mr-2"></i>{{$product->display}}</td>
-                                    <td><a href="{{route('checkout' , $product->id)}}" class="btn btn-info">Zakoupit</a>
+                                    <td><a href="{{route('checkout' , $product->id)}}" class="btn btn-info">{{__('Zakoupit')}}</a>
                                     </td>
                                 </tr>
                             @endforeach
@@ -65,8 +65,8 @@
 
             @else
                 <div class="alert alert-danger alert-dismissible">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                    <h4><i class="icon fa fa-ban"></i> @if($products->count() == 0) Nejsou tu žádné balíčky pro dokoupení kreditů! @else Tato stránka není správně nastavena! Kontaktujte prosím podporu. @endif
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
+                    <h4><i class="icon fa fa-ban"></i> @if($products->count() == 0) {{__('Nejsou tu žádné balíčky pro dokoupení kreditů!')}} @else {{__('Tato stránka není správně nastavena! Kontaktujte prosím podporu.')}} @endif
                     </h4>
                 </div>
 

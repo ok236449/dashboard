@@ -10,6 +10,8 @@
           href="{{\Illuminate\Support\Facades\Storage::disk('public')->exists('favicon.ico') ? asset('storage/favicon.ico') : asset('favicon.ico')}}"
           type="image/x-icon">
 
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
     {{--    <link rel="stylesheet" href="{{asset('css/adminlte.min.css')}}">--}}
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.24/datatables.min.css"/>
 
@@ -48,7 +50,7 @@
                 <a href="https://phpmyadmin.vagonbrei.eu" class="nav-link">PhpMyAdmin</a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
-                <a href="{{env('DISCORD_INVITE_URL')}}" class="nav-link" target="__blank">Discord</a>
+                <a href="{{env('DISCORD_INVITE_URL')}}" class="nav-link" target="__blank">{{__('Discord')}}</a>
             </li>
         </ul>
 
@@ -77,7 +79,29 @@
                     @endforeach
 
                     <div class="dropdown-divider"></div>
-                    <a href="{{route('notifications.index')}}" class="dropdown-item dropdown-footer">Zobrazit všechny notifikace</a>
+                    <a href="{{route('notifications.index')}}" class="dropdown-item dropdown-footer">{{__('Zobrazit všechny notifikace')}}</a>
+                </div>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link" href="#" id="userDropdown" role="button" data-toggle="dropdown"
+                   aria-haspopup="true"
+                   aria-expanded="false">
+                    <span class="mr-1 d-lg-inline text-gray-600">
+                        <small><i class="fas fa-coins mr-2"></i></small>{{Auth::user()->credits()}}
+                    </span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                    <a class="dropdown-item" href="{{route('store.index')}}">
+                        <i class="fas fa-coins fa-sm fa-fw mr-2 text-gray-400"></i>
+                        {{__('Store')}}
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" data-toggle="modal" data-target="#redeemVoucherModal"
+                       href="javascript:void(0)">
+                        <i class="fas fa-money-check-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                        {{__('Využít voucher')}}
+                    </a>
                 </div>
             </li>
 
@@ -85,7 +109,7 @@
                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
                    aria-haspopup="true"
                    aria-expanded="false">
-                    <span class="mr-1 d-none d-lg-inline text-gray-600 small">
+                    <span class="mr-1 d-lg-inline text-gray-600 small">
                         {{Auth::user()->name}}
                         <img width="28px" height="28px" class="rounded-circle ml-1" src="{{Auth::user()->getAvatar()}}">
                     </span>
@@ -94,7 +118,7 @@
                 <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                     <a class="dropdown-item" href="{{route('profile.index')}}">
                         <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Profil
+                        {{__('Profil')}}
                     </a>
                     {{--                    <a class="dropdown-item" href="#">--}}
                     {{--                        <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>--}}
@@ -104,20 +128,15 @@
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{{route('users.logbackin')}}">
                             <i class="fas fa-sign-in-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                            Přihlásit se zpět za sebe
+                            {{__('Přihlásit se zpět za sebe')}}
                         </a>
                     @endif
-                    <a class="dropdown-item" data-toggle="modal" data-target="#redeemVoucherModal"
-                       href="javascript:void(0)">
-                        <i class="fas fa-money-check-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Využít voucher
-                    </a>
                     <div class="dropdown-divider"></div>
                     <form method="post" action="{{route('logout')}}">
                         @csrf
                         <button class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                             <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                            Odhlásit se
+                            {{__('Odhlásit se')}}
                         </button>
                     </form>
                 </div>
@@ -147,7 +166,7 @@
                     <li class="nav-item">
                         <a href="{{route('home')}}" class="nav-link @if(Request::routeIs('home')) active @endif">
                             <i class="nav-icon fa fa-home"></i>
-                            <p>Přehled</p>
+                            <p>{{__('Přehled')}}</p>
                         </a>
                     </li>
 
@@ -155,7 +174,7 @@
                         <a href="{{route('servers.index')}}"
                            class="nav-link @if(Request::routeIs('servers.*')) active @endif">
                             <i class="nav-icon fa fa-server"></i>
-                            <p>Servery
+                            <p>{{__('Servery')}}
                                 <span
                                     class="badge badge-info right">{{Auth::user()->servers()->count()}} / {{Auth::user()->server_limit}}</span>
                             </p>
@@ -167,19 +186,54 @@
                             <a href="{{route('store.index')}}"
                                class="nav-link @if(Request::routeIs('store.*') || Request::routeIs('checkout')) active @endif">
                                 <i class="nav-icon fa fa-coins"></i>
-                                <p>Dokoupit kredity</p>
+                                <p>{{__('Dokoupit kredity')}}</p>
                             </a>
                         </li>
                     @endif
 
                     @if(Auth::user()->role == 'admin')
-                        <li class="nav-header">Admin</li>
+
+                        <li class="nav-header">{{__('Administration')}}</li>
+
+                        <li class="nav-item">
+                            <a href="{{route('admin.overview.index')}}"
+                               class="nav-link @if(Request::routeIs('admin.overview.*')) active @endif">
+                                <i class="nav-icon fa fa-home"></i>
+                                <p>{{__('Overview')}}</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{route('admin.configurations.index')}}"
+                               class="nav-link @if(Request::routeIs('admin.configurations.*')) active @endif">
+                                <i class="nav-icon fas fa-cogs"></i>
+                                <p>{{__('Configurations')}}</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{route('admin.settings.index')}}"
+                               class="nav-link @if(Request::routeIs('admin.settings.*')) active @endif">
+                                <i class="nav-icon fas fa-tools"></i>
+                                <p>{{__('Settings')}}</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{route('admin.api.index')}}"
+                               class="nav-link @if(Request::routeIs('admin.api.*')) active @endif">
+                                <i class="nav-icon fa fa-gamepad"></i>
+                                <p>{{__('Application API')}}</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-header">{{__('Management')}}</li>
 
                         <li class="nav-item">
                             <a href="{{route('admin.users.index')}}"
                                class="nav-link @if(Request::routeIs('admin.users.*')) active @endif">
                                 <i class="nav-icon fas fa-users"></i>
-                                <p>Uživatelé</p>
+                                <p>{{__('Uživatelé')}}</p>
                             </a>
                         </li>
 
@@ -187,7 +241,7 @@
                             <a href="{{route('admin.servers.index')}}"
                                class="nav-link @if(Request::routeIs('admin.servers.*')) active @endif">
                                 <i class="nav-icon fas fa-server"></i>
-                                <p>Všechny servery</p>
+                                <p>{{__('Všechny servery')}}</p>
                             </a>
                         </li>
 
@@ -195,7 +249,7 @@
                             <a href="{{route('admin.products.index')}}"
                                class="nav-link @if(Request::routeIs('admin.products.*')) active @endif">
                                 <i class="nav-icon fas fa-sliders-h"></i>
-                                <p>Balíčky</p>
+                                <p>{{__('Balíčky')}}</p>
                             </a>
                         </li>
 
@@ -203,7 +257,7 @@
                             <a href="{{route('admin.store.index')}}"
                                class="nav-link @if(Request::routeIs('admin.store.*')) active @endif">
                                 <i class="nav-icon fas fa-shopping-basket"></i>
-                                <p>Nastavení obchodu</p>
+                                <p>{{__('Nastavení obchodu')}}</p>
                             </a>
                         </li>
 
@@ -211,35 +265,46 @@
                             <a href="{{route('admin.vouchers.index')}}"
                                class="nav-link @if(Request::routeIs('admin.vouchers.*')) active @endif">
                                 <i class="nav-icon fas fa-money-check-alt"></i>
-                                <p>Vouchery</p>
+                                <p>{{__('Vouchery')}}</p>
                             </a>
                         </li>
 
-                        <li class="nav-header">Pterodactyl</li>
+{{--                        <li class="nav-header">Pterodactyl</li>--}}
+
+{{--                        <li class="nav-item">--}}
+{{--                            <a href="{{route('admin.nodes.index')}}"--}}
+{{--                               class="nav-link @if(Request::routeIs('admin.nodes.*')) active @endif">--}}
+{{--                                <i class="nav-icon fas fa-sitemap"></i>--}}
+{{--                                <p>Nodes</p>--}}
+{{--                            </a>--}}
+{{--                        </li>--}}
+
+{{--                        <li class="nav-item">--}}
+{{--                            <a href="{{route('admin.nests.index')}}"--}}
+{{--                               class="nav-link @if(Request::routeIs('admin.nests.*')) active @endif">--}}
+{{--                                <i class="nav-icon fas fa-th-large"></i>--}}
+{{--                                <p>Nests</p>--}}
+{{--                            </a>--}}
+{{--                        </li>--}}
+
+
+                        <li class="nav-header">{{__('Other')}}</li>
 
                         <li class="nav-item">
-                            <a href="{{route('admin.nodes.index')}}"
-                               class="nav-link @if(Request::routeIs('admin.nodes.*')) active @endif">
-                                <i class="nav-icon fas fa-sitemap"></i>
-                                <p>Nodes</p>
+                            <a href="{{route('admin.usefullinks.index')}}"
+                               class="nav-link @if(Request::routeIs('admin.usefullinks.*')) active @endif">
+                                <i class="nav-icon fas fa-link"></i>
+                                <p>{{__('Useful Links')}}</p>
                             </a>
                         </li>
 
-                        <li class="nav-item">
-                            <a href="{{route('admin.nests.index')}}"
-                               class="nav-link @if(Request::routeIs('admin.nests.*')) active @endif">
-                                <i class="nav-icon fas fa-th-large"></i>
-                                <p>Nests</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-header">Historie</li>
+                        <li class="nav-header">{{__('Logy')}}</li>
 
                         <li class="nav-item">
                             <a href="{{route('admin.payments.index')}}"
                                class="nav-link @if(Request::routeIs('admin.payments.*')) active @endif">
                                 <i class="nav-icon fas fa-money-bill-wave"></i>
-                                <p>Platby
+                                <p>{{__('Platby')}}
                                     <span class="badge badge-success right">{{\App\Models\Payment::count()}}</span>
                                 </p>
                             </a>
@@ -249,44 +314,7 @@
                             <a href="{{route('admin.activitylogs.index')}}"
                                class="nav-link @if(Request::routeIs('admin.activitylogs.*')) active @endif">
                                 <i class="nav-icon fas fa-clipboard-list"></i>
-                                <p>Historie aktivity</p>
-                            </a>
-                        </li>
-
-
-                        <li class="nav-header">Dashboard</li>
-
-                        <li class="nav-item">
-                            <a href="{{route('admin.api.index')}}"
-                               class="nav-link @if(Request::routeIs('admin.api.*')) active @endif">
-                                <i class="nav-icon fa fa-gamepad"></i>
-                                <p>Application API</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{route('admin.usefullinks.index')}}"
-                               class="nav-link @if(Request::routeIs('admin.usefullinks.*')) active @endif">
-                                <i class="nav-icon fas fa-link"></i>
-                                <p>Užitečné linky</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-header">Nastavení</li>
-
-                        <li class="nav-item">
-                            <a href="{{route('admin.configurations.index')}}"
-                               class="nav-link @if(Request::routeIs('admin.configurations.*')) active @endif">
-                                <i class="nav-icon fas fa-cogs"></i>
-                                <p>Konfigurace</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{route('admin.settings.index')}}"
-                               class="nav-link @if(Request::routeIs('admin.settings.*')) active @endif">
-                                <i class="nav-icon fas fa-tools"></i>
-                                <p>Nastavení ikony</p>
+                                <p>{{__('Historie aktivity')}}</p>
                             </a>
                         </li>
 
@@ -356,6 +384,8 @@
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.24/datatables.min.js"></script>
 <!-- Summernote -->
 <script src="{{asset('plugins/summernote/summernote-bs4.min.js')}}"></script>
+<!-- select2 -->
+<script src="{{asset('plugins/select2/js/select2.min.js')}}"></script>
 
 <!-- Moment.js -->
 <script src="{{asset('plugins/moment/moment.min.js')}}"></script>
