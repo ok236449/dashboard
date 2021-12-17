@@ -226,8 +226,8 @@
                                 <li class="list-group-item">
                                     <div>
                                         <h6 class="my-0">{{__('Prostředky')}}</h6>
-                                        <small x-text="selectedProductObject?.name ?? '{{__('No selection')}}'"
-                                               class="text-muted"></small>
+                                        <b><small x-text="selectedProductObject?.name ?? '{{__('No selection')}}'"
+                                               class="text-muted"></small></b>
                                     </div>
 
                                     <template x-if="selectedProductObject?.name">
