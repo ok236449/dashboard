@@ -125,7 +125,7 @@
                                                     required="required"
                                                     class="custom-select">
                                                 <option x-text="getEggInputText()"
-                                                        selected disabled hidden value="null">{{count($eggs) > 0 ? __('Prosím vyberte distribuci...') : __('---')}}</option>
+                                                        selected disabled hidden value="null">{{__('Prosím vyberte distribuci...') : __('---')}}</option>
                                                 <template x-for="egg in eggs" :key="egg.id">
                                                     <option x-text="egg.name" :value="egg.id"></option>
                                                 </template>
@@ -445,9 +445,9 @@
                 getProductInputText() {
                     if (this.fetchedProducts) {
                         if (this.products.length > 0) {
-                            return '{{__('Please select a resource ...')}}';
+                            return '{{__('Prosím zvolte prostředky ...')}}';
                         }
-                        return '{{__('No resources found matching current configuration')}}'
+                        return '{{__('Nebyly nalezeny žádné dostupné prostředky. Kontaktujte prosím správce.')}}'
                     }
                     return '{{__('---')}}';
                 },
@@ -463,7 +463,7 @@
                     let text = product.name + ' (' + product.description + ')';
 
                     if (product.minimum_credits > this.user.credits) {
-                        return '{{__('Not enough credits!')}} | ' + text;
+                        return '{{__('Nedostatek kreditů!')}} | ' + text;
                     }
 
                     return text;
