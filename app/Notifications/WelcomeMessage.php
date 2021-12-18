@@ -42,17 +42,17 @@ class WelcomeMessage extends Notification implements ShouldQueue
 
             $AdditionalLine = "";
             if(Configuration::getValueByKey('CREDITS_REWARD_AFTER_VERIFY_EMAIL') != 0) {
-                $AdditionalLine .= "Ověřením emailu získáte ".Configuration::getValueByKey('CREDITS_REWARD_AFTER_VERIFY_EMAIL')." additional " . Configuration::getValueByKey('CREDITS_DISPLAY_NAME') . " <br />";
+                $AdditionalLine .= "Verifying your e-mail address will grant you ".Configuration::getValueByKey('CREDITS_REWARD_AFTER_VERIFY_EMAIL')." additional " . Configuration::getValueByKey('CREDITS_DISPLAY_NAME') . ". <br />";
             }
             if(Configuration::getValueByKey('SERVER_LIMIT_REWARD_AFTER_VERIFY_EMAIL') != 0) {
-                $AdditionalLine .= "Ověřením emailu také zvýšíte možný počet serverů o " . Configuration::getValueByKey('SERVER_LIMIT_REWARD_AFTER_VERIFY_EMAIL') . " <br />";
+                $AdditionalLine .= "Verifying your e-mail will also increase your Server Limit by " . Configuration::getValueByKey('SERVER_LIMIT_REWARD_AFTER_VERIFY_EMAIL') . ". <br />";
             }
             $AdditionalLine .="<br />";
             if(Configuration::getValueByKey('CREDITS_REWARD_AFTER_VERIFY_DISCORD') != 0) {
-                $AdditionalLine .=  "Ověřením discordu získáte " . Configuration::getValueByKey('CREDITS_REWARD_AFTER_VERIFY_DISCORD') . " " . Configuration::getValueByKey('CREDITS_DISPLAY_NAME') . " a roli \"Ověřený\" na našem discord serveru s přístupem do dalších kanálů.<br />";
+                $AdditionalLine .=  "You can also verify your discord account to get another " . Configuration::getValueByKey('CREDITS_REWARD_AFTER_VERIFY_DISCORD') . " " . Configuration::getValueByKey('CREDITS_DISPLAY_NAME') . ". <br />";
             }
             if(Configuration::getValueByKey('SERVER_LIMIT_REWARD_AFTER_VERIFY_DISCORD') != 0) {
-                $AdditionalLine .=  "Ověřením discordu také zvýšíte možný počet serverů o " . Configuration::getValueByKey('SERVER_LIMIT_REWARD_AFTER_VERIFY_DISCORD') . " <br />";
+                $AdditionalLine .=  "Verifying your Discord account will also increase your Server Limit by " . Configuration::getValueByKey('SERVER_LIMIT_REWARD_AFTER_VERIFY_DISCORD') . ". <br />";
             }
 
             return $AdditionalLine;
@@ -66,18 +66,18 @@ class WelcomeMessage extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            'title'   => "Začínáme!",
+            'title'   => __("Getting started!"),
             'content' => "
-               <p>Dobrý den <strong>{$this->user->name}</strong>, vítejte na našem storu</p>
-                <h5>Verifikace</h5>
-                <p>Prosím ověřte si emailovou adresu. Dostanete na ni upozornění v případě nedostatku kreditů.</p>
+               <p>Hello <strong>{$this->user->name}</strong>, Welcome to our dashboard!</p>
+                <h5>Verification</h5>
+                <p>You can verify your e-mail address and link/verify your Discord account.</p>
                 <p>
                   ".$this->AdditionalLines()."
                 </p>
-                <h5>Informace</h5>
-                <p>Tento web můžete používat na správu vašich serverů.<br /> Tyto servery tu můžete vytvářet a mazat, do konzole serveru se dostanete použitím našeho panelu.<br /> Pokud máte jakýkoliv dotaz, kontaktujte nás prosím.</p>
-                <p>Doufáme, že budete spokojeni s naším hostingem. Máte li nějaké návrhy na zlepšení, nebojte se dát vědět.</p>
-                <p>S přáním hezkého dne,<br />" . config('app.name', 'Laravel') . "</p>
+                <h5>Information</h5>
+                <p>This dashboard can be used to create and delete servers.<br /> These servers can be used and managed on our pterodactyl panel.<br /> If you have any questions, please join our Discord server and #create-a-ticket.</p>
+                <p>We hope you can enjoy this hosting experience and if you have any suggestions please let us know!</p>
+                <p>Regards,<br />" . config('app.name', 'Laravel') . "</p>
             ",
         ];
     }

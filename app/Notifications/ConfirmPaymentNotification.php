@@ -47,7 +47,7 @@ class ConfirmPaymentNotification extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject(__('Potvrzení platby'))
+            ->subject(__('Payment Confirmation'))
             ->markdown('mail.payment.confirmed' , ['payment' => $this->payment]);
     }
 
@@ -60,8 +60,8 @@ class ConfirmPaymentNotification extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            'title'   => __("Potvrzení platby"),
-            'content' => __("Touto zprávou potvrzujeme úspěšnou platbu na našem storu. Děkujeme!"),
+            'title'   => __("Payment Confirmed!"),
+            'content' => __("Payment Confirmed!"),
         ];
     }
 }

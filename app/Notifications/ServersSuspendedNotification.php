@@ -42,11 +42,11 @@ class ServersSuspendedNotification extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-        ->subject('Vaše servery byly pozastaveny!')
-        ->greeting('Vaše servery byly pozastaveny!')
-        ->line("Pro automatické obnovení serverů je potřeba zakoupit další kredity.")
-        ->action('Zakoupit kredity', route('store.index'))
-        ->line('Pokud máte nějaké dotazy, ozvěte se.');
+                    ->subject(__('Your servers have been suspended!'))
+                    ->greeting(__('Your servers have been suspended!'))
+                    ->line(__("To automatically re-enable your server/s, you need to purchase more credits."))
+                    ->action(__('Purchase credits'), route('store.index'))
+                    ->line(__('If you have any questions please let us know.'));
     }
 
     /**
@@ -58,12 +58,12 @@ class ServersSuspendedNotification extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            'title'   => "Servery pozastaveny!",
+            'title'   => __('Your servers have been suspended!'),
             'content' => "
-                <h5>Vaše servery byly pozastaveny!</h5>
-                <p>Pro automatické obnovení serverů je potřeba zakoupit další kredity.</p>
-                <p>Pokud máte nějaké dotazy, ozvěte se.</p>
-                <p>S přáním hezkého dne,<br />" . config('app.name', 'Laravel') . "</p>
+                <h5>". __('Your servers have been suspended!')."</h5>
+                <p>". __("To automatically re-enable your server/s, you need to purchase more credits.")."</p>
+                <p>". __('If you have any questions please let us know.')."</p>
+                <p>". __('Regards').",<br />" . config('app.name', 'Laravel') . "</p>
             ",
         ];
     }

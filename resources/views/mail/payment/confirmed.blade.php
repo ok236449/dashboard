@@ -1,18 +1,18 @@
 @component('mail::message')
-# {{__('Děkujeme za nákup!')}}
-{{__('Vaše platba byla úspěšná, kredity byly aktualizovány.')}}'<br>
+# {{__('Thank you for your purchase!')}}
+{{__('Your payment has been confirmed; Your credit balance has been updated.')}}'<br>
 
-# Detaily
+# Details
 ___
-### {{__('ID Platby')}}':    **{{$payment->id}}**<br>
-### {{__('Stav')}}':         **{{$payment->status}}**<br>
-### {{__('Cena')}}':         **{{$payment->formatToCurrency($payment->total_price)}}**<br>
-### {{__('Typ')}}':          **{{$payment->type}}**<br>
-### {{__('Množství')}}':     **{{$payment->amount}}**<br>
-### {{__('Stav kreditů')}}':  **{{$payment->user->credits}}**<br>
-### {{__('ID uživatele')}}':  **{{$payment->user_id}}**<br>
+### {{__('Payment ID')}}': **{{$payment->id}}**<br>
+### {{__('Status')}}':     **{{$payment->status}}**<br>
+### {{__('Price')}}':      **{{$payment->formatToCurrency($payment->total_price)}}**<br>
+### {{__('Type')}}':       **{{$payment->type}}**<br>
+### {{__('Amount')}}':     **{{$payment->amount}}**<br>
+### {{__('Balance')}}':    **{{$payment->user->credits}}**<br>
+### {{__('User ID')}}':    **{{$payment->user_id}}**<br>
 
 <br>
-{{__('Děkujeme,')}},<br>
+{{__('Thanks')}},<br>
 {{ config('app.name') }}
 @endcomponent

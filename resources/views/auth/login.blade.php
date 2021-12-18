@@ -9,7 +9,7 @@
                 <a href="{{route('welcome')}}" class="h1"><b class="mr-1">{{config('app.name', 'Laravel')}}</b></a>
             </div>
             <div class="card-body">
-                <p class="login-box-msg">Pro přístup ke storu se prosím přihlašte</p>
+                <p class="login-box-msg">{{__('Sign in to start your session')}}</p>
 
                 @if (session('message'))
                     <div class="alert alert-danger">{{ session('message') }}</div>
@@ -43,7 +43,7 @@
                     <div class="form-group">
                         <div class="input-group mb-3">
                             <input type="password" name="password" class="form-control @error('password') is-invalid @enderror"
-                                   placeholder="Heslo">
+                                   placeholder="{{__('Password')}}">
                             <div class="input-group-append">
                                 <div class="input-group-text">
                                     <span class="fas fa-lock"></span>
@@ -72,13 +72,13 @@
                             <div class="icheck-primary">
                                 <input type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
                                 <label for="remember">
-                                    Zapamatovat
+                                    {{__('Remember Me')}}
                                 </label>
                             </div>
                         </div>
                         <!-- /.col -->
                         <div class="col-4">
-                            <button type="submit" class="btn btn-primary btn-block">Přihlásit se</button>
+                            <button type="submit" class="btn btn-primary btn-block">{{__('Sign In')}}</button>
                         </div>
                         <!-- /.col -->
                     </div>
@@ -97,12 +97,12 @@
                 <p class="mb-1">
                     @if (Route::has('password.request'))
                         <a class="" href="{{ route('password.request') }}">
-                            {{ __('Zapomenuté heslo?') }}
+                            {{ __('Forgot Your Password?') }}
                         </a>
                     @endif
                 </p>
                 <p class="mb-0">
-                    <a href="{{route('register')}}" class="text-center">Registrovat se</a>
+                    <a href="{{route('register')}}" class="text-center">{{__('Register a new membership')}}</a>
                 </p>
             </div>
             <!-- /.card-body -->

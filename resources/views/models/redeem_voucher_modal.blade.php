@@ -5,7 +5,7 @@
 
             <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title">{{__('Využít voucher')}}</h4>
+                <h4 class="modal-title">{{__('Redeem voucher code')}}</h4>
 
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
@@ -14,14 +14,14 @@
             <div class="modal-body">
                 <form id="redeemVoucherForm" onsubmit="return false" method="post" action="{{route('voucher.redeem')}}">
                     <div class="form-group">
-                        <label for="redeemVoucherCode">{{__('Kód')}}</label>
+                        <label for="redeemVoucherCode">{{__('Code')}}</label>
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <div class="input-group-text">
                                     <i class="fas fa-money-check-alt"></i>
                                 </div>
                             </div>
-                            <input id="redeemVoucherCode" name="code" placeholder="xxxx" type="text"
+                            <input id="redeemVoucherCode" name="code" placeholder="SUMMER" type="text"
                                    class="form-control">
                         </div>
                         <span id="redeemVoucherCodeError" class="text-danger"></span>
@@ -32,9 +32,9 @@
 
             <!-- Modal footer -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">{{__('Zavřít')}}</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">{{__('Close')}}</button>
                 <button name="submit" id="redeemVoucherSubmit" onclick="redeemVoucherCode()" type="button"
-                        class="btn btn-primary">{{__('Využít')}}
+                        class="btn btn-primary">{{__('Redeem')}}
                 </button>
             </div>
 

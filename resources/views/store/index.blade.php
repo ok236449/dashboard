@@ -7,12 +7,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>{{__('Dokoupit kredity')}}</h1>
+                    <h1>{{__('Store')}}</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a class="" href="{{route('home')}}">{{__('Přehled')}}</a></li>
-                        <li class="breadcrumb-item"><a class="text-muted" href="{{route('store.index')}}">{{__('Dokoupit kredity')}}</a></li>
+                        <li class="breadcrumb-item"><a class="" href="{{route('home')}}">{{__('Dashboard')}}</a></li>
+                        <li class="breadcrumb-item"><a class="text-muted" href="{{route('store.index')}}">{{__('Store')}}</a></li>
                     </ol>
                 </div>
             </div>
@@ -26,7 +26,7 @@
 
             <div class="text-right mb-3">
                 <button type="button" data-toggle="modal" data-target="#redeemVoucherModal" class="btn btn-primary">
-                    <i class="fas fa-money-check-alt mr-2"></i>{{__('Využít voucher')}}
+                    <i class="fas fa-money-check-alt mr-2"></i>{{__('Redeem code')}}
                 </button>
             </div>
 
@@ -34,15 +34,15 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title"><i class="fa fa-coins mr-2"></i>Balíčky nákupu {{CREDITS_DISPLAY_NAME}}</h5>
+                        <h5 class="card-title"><i class="fa fa-coins mr-2"></i>{{CREDITS_DISPLAY_NAME}}</h5>
                     </div>
                     <div class="card-body">
                         <table class="table table-striped table-responsive-sm">
                             <thead>
                             <tr>
-                                <th>{{__('Cena')}}</th>
-                                <th>{{__('Typ')}}</th>
-                                <th>{{__('Množství kreditů')}}</th>
+                                <th>{{__('Price')}}</th>
+                                <th>{{__('Type')}}</th>
+                                <th>{{__('Description')}}</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -53,20 +53,19 @@
                                     <td>{{$product->formatToCurrency($product->price)}}</td>
                                     <td>{{strtolower($product->type) == 'credits' ? CREDITS_DISPLAY_NAME : $product->type}}</td>
                                     <td><i class="fa fa-coins mr-2"></i>{{$product->display}}</td>
-                                    <td><a href="{{route('checkout' , $product->id)}}" class="btn btn-info">{{__('Zakoupit')}}</a>
+                                    <td><a href="{{route('checkout' , $product->id)}}" class="btn btn-info">{{__('Purchase')}}</a>
                                     </td>
                                 </tr>
                             @endforeach
                             </tbody>
                         </table>
-                        </br><i class="fas fa-info-circle"></i> Pokud Vám nevyhovuje platba přes PayPal, nebo se chcete vyhnout poplatku, kontaktujte majitele na <a href="https://discord.gg/kF5F8ss4wU">discordu</a>.</br>Paypal si účtuje poplatek 10Kč/0,35€ + 3,4% z platby. Z tohoto důvodu je to u menších balíčků bráno v potaz.
                     </div>
                 </div>
 
             @else
                 <div class="alert alert-danger alert-dismissible">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
-                    <h4><i class="icon fa fa-ban"></i> @if($products->count() == 0) {{__('Nejsou tu žádné balíčky pro dokoupení kreditů!')}} @else {{__('Tato stránka není správně nastavena! Kontaktujte prosím podporu.')}} @endif
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <h4><i class="icon fa fa-ban"></i> @if($products->count() == 0) {{__('There are no store products!')}} @else {{__('The store is not correctly configured!')}} @endif
                     </h4>
                 </div>
 

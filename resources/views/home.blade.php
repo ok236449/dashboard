@@ -10,7 +10,7 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a class="text-muted" href="">Přehled</a></li>
+                        <li class="breadcrumb-item"><a class="text-muted" href="">{{__('Dashboard')}}</a></li>
                     </ol>
                 </div>
             </div>
@@ -28,7 +28,7 @@
                         <span class="info-box-icon bg-info elevation-1"><i class="fas fa-server"></i></span>
 
                         <div class="info-box-content">
-                            <span class="info-box-text">Počet serverů</span>
+                            <span class="info-box-text">{{__('Servers')}}</span>
                             <span class="info-box-number">{{Auth::user()->servers()->count()}}</span>
                         </div>
                         <!-- /.info-box-content -->
@@ -41,7 +41,7 @@
                         <span class="info-box-icon bg-secondary elevation-1"><i class="fas fa-coins"></i></span>
 
                         <div class="info-box-content">
-                            <span class="info-box-text">Počet {{CREDITS_DISPLAY_NAME}}</span>
+                            <span class="info-box-text">{{CREDITS_DISPLAY_NAME}}</span>
                             <span class="info-box-number">{{Auth::user()->Credits()}}</span>
                         </div>
                         <!-- /.info-box-content -->
@@ -58,8 +58,8 @@
                         <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-chart-line"></i></span>
 
                         <div class="info-box-content">
-                            <span class="info-box-text">Využití {{CREDITS_DISPLAY_NAME}}</span>
-                            <span class="info-box-number">{{number_format($useage, 2, '.', '')}} <sup>za měsíc</sup></span>
+                            <span class="info-box-text">{{CREDITS_DISPLAY_NAME}} {{__('Usage')}}</span>
+                            <span class="info-box-number">{{number_format($useage, 2, '.', '')}} <sup>{{__('per month')}}</sup></span>
                         </div>
                         <!-- /.info-box-content -->
                     </div>
@@ -67,29 +67,15 @@
                 </div>
 
                 <!-- /.col -->
-                @if(Auth::user()->Credits() > 0.01 and $useage > 0)
-                <div class="col-12 col-sm-6 col-md-3">
-                    <div class="info-box mb-3">
-                        @if(number_format((Auth::user()->Credits()*30)/$useage,0,'.','') >= 15)
-                            <span class="info-box-icon bg-success elevation-1">
-                        @elseif (number_format((Auth::user()->Credits()*30)/$useage,0,'.','') >= 8 && number_format((Auth::user()->Credits()*30)/$useage,0,'.','') <= 14)
-                            <span class="info-box-icon bg-warning elevation-1">
-                        @elseif (number_format((Auth::user()->Credits()*30)/$useage,0,'.','') <= 7)
-                            <span class="info-box-icon bg-danger elevation-1">
-                        @endif
-                            <i class="fas fa-hourglass-half"></i></span>
-
-                        <div class="info-box-content">
-                            <span class="info-box-text">Dostatek {{CREDITS_DISPLAY_NAME}} na</span>
-                            @if(number_format((Auth::user()->Credits()*30)/$useage,2,'.','') < "1")
-                                @if(number_format(Auth::user()->Credits()/($useage/30/24),2,'.','') < "1")
-                                    <span class="info-box-number">Došly Vám kredity!</span>
-                                @else
-                                    <span class="info-box-number">{{number_format(Auth::user()->Credits()/($useage/30/24),0,'.','')}} <sup> hodin</sup></span>
-                                @endif
-                            @else
-                               <span class="info-box-number">{{number_format((Auth::user()->Credits()*30)/$useage,0,'.','')}} <sup> dní</sup></span>
-                            @endif
+                @if($credits > 0.01 and $useage > 0)
+                     <div class="col-12 col-sm-6 col-md-3">
+                        <div class="info-box mb-3">
+                        <span class="info-box-icon {{$bg}} elevation-1">
+                        <i class="fas fa-hourglass-half"></i></span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">{{__('Out of Credits in',["credits"=>CREDITS_DISPLAY_NAME])}} </span>
+                                <span class="info-box-number">{{$boxText}}<sup>{{$unit}}</sup></span>
+                            </div>
                         </div>
                     <!-- /.info-box -->
                 @endif
@@ -107,7 +93,7 @@
                         <div class="card-header">
                             <h3 class="card-title">
                                 <i class="fas fa-link mr-2"></i>
-                                Užitečné odkazy
+                                {{__('Useful Links')}}
                             </h3>
                         </div>
                         <!-- /.card-header -->
@@ -135,7 +121,7 @@
                         <div class="card-header">
                             <h3 class="card-title">
                                 <i class="fas fa-history mr-2"></i>
-                                Historie akcí
+                                {{__('Activity Logs')}}
                             </h3>
                         </div>
                         <!-- /.card-header -->

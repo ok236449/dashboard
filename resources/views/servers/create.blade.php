@@ -6,14 +6,14 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>{{__('Servery')}}</h1>
+                    <h1>{{__('Servers')}}</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ route('home') }}">{{__('Přehled')}}</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('servers.index') }}">{{__('Servery')}}</a>
+                        <li class="breadcrumb-item"><a href="{{ route('home') }}">{{__('Dashboard')}}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('servers.index') }}">{{__('Servers')}}</a>
                         <li class="breadcrumb-item"><a class="text-muted"
-                                                       href="{{ route('servers.create') }}">{{__('Vytvořit')}}</a>
+                                                       href="{{ route('servers.create') }}">{{__('Create')}}</a>
                         </li>
                     </ol>
                 </div>
@@ -32,7 +32,7 @@
                 <div class="col-md-8">
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title"><i class="fas fa-cogs mr-2"></i>{{__('Nastavení serveru')}}</div>
+                            <div class="card-title"><i class="fas fa-cogs mr-2"></i>{{__('Server configuration')}}</div>
                         </div>
 
                         @if($productCount === 0 || $nodeCount === 0 || count($nests) === 0 || count($eggs) === 0 )
@@ -40,25 +40,25 @@
                                 <h5><i class="icon fas fa-exclamation-circle"></i>{{__('Error!')}}</h5>
                                 <p class="pl-4">
                                     @if(Auth::user()->role == 'admin')
-                                        {{__('Neexistují žádné nastavené propojení her a distribucí.')}} <br>
-                                        {{__('Kontaktujte prosím admina.')}}
+                                        {{__('Make sure to link your products to nodes and eggs.')}} <br>
+                                        {{__('There has to be at least 1 valid product for server creation')}}
                                     @endif
                                 </p>
                                 <ul>
                                     @if($productCount === 0 )
-                                        <li> {{__('Nejsou k dispozici žádné balíčky konfigurace prostředků!')}}</li>
+                                        <li> {{__('No products available!')}}</li>
                                     @endif
 
                                     @if($nodeCount === 0 )
-                                        <li>{{__('Nejsou k dispozici žádná umístění!')}}</li>
+                                        <li>{{__('No nodes have been linked!')}}</li>
                                     @endif
 
                                     @if(count($nests) === 0 )
-                                        <li>{{__('Nejsou k dispozici žádné hry!')}}</li>
+                                        <li>{{__('No nests available!')}}</li>
                                     @endif
 
                                     @if(count($eggs) === 0 )
-                                        <li>{{__('Nejsou k dispozici žádné distribuce!')}}</li>
+                                        <li>{{__('No eggs have been linked!')}}</li>
                                     @endif
                                 </ul>
                             </div>
@@ -81,7 +81,7 @@
                             @endif
 
                             <div class="form-group">
-                                <label for="name">{{__('Název serveru')}}</label>
+                                <label for="name">{{__('Name')}}</label>
                                 <input x-model="name" id="name" name="name" type="text" required="required"
                                        class="form-control @error('name') is-invalid @enderror">
 
@@ -95,7 +95,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="nest">{{__('Software/hra')}}</label>
+                                        <label for="nest">{{__('Software / Games')}}</label>
                                         <select class="custom-select"
                                                 required
                                                 name="nest"
@@ -103,7 +103,7 @@
                                                 x-model="selectedNest"
                                                 @change="setEggs();">
                                             <option selected disabled hidden
-                                                    value="null">{{count($nests) > 0 ? __('Prosím vyberte hru...') : __('---')}}</option>
+                                                    value="null">{{count($nests) > 0 ? __('Please select software ...') : __('---')}}</option>
                                             @foreach ($nests as $nest)
                                                 <option value="{{ $nest->id }}">{{ $nest->name }}</option>
                                             @endforeach
@@ -114,7 +114,7 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="egg">{{__('Distribuce/verze')}}</label>
+                                        <label for="egg">{{__('Specification')}}</label>
                                         <div>
                                             <select id="egg"
                                                     required
@@ -136,7 +136,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="node">{{__('Umístění')}}</label>
+                                <label for="node">{{__('Node')}}</label>
                                 <select name="node"
                                         required
                                         id="node"
@@ -166,7 +166,7 @@
 
 
                             <div class="form-group">
-                                <label for="product">{{__('Prostředky/konfigurace')}}</label>
+                                <label for="product">{{__('Resources')}}</label>
                                 <select name="product"
                                         required
                                         id="product"
@@ -185,7 +185,8 @@
                                     </template>
                                 </select>
                             </div>
-                            <small><i class="fas fa-info-circle"></i> Pokud po zvolení distribuce tabulka zšedne a nejde dále ovládat, smažte prosím cache vašeho prohlížeče.</small>
+
+
                         </div>
                     </div>
                 </div>
@@ -193,7 +194,7 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="card-title">
-                                <i class="fas fa-list mr-2"></i>{{__('Detaily serveru')}}
+                                <i class="fas fa-list mr-2"></i>{{__('Server Details')}}
                             </div>
                         </div>
                         <div class="card-body">
@@ -202,29 +203,29 @@
                                 <li x-show="selectedNestObject.name"
                                     class="list-group-item d-flex justify-content-between lh-condensed">
                                     <div>
-                                        <h6 class="my-0">{{__('Software')}}</h6>
-                                        <small x-text="selectedNestObject?.name ?? '{{__('Nevybráno')}}'"
+                                        <h6 class="my-0">{{__('Software / Games')}}</h6>
+                                        <small x-text="selectedNestObject?.name ?? '{{__('No selection')}}'"
                                                class="text-muted"></small>
                                     </div>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between lh-condensed">
                                     <div>
-                                        <h6 class="my-0">{{__('Distribuce')}}</h6>
-                                        <small x-text="selectedEggObject?.name ?? '{{__('Nevybráno')}}'"
+                                        <h6 class="my-0">{{__('Specification')}}</h6>
+                                        <small x-text="selectedEggObject?.name ?? '{{__('No selection')}}'"
                                                class="text-muted"></small>
                                     </div>
                                 </li>
                                 <li
                                     class="list-group-item d-flex justify-content-between lh-condensed">
                                     <div>
-                                        <h6 class="my-0">{{__('Umístění')}}</h6>
-                                        <small x-text="selectedNodeObject?.name ?? '{{__('Nevybráno')}}'"
+                                        <h6 class="my-0">{{__('Node')}}</h6>
+                                        <small x-text="selectedNodeObject?.name ?? '{{__('No selection')}}'"
                                                class="text-muted"></small>
                                     </div>
                                 </li>
                                 <li class="list-group-item">
                                     <div>
-                                        <h6 class="my-0">{{__('Prostředky')}}</h6>
+                                        <h6 class="my-0">{{__('Resources')}}</h6>
                                         <small x-text="selectedProductObject?.name ?? '{{__('No selection')}}'"
                                                class="text-muted"></small>
                                     </div>
@@ -232,12 +233,12 @@
                                     <template x-if="selectedProductObject?.name">
                                         <ul class="pl-0">
                                             <li class="d-flex justify-content-between">
-                                                <small class="text-muted d-inline-block">{{__('CPU')}}</small>
+                                                <small class="text-muted d-inline-block">{{__('Cpu')}}</small>
                                                 <small class="text-muted d-inline-block"
                                                        x-text="selectedProductObject.cpu + ' %'"></small>
                                             </li>
                                             <div class="d-flex justify-content-between">
-                                                <small class="text-muted d-inline-block">{{__('RAM')}}</small>
+                                                <small class="text-muted d-inline-block">{{__('Memory')}}</small>
                                                 <small class="text-muted d-inline-block"
                                                        x-text="selectedProductObject.memory + ' {{__('MB')}}'"></small>
                                             </div>
@@ -247,17 +248,17 @@
                                                        x-text="selectedProductObject.disk + ' {{__('MB')}}'"></small>
                                             </div>
                                             <div class="d-flex justify-content-between">
-                                                <small class="text-muted d-inline-block">{{__('Databáze')}}</small>
+                                                <small class="text-muted d-inline-block">{{__('Databases')}}</small>
                                                 <small class="text-muted d-inline-block"
                                                        x-text="selectedProductObject.databases + ' {{__('MySQL')}}'"></small>
                                             </div>
                                             <div class="d-flex justify-content-between">
-                                                <small class="text-muted d-inline-block">{{__('Zálohy')}}</small>
+                                                <small class="text-muted d-inline-block">{{__('Backups')}}</small>
                                                 <small class="text-muted d-inline-block"
                                                        x-text="selectedProductObject.backups"></small>
                                             </div>
                                             <div class="d-flex justify-content-between">
-                                               <small class="text-muted d-inline-block">{{__('Porty')}}</small>
+                                               <small class="text-muted d-inline-block">{{__('Allocations')}}</small>
                                                <small class="text-muted d-inline-block" x-text="selectedProductObject.allocations"></small>
                                            </div>
                                         </ul>
@@ -267,7 +268,7 @@
                             </ul>
                             <ul class="list-group mb-3">
                                 <li class="list-group-item d-flex justify-content-between">
-                                    <span>{{__('Měsíčně')}} {{CREDITS_DISPLAY_NAME}}</span>
+                                    <span>{{CREDITS_DISPLAY_NAME}} {{__('per month')}}</span>
                                     <strong>
                                         <i x-show="selectedProductObject?.price" class="fas fa-coins"></i>
                                         <span x-text="selectedProductObject?.price ?? ''"></span>
@@ -276,7 +277,7 @@
                             </ul>
                             <button :disabled="!isFormValid()" :class="isFormValid() ? '' : 'disabled'"
                                     class="btn btn-primary btn-block">
-                                {{__('Vytvořit server')}}
+                                {{__('Create server')}}
                             </button>
                         </div>
                     </div>

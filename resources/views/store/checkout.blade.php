@@ -6,12 +6,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>{{__('Dokoupení kreditů')}}</h1>
+                    <h1>{{__('Store')}}</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a class="" href="{{route('home')}}">{{__('Přehled')}}</a></li>
-                        <li class="breadcrumb-item"><a class="text-muted" href="{{route('store.index')}}">{{__('Dokoupení kreditů')}}</a></li>
+                        <li class="breadcrumb-item"><a class="" href="{{route('home')}}">{{__('Dashboard')}}</a></li>
+                        <li class="breadcrumb-item"><a class="text-muted" href="{{route('store.index')}}">{{__('Store')}}</a></li>
                     </ol>
                 </div>
             </div>
@@ -34,7 +34,7 @@
                             <div class="col-12">
                                 <h4>
                                     <i class="fas fa-globe"></i> {{ config('app.name', 'Laravel') }}
-                                    <small class="float-right">{{__('Datum')}}: {{Carbon\Carbon::now()->isoFormat('LL')}}</small>
+                                    <small class="float-right">{{__('Date')}}: {{Carbon\Carbon::now()->isoFormat('LL')}}</small>
                                 </h4>
                             </div>
                             <!-- /.col -->
@@ -58,8 +58,8 @@
                             </div>
                             <!-- /.col -->
                             <div class="col-sm-4 invoice-col">
-                                <b>{{__('Stav')}}</b><br>
-                                <span class="badge badge-warning">{{__('Čekání')}}</span><br>
+                                <b>{{__('Status')}}</b><br>
+                                <span class="badge badge-warning">{{__('Pending')}}</span><br>
 {{--                                <b>Order ID:</b> 4F3S8J<br>--}}
                             </div>
                             <!-- /.col -->
@@ -72,13 +72,15 @@
                                 <table class="table table-striped">
                                     <thead>
                                     <tr>
-                                        <th>{{__('Množství kreditů')}}</th>
-                                        <th>{{__('Množství kreditů')}}</th>
-                                        <th>{{__('Mezisoučet')}}</th>
+                                        <th>{{__('Quantity')}}</th>
+                                        <th>{{__('Product')}}</th>
+                                        <th>{{__('Description')}}</th>
+                                        <th>{{__('Subtotal')}}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr>
+                                        <td>1</td>
                                         <td><i class="fa fa-coins mr-2"></i>{{$product->quantity}} {{strtolower($product->type) == 'credits' ? CREDITS_DISPLAY_NAME : $product->type}}</td>
                                         <td>{{$product->description}}</td>
                                         <td>{{$product->formatToCurrency($product->price)}}</td>
@@ -93,17 +95,17 @@
                         <div class="row">
                             <!-- accepted payments column -->
                             <div class="col-6">
-                                <p class="lead">{{__('Platební metody:')}}:</p>
+                                <p class="lead">{{__('Payment Methods')}}:</p>
 
                                 <img src="https://www.paypalobjects.com/digitalassets/c/website/logo/full-text/pp_fc_hl.svg" alt="Paypal">
 
                                 <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
-                                    {{__('Zakoupením souhlasíte s <a href="http://home.vagonbrei.eu/podminky-uziti">podmínkami užití. </a>')}}</a>
+                                    {{__('By purchasing this product you agree and accept our terms of service')}}</a>
                                 </p>
                             </div>
                             <!-- /.col -->
                             <div class="col-6">
-                                <p class="lead">{{__('Platba ke dni')}} {{Carbon\Carbon::now()->isoFormat('LL')}}</p>
+                                <p class="lead">{{__('Amount due')}} {{Carbon\Carbon::now()->isoFormat('LL')}}</p>
 
                                 <div class="table-responsive">
                                     <table class="table">
@@ -118,9 +120,9 @@
                                         <tr>
                                             <th>{{__('Quantity')}}:</th>
                                             <td>1</td>
-                                        </tr>-->
+                                        </tr>
                                         <tr>
-                                            <th>{{__('Celkem')}}:</th>
+                                            <th>{{__('Total')}}:</th>
                                             <td>{{$product->formatToCurrency($total)}}</td>
                                         </tr>
                                     </table>
@@ -133,7 +135,7 @@
                         <!-- this row will not appear when printing -->
                         <div class="row no-print">
                             <div class="col-12">
-                                <a href="{{route('payment.pay' , $product->id)}}" type="button" class="btn btn-success float-right"><i class="far fa-credit-card mr-2"></i> {{__('Potvrdit platbu')}}
+                                <a href="{{route('payment.pay' , $product->id)}}" type="button" class="btn btn-success float-right"><i class="far fa-credit-card mr-2"></i> {{__('Submit Payment')}}
                                 </a>
                             </div>
                         </div>

@@ -6,12 +6,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>{{__('Notifikace')}}</h1>
+                    <h1>{{__('Notifications')}}</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{route('home')}}">{{__('Přehled')}}</a></li>
-                        <li class="breadcrumb-item"><a class="text-muted" href="{{route('notifications.index')}}">{{__('Notifikace')}}</a>
+                        <li class="breadcrumb-item"><a href="{{route('home')}}">{{__('Dashboard')}}</a></li>
+                        <li class="breadcrumb-item"><a class="text-muted" href="{{route('notifications.index')}}">{{__('Notifications')}}</a>
                         </li>
                     </ol>
                 </div>
@@ -27,7 +27,7 @@
             <!-- CUSTOM CONTENT -->
             <div class="row justify-content-center">
                 <div class="col-md-8">
-                    <p>{{__('Všechny notifikace')}}</p>
+                    <p>{{__('All notifications')}}</p>
                 </div>
                 @foreach($notifications as $notification)
                     <div class="col-md-8">
