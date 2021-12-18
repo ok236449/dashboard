@@ -125,7 +125,7 @@
                                                     required="required"
                                                     class="custom-select">
                                                 <option x-text="getEggInputText()"
-                                                        selected disabled hidden value="null"></option>
+                                                        selected disabled hidden value="null">{{count($eggs) > 0 ? __('Prosím vyberte distribuci...') : __('---')}}</option>
                                                 <template x-for="egg in eggs" :key="egg.id">
                                                     <option x-text="egg.name" :value="egg.id"></option>
                                                 </template>
@@ -267,7 +267,7 @@
                             </ul>
                             <ul class="list-group mb-3">
                                 <li class="list-group-item d-flex justify-content-between">
-                                    <span>{{__('Měsíčně')}} {{CREDITS_DISPLAY_NAME}}:</span>
+                                    <span>{{__('Měsíčně')}} {{CREDITS_DISPLAY_NAME}}</span>
                                     <strong>
                                         <i x-show="selectedProductObject?.price" class="fas fa-coins"></i>
                                         <span x-text="selectedProductObject?.price ?? ''"></span>
