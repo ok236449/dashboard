@@ -41,11 +41,17 @@
                 <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
-                <a href="{{route('home')}}" class="nav-link"><i class="fas fa-home mr-2"></i>{{__('Home')}}</a>
+                <a href="http://home.vagonbrei.eu" class="nav-link"><i class="fas fa-home mr-2"></i>{{__('Home')}}</a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
                 <a href="{{env('DISCORD_INVITE_URL')}}" class="nav-link" target="__blank"><i
                         class="fab fa-discord mr-2"></i>{{__('Discord')}}</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="https://panel.vagonbrei.eu" class="nav-link">Panel</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="https://phpmyadmin.vagonbrei.eu" class="nav-link">PhpMyAdmin</a>
             </li>
             <!-- Language Selection -->
             <li class="nav-item dropdown">
