@@ -90,7 +90,7 @@
                     {data: 'role'},
                     {data: 'email', name: 'users.email'},
                     {data: 'credits' , name : 'users.credits'},
-                    {data: Auth::user()->creditUsage() , sortable : false},
+                    {data: 'Auth::user()->creditUsage()' , sortable : false},
                     {data: 'servers' , sortable : false},
                     {data: 'verified' , sortable : false},
                     {data: 'last_seen'},
