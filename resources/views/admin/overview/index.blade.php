@@ -77,7 +77,7 @@
 
                         <div class="info-box-content">
                             <span class="info-box-text">{{__('Total')}} {{CREDITS_DISPLAY_NAME}}</span>
-                            <span class="info-box-number">{{$creditUsage}}</span>
+                            <span class="info-box-number">{{$creditCount}}</span>
                         </div>
                         <!-- /.info-box-content -->
                     </div>
