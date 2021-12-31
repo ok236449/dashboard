@@ -27,8 +27,8 @@ class OverViewController extends Controller
         });
 
         $creditUsage = function (){
-            foreach ($user) $creditUsage += $user->creditUsage()
-            return $creditUsage
+            foreach ($user) $creditUsage += $user->creditUsage();
+            return $creditUsage;
         }
         $paymentCount = Cache::remember('payment:count', self::TTL, function () {
             return Payment::query()->count();
