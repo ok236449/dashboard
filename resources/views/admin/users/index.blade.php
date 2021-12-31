@@ -46,7 +46,7 @@
                             <th>{{__('Role')}}</th>
                             <th>{{__('Email')}}</th>
                             <th>{{CREDITS_DISPLAY_NAME}}</th>
-                            <th>Usage</th>
+                            <th>{{__('Usage')}}</th>
                             <th>{{__('Servers')}}</th>
                             <th>{{__('Verified')}}</th>
                             <th>{{__('Last seen')}}</th>
