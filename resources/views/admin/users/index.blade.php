@@ -90,7 +90,7 @@
                     {data: 'role'},
                     {data: 'email', name: 'users.email'},
                     {data: 'credits' , name : 'users.credits'},
-                    {data: 'usage' , sortable : false},
+                    {data: 'usage'},
                     {data: 'servers' , sortable : false},
                     {data: 'verified' , sortable : false},
                     {data: 'last_seen'},
