@@ -46,6 +46,7 @@
                             <th>{{__('Role')}}</th>
                             <th>{{__('Email')}}</th>
                             <th>{{CREDITS_DISPLAY_NAME}}</th>
+                            <th>Usage</th>
                             <th>{{__('Servers')}}</th>
                             <th>{{__('Verified')}}</th>
                             <th>{{__('Last seen')}}</th>
@@ -89,6 +90,7 @@
                     {data: 'role'},
                     {data: 'email', name: 'users.email'},
                     {data: 'credits' , name : 'users.credits'},
+                    {data: 'usage' , sortable : false},
                     {data: 'servers' , sortable : false},
                     {data: 'verified' , sortable : false},
                     {data: 'last_seen'},
