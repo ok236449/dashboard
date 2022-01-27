@@ -97,7 +97,7 @@
                     <div class="row">
                         <div class="col-8">
                             <div class="icheck-primary">
-                                <input type="checkbox" id="agreeTerms" name="terms" value="agree">
+                                <input type="checkbox" id="agreeTerms" required name="terms" value="agree">
                                 <label for="agreeTerms">
                                     Souhlasím s <a href="https://home.vagonbrei.eu/VOP.pdf">VOP</a>
                                 </label>
