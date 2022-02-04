@@ -375,7 +375,7 @@
             <div class="alert alert-warning p-2 m-2">
                 <h5><i class="fab fa-discord mr-2"></i> {{__('Warning!')}}</h5>
                 {{__('You have not yet verified your discord account')}} <a class="text-primary"
-                href="{{route('auth.redirect')}}">{{__('Click here to edit you profile.')}}</a> <br>
+                href="{{route('auth.redirect')}}">{{__('Click here to verify')}}</a> <br>
                 {{__('Please contact support If you face any issues.')}}
             </div>
         @endif
