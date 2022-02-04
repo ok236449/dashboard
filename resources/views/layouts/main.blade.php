@@ -362,13 +362,22 @@
         @if(!Auth::user()->hasVerifiedEmail())
             @if(Auth::user()->created_at->diffInHours(now(), false) > 1)
                 <div class="alert alert-warning p-2 m-2">
-                    <h5><i class="icon fas fa-exclamation-circle"></i> {{__('Warning!')}}</h5>
+                    <h5><<i class="fas fa-envelope"></i> {{__('Warning!')}}</h5>
                     {{__('You have not yet verified your email address')}} <a class="text-primary"
                                                                               href="{{route('verification.send')}}">{{__('Click here to resend verification email')}}</a>
                     <br>
                     {{__('Please contact support If you didnt receive your verification email.')}}
                 </div>
             @endif
+        @endif
+
+        @if(is_null(Auth::user()->discordUser))
+            <div class="alert alert-warning p-2 m-2">
+                <h5><i class="fab fa-discord mr-2"></i> {{__('Warning!')}}</h5>
+                {{__('You have not yet verified your discord account')}} <a class="text-primary"
+                href="{{route('auth.redirect')}}">Click here to verify</a> <br>
+                {{__('Please contact support If you face any issues.')}}
+            </div>
         @endif
 
         @yield('content')
