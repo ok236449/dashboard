@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Events\UserUpdateCreditsEvent;
 use App\Http\Controllers\Controller;
-use App\Models\Configuration;
 use App\Models\InvoiceSettings;
 use App\Models\Payment;
 use App\Models\CreditProduct;
+use App\Models\Settings;
 use App\Models\User;
 use App\Notifications\InvoiceNotification;
 use App\Notifications\ConfirmPaymentNotification;
@@ -134,7 +134,7 @@ class PaymentController extends Controller
      */
     protected function getPaypalClientId()
     {
-        return env('APP_ENV') == 'local' ? env('PAYPAL_SANDBOX_CLIENT_ID') : env('PAYPAL_CLIENT_ID');
+        return env('APP_ENV') == 'local' ?  config("SETTINGS::PAYMENTS:PAYPAL:SANDBOX_CLIENT_ID") : config("SETTINGS::PAYMENTS:PAYPAL:CLIENT_ID");
     }
 
     /**
@@ -142,7 +142,7 @@ class PaymentController extends Controller
      */
     protected function getPaypalClientSecret()
     {
-        return env('APP_ENV') == 'local' ? env('PAYPAL_SANDBOX_SECRET') : env('PAYPAL_SECRET');
+        return env('APP_ENV') == 'local' ? config("SETTINGS::PAYMENTS:PAYPAL:SANDBOX_SECRET") : config("SETTINGS::PAYMENTS:PAYPAL:SECRET");
     }
 
     /**
@@ -167,9 +167,9 @@ class PaymentController extends Controller
                 $user->increment('credits', $creditProduct->quantity);
 
                 //update server limit
-                if (Configuration::getValueByKey('SERVER_LIMIT_AFTER_IRL_PURCHASE') !== 0) {
-                    if ($user->server_limit < Configuration::getValueByKey('SERVER_LIMIT_AFTER_IRL_PURCHASE')) {
-                        $user->update(['server_limit' => Configuration::getValueByKey('SERVER_LIMIT_AFTER_IRL_PURCHASE')]);
+                if (config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE') !== 0) {
+                    if ($user->server_limit < config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE')) {
+                        $user->update(['server_limit' => config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE')]);
                     }
                 }
 
@@ -197,7 +197,11 @@ class PaymentController extends Controller
 
                 event(new UserUpdateCreditsEvent($user));
 
-                $this->createInvoice($user, $payment, 'paid');
+                //only create invoice if SETTINGS::INVOICE:ENABLED is true
+                if (config('SETTINGS::INVOICE:ENABLED') == 'true') {
+                    $this->createInvoice($user, $payment, 'paid');
+                }
+
 
                 //redirect back to home
                 return redirect()->route('home')->with('success', __('Your credit balance has been increased!'));
@@ -266,7 +270,7 @@ class PaymentController extends Controller
             ],
 
             'mode' => 'payment',
-            "payment_method_types" => str_getcsv(env('STRIPE_METHODS')),
+            "payment_method_types" => str_getcsv(config("SETTINGS::PAYMENTS:STRIPE:METHODS")),
             'success_url' => route('payment.StripeSuccess',  ['product' => $creditProduct->id]) . '&session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => route('payment.Cancel'),
         ]);
@@ -304,9 +308,9 @@ class PaymentController extends Controller
                 $user->increment('credits', $creditProduct->quantity);
 
                 //update server limit
-                if (Configuration::getValueByKey('SERVER_LIMIT_AFTER_IRL_PURCHASE') !== 0) {
-                    if ($user->server_limit < Configuration::getValueByKey('SERVER_LIMIT_AFTER_IRL_PURCHASE')) {
-                        $user->update(['server_limit' => Configuration::getValueByKey('SERVER_LIMIT_AFTER_IRL_PURCHASE')]);
+                if (config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE') !== 0) {
+                    if ($user->server_limit < config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE')) {
+                        $user->update(['server_limit' => config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE')]);
                     }
                 }
 
@@ -336,7 +340,10 @@ class PaymentController extends Controller
 
                 event(new UserUpdateCreditsEvent($user));
 
-                $this->createInvoice($user, $payment, 'paid');
+                //only create invoice if SETTINGS::INVOICE:ENABLED is true
+                if (config('SETTINGS::INVOICE:ENABLED') == 'true') {
+                    $this->createInvoice($user, $payment, 'paid');
+                }
 
                 //redirect back to home
                 return redirect()->route('home')->with('success', __('Your credit balance has been increased!'));
@@ -359,7 +366,10 @@ class PaymentController extends Controller
                         'credit_product_id' => $creditProduct->id,
                     ]);
 
-                    $this->createInvoice($user, $payment, 'processing');
+                    //only create invoice if SETTINGS::INVOICE:ENABLED is true
+                    if (config('SETTINGS::INVOICE:ENABLED') == 'true') {
+                        $this->createInvoice($user, $payment, 'paid');
+                    }
 
                     //redirect back to home
                     return redirect()->route('home')->with('success', __('Your payment is being processed!'));
@@ -398,9 +408,9 @@ class PaymentController extends Controller
                 $user->increment('credits', $payment->amount);
 
                 //update server limit
-                if (Configuration::getValueByKey('SERVER_LIMIT_AFTER_IRL_PURCHASE') !== 0) {
-                    if ($user->server_limit < Configuration::getValueByKey('SERVER_LIMIT_AFTER_IRL_PURCHASE')) {
-                        $user->update(['server_limit' => Configuration::getValueByKey('SERVER_LIMIT_AFTER_IRL_PURCHASE')]);
+                if (config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE') !== 0) {
+                    if ($user->server_limit < config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE')) {
+                        $user->update(['server_limit' => config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE')]);
                     }
                 }
 
@@ -416,7 +426,10 @@ class PaymentController extends Controller
                 $user->notify(new ConfirmPaymentNotification($payment));
                 event(new UserUpdateCreditsEvent($user));
 
-                $this->createInvoice($user, $payment, 'paid');
+                //only create invoice if SETTINGS::INVOICE:ENABLED is true
+                if (config('SETTINGS::INVOICE:ENABLED') == 'true') {
+                    $this->createInvoice($user, $payment, 'paid');
+                }
             }
         } catch (HttpException $ex) {
             abort(422);
@@ -474,8 +487,8 @@ class PaymentController extends Controller
     protected function getStripeSecret()
     {
         return env('APP_ENV') == 'local'
-            ?  env('STRIPE_TEST_SECRET')
-            :  env('STRIPE_SECRET');
+            ?  config("SETTINGS::PAYMENTS:STRIPE:TEST_SECRET")
+            :  config("SETTINGS::PAYMENTS:STRIPE:SECRET");
     }
 
     /**
@@ -484,8 +497,8 @@ class PaymentController extends Controller
     protected function getStripeEndpointSecret()
     {
         return env('APP_ENV') == 'local'
-            ?  env('STRIPE_ENDPOINT_TEST_SECRET')
-            :  env('STRIPE_ENDPOINT_SECRET');
+            ?  config("SETTINGS::PAYMENTS:STRIPE:ENDPOINT_TEST_SECRET")
+            :  config("SETTINGS::PAYMENTS:STRIPE:ENDPOINT_SECRET");
     }
 
 
@@ -495,17 +508,16 @@ class PaymentController extends Controller
         //create invoice
         $lastInvoiceID = \App\Models\Invoice::where("invoice_name", "like", "%" . now()->format('mY') . "%")->count("id");
         $newInvoiceID = $lastInvoiceID + 1;
-        $InvoiceSettings = InvoiceSettings::query()->first();
         $logoPath = storage_path('app/public/logo.png');
 
         $seller = new Party([
-            'name' => $InvoiceSettings->company_name,
-            'phone' => $InvoiceSettings->company_phone,
-            'address' => $InvoiceSettings->company_adress,
-            'vat' => $InvoiceSettings->company_vat,
+            'name' => config("SETTINGS::INVOICE:COMPANY_NAME"),
+            'phone' => config("SETTINGS::INVOICE:COMPANY_PHONE"),
+            'address' => config("SETTINGS::INVOICE:COMPANY_ADDRESS"),
+            'vat' => config("SETTINGS::INVOICE:COMPANY_VAT"),
             'custom_fields' => [
-                'E-Mail' => $InvoiceSettings->company_mail,
-                "Web" => $InvoiceSettings->company_web
+                'E-Mail' => config("SETTINGS::INVOICE:COMPANY_MAIL"),
+                "Web" => config("SETTINGS::INVOICE:COMPANY_WEBSITE")
             ],
         ]);
 
@@ -522,7 +534,7 @@ class PaymentController extends Controller
             ->pricePerUnit($creditProduct->price);
 
         $notes = [
-            __("Payment method") .": ". $payment->payment_method,
+            __("Payment method") . ": " . $payment->payment_method,
         ];
         $notes = implode("<br>", $notes);
 
@@ -540,7 +552,7 @@ class PaymentController extends Controller
             ->series(now()->format('mY'))
             ->delimiter("-")
             ->sequence($newInvoiceID)
-            ->serialNumberFormat($InvoiceSettings->invoice_prefix . '{DELIMITER}{SERIES}{SEQUENCE}')
+            ->serialNumberFormat(config("SETTINGS::INVOICE:PREFIX") . '{DELIMITER}{SERIES}{SEQUENCE}')
             ->notes($notes);
 
         if (file_exists($logoPath)) {
@@ -591,6 +603,11 @@ class PaymentController extends Controller
             ->editColumn('created_at', function (Payment $payment) {
                 return $payment->created_at ? $payment->created_at->diffForHumans() : '';
             })
-            ->make();
+            ->addColumn('actions', function (Payment $payment) {
+                return ' <a data-content="' . __("Download") . '" data-toggle="popover" data-trigger="hover" data-placement="top"  href="' . route('admin.invoices.downloadSingleInvoice', "id=" . $payment->payment_id) . '" class="btn btn-sm text-white btn-info mr-1"><i class="fas fa-file-download"></i></a>
+';
+            })
+            ->rawColumns(['actions'])
+            ->make(true);
     }
 }

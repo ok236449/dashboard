@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Egg;
-use App\Models\Product;
 use App\Models\UsefulLink;
-use App\Models\Configuration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -90,7 +87,7 @@ class HomeController extends Controller
 
         // RETURN ALL VALUES
         return view('home')->with([
-            'useage' => $usage,
+            'usage' => $usage,
             'credits' => $credits,
             'useful_links' => UsefulLink::all()->sortBy('id'),
             'bg' => $bg,
@@ -98,6 +95,4 @@ class HomeController extends Controller
             'unit' => $unit
         ]);
     }
-
 }
-

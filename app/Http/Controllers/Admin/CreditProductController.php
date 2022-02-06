@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\CreditProduct;
+use App\Models\Settings;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -25,8 +26,8 @@ class CreditProductController extends Controller
 
         if (
             env('APP_ENV') == 'local' ||
-            env('PAYPAL_SECRET') && env('PAYPAL_CLIENT_ID') ||
-            env('STRIPE_SECRET') && env('STRIPE_ENDPOINT_SECRET') && env('STRIPE_METHODS')
+            config("SETTINGS::PAYMENTS:PAYPAL:SECRET") && config("SETTINGS::PAYMENTS:PAYPAL:CLIENT_ID") ||
+            config("SETTINGS::PAYMENTS:STRIPE:SECRET") && config("SETTINGS::PAYMENTS:STRIPE:ENDPOINT_SECRET") && config("SETTINGS::PAYMENTS:STRIPE:METHODS")
         ) $isPaymentSetup = true;
 
         return view('admin.store.index', [
