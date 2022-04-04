@@ -147,7 +147,7 @@
 
                                 </select>
                             </div>
-                            <i class="fas fa-info-circle"></i> Pokud není některý ze serverů k dispozici, znamená to, že je vyprodaný.
+                            <i class="fas fa-info-circle"></i> Pokud není některý z uzlů v nabídce, znamená to, že je buď vyprodaný, nebo není pro zvolenou hru k dispozici.
                         </div>
                     </div>
                 </div>
