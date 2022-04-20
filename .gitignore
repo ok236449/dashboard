@@ -23,3 +23,5 @@ storage/app/public/logo.png
 *vscode
  - Kopie.env
 public/install/logs.txt
+install.lock
+public/install/logs/installer.log

@@ -16,7 +16,7 @@ class InvoiceController extends Controller
         $zip = new ZipArchive;
         $zip_safe_path = storage_path('invoices.zip');
         $res = $zip->open($zip_safe_path, ZipArchive::CREATE | ZipArchive::OVERWRITE);
-        $result = $dthis::rglob(storage_path('app/invoice/*'));
+        $result = $this::rglob(storage_path('app/invoice/*'));
         if ($res === TRUE) {
             $zip->addFromString("1. Info.txt", __("Created at") . " " . now()->format("d.m.Y"));
             foreach ($result as $file) {
@@ -59,12 +59,10 @@ class InvoiceController extends Controller
         $invoice_path = storage_path('app/invoice/' . $query->invoice_user . '/' . $query->created_at->format("Y") . '/' . $query->invoice_name . '.pdf');
 
         if (!file_exists($invoice_path)) {
-            return redirect()->back()->with("error", __("Error!"));
+            return redirect()->back()->with("error", __("Invoice does not exist on filesystem!"));
         }
 
 
         return response()->download($invoice_path);
-
     }
-
 }
