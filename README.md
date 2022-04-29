@@ -1,6 +1,3 @@
-### Traslated version to czech
-
-
 ### Features
 
 -   PayPal Integration
