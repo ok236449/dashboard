@@ -106,7 +106,7 @@
                             <div class="icheck-primary">
                                 <input type="checkbox" id="agreeTerms" required name="terms" value="agree">
                                 <label for="agreeTerms">
-                                    Souhlasím s <a href="https://home.vagonbrei.eu/VOP.pdf">VOP</a>
+                                    Souhlasím s <a href="https://home.vagonbrei.eu/VOP">VOP</a>
                                 </label>
                             </div>
                         </div>
