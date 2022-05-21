@@ -49,15 +49,19 @@
                     <a href="http://home.vagonbrei.eu" class="nav-link"><i
                             class="fas fa-home mr-2"></i>{{ __('Home') }}</a>
                 </li>
-                <li class="nav-item d-none d-sm-inline-block">
-                    <a href="{{ config('SETTINGS::DISCORD:INVITE_URL') }}" class="nav-link" target="__blank"><i
-                            class="fab fa-discord mr-2"></i>{{ __('Discord') }}</a>
-                </li>
+                
                 <li class="nav-item d-none d-sm-inline-block">
                 <a href="https://panel.vagonbrei.eu" class="nav-link">Panel</a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
+                <a href="https://vip.vagonbrei.eu" class="nav-link">VIP</a>
+                </li>
+                <li class="nav-item d-none d-sm-inline-block">
                 <a href="https://phpmyadmin.vagonbrei.eu" class="nav-link">PhpMyAdmin</a>
+                </li>
+                <li class="nav-item d-none d-sm-inline-block">
+                    <a href="{{ config('SETTINGS::DISCORD:INVITE_URL') }}" class="nav-link" target="__blank"><i
+                            class="fab fa-discord mr-2"></i>{{ __('Discord') }}</a>
                 </li>
                 <!-- Language Selection -->
                 @if (config('SETTINGS::LOCALE:CLIENTS_CAN_CHANGE') == 'true')
