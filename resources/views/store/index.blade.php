@@ -1,5 +1,5 @@
 @extends('layouts.main')
-<?php use App\Models\CreditProduct; ?>
+<?php use App\Models\ShopProduct; ?>
 
 @section('content')
     <!-- CONTENT HEADER -->
@@ -12,9 +12,9 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a class=""
-                                href="{{ route('home') }}">{{ __('Dashboard') }}</a></li>
+                                                       href="{{ route('home') }}">{{ __('Dashboard') }}</a></li>
                         <li class="breadcrumb-item"><a class="text-muted"
-                                href="{{ route('store.index') }}">{{ __('Store') }}</a></li>
+                                                       href="{{ route('store.index') }}">{{ __('Store') }}</a></li>
                     </ol>
                 </div>
             </div>
@@ -41,27 +41,34 @@
                     <div class="card-body">
                         <table class="table table-striped table-responsive-sm">
                             <thead>
-                                <tr>
-                                    <th>{{ __('Price') }}</th>
-                                    <th>{{ __('Type') }}</th>
-                                    <th>{{ __('Description') }}</th>
-                                    <th></th>
-                                </tr>
+                            <tr>
+                                <th>{{ __('Price') }}</th>
+                                <th>{{ __('Type') }}</th>
+                                <th>{{ __('Description') }}</th>
+                                <th></th>
+                            </tr>
                             </thead>
                             <tbody>
-                                <?php /** @var $product CreditProduct */
-                                ?>
-                                @foreach ($products as $product)
-                                    <tr>
-                                        <td>{{ $product->formatToCurrency($product->price) }}</td>
-                                        <td>{{ strtolower($product->type) == 'credits' ? CREDITS_DISPLAY_NAME : $product->type }}
-                                        </td>
-                                        <td><i class="fa fa-coins mr-2"></i>{{ $product->display }}</td>
-                                        <td><a href="{{ route('checkout', $product->id) }}"
-                                                class="btn btn-info">{{ __('Purchase') }}</a>
-                                        </td>
-                                    </tr>
-                                @endforeach
+                            <?php /** @var $product ShopProduct */
+                            ?>
+                            @foreach ($products as $product)
+                                <tr>
+                                    <td>{{ $product->formatToCurrency($product->price) }}</td>
+                                    <td>{{ strtolower($product->type) == 'credits' ? CREDITS_DISPLAY_NAME : $product->type }}
+                                    </td>
+                                    <td>
+                                        @if(strtolower($product->type) == 'credits')
+                                            <i class="fa fa-coins mr-2"></i>
+                                        @elseif (strtolower($product->type) == 'server slots')
+                                            <i class="fa fa-server mr-2"></i>
+                                        @endif
+
+                                        {{ $product->display }}</td>
+                                    <td><a href="{{ route('checkout', $product->id) }}"
+                                           class="btn btn-info">{{ __('Purchase') }}</a>
+                                    </td>
+                                </tr>
+                            @endforeach
                             </tbody>
                         </table>
                         </br><i class="fas fa-info-circle"></i> Dobitím kreditů souhlasíte s <a href="https://home.vagonbrei.eu/VOP.pdf">VOP</a>.
@@ -88,7 +95,6 @@
             const urlParams = new URLSearchParams(queryString);
             return urlParams.get(param);
         }
-
         const voucherCode = getUrlParameter('voucher');
         //if voucherCode not empty, open the modal and fill the input
         if (voucherCode) {
@@ -96,7 +102,6 @@
                 $('#redeemVoucherModal').modal('show');
                 $('#redeemVoucherCode').val(voucherCode);
             });
-
         }
     </script>
 
