@@ -38,7 +38,6 @@ class Pterodactyl
     private static function getException(string $message = "", int $status = 0): Exception
     {
         if ($status == 404) {
-            dd($pterodactylId);
             return new Exception("Ressource does not exist on pterodactyl - " . $message, 404);
         }
 
@@ -262,7 +261,6 @@ class Pterodactyl
         try {
             $response = self::client()->get("/application/servers/{$pterodactylId}?include=egg,node,nest,location");
         } catch (Exception $e) {
-            dd($pterodactylId);
             throw self::getException($e->getMessage());
         }
 
