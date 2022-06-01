@@ -261,6 +261,7 @@ class Pterodactyl
         try {
             $response = self::client()->get("/application/servers/{$pterodactylId}?include=egg,node,nest,location");
         } catch (Exception $e) {
+            dd($pterodactylId);
             throw self::getException($e->getMessage());
         }
 
