@@ -145,7 +145,7 @@ class RegisterController extends Controller
                     if(DB::table('user_referrals')->where("referral_id","=",Auth::user()->id)->count()>10)$amount_gained=2;
                     elseif(DB::table('user_referrals')->where("referral_id","=",Auth::user()->id)->count()>25)$amount_gained=1;
                     $ref_user->increment('credits', $amount_gained);
-                    $ref_user->notify(new ReferralNotification($ref_user->id, $new_user));
+                    //$ref_user->notify(new ReferralNotification($ref_user->id, $new_user));
 
                     //LOGS REFERRALS IN THE ACTIVITY LOG
                     activity()
