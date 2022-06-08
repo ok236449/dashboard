@@ -141,14 +141,17 @@ class RegisterController extends Controller
             $new_user = $user->id;
             if($ref_user = User::query()->where('referral_code', '=', $ref_code)->first()) {
                 if(config("SETTINGS::REFERRAL:MODE") == "sign-up" || config("SETTINGS::REFERRAL:MODE") == "both") {
-                    $ref_user->increment('credits', config("SETTINGS::REFERRAL::REWARD"));
+                    $amount_gained = config("SETTINGS::REFERRAL::REWARD");
+                    if(DB::table('user_referrals')->where("referral_id","=",Auth::user()->id)->count()>10)$amount_gained=2;
+                    elseif(DB::table('user_referrals')->where("referral_id","=",Auth::user()->id)->count()>25)$amount_gained=1;
+                    $ref_user->increment('credits', $amount_gained);
                     $ref_user->notify(new ReferralNotification($ref_user->id, $new_user));
 
                     //LOGS REFERRALS IN THE ACTIVITY LOG
                     activity()
                         ->performedOn($user)
                         ->causedBy($ref_user)
-                        ->log('gained '. config("SETTINGS::REFERRAL::REWARD").' '.config("SETTINGS::SYSTEM:CREDITS_DISPLAY_NAME").' for sign-up-referral of '.$user->name.' (ID:'.$user->id.')');
+                        ->log('gained '. $amount_gained .' '.config("SETTINGS::SYSTEM:CREDITS_DISPLAY_NAME").' for sign-up-referral of '.$user->name.' (ID:'.$user->id.')');
                 }
                 //INSERT INTO USER_REFERRALS TABLE
                 DB::table('user_referrals')->insert([
