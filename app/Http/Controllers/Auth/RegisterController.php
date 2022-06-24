@@ -142,8 +142,8 @@ class RegisterController extends Controller
             if($ref_user = User::query()->where('referral_code', '=', $ref_code)->first()) {
                 if(config("SETTINGS::REFERRAL:MODE") == "sign-up" || config("SETTINGS::REFERRAL:MODE") == "both") {
                     $amount_gained = config("SETTINGS::REFERRAL::REWARD");
-                    if(DB::table('user_referrals')->where("referral_id","=",Auth::user()->id)->count()>10)$amount_gained=2;
-                    elseif(DB::table('user_referrals')->where("referral_id","=",Auth::user()->id)->count()>25)$amount_gained=1;
+                    if(DB::table('user_referrals')->where("referral_id","=",$ref_user->id)->count()>10)$amount_gained=2;
+                    elseif(DB::table('user_referrals')->where("referral_id","=",$ref_user->id)->count()>25)$amount_gained=1;
                     $ref_user->increment('credits', $amount_gained);
                     //$ref_user->notify(new ReferralNotification($ref_user->id, $new_user));
 
