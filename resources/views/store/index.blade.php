@@ -71,7 +71,7 @@
                             @endforeach
                             </tbody>
                         </table>
-                        </br><i class="fas fa-info-circle"></i> Dobitím kreditů souhlasíte s <a href="https://home.vagonbrei.eu/VOP.pdf">VOP</a>.
+                        </br><i class="fas fa-info-circle"></i> Dobitím kreditů souhlasíte s <a href="https://home.vagonbrei.eu/files/VOP.pdf">VOP</a>.
                     </div>
                 </div>
 
