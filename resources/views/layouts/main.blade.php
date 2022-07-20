@@ -194,11 +194,11 @@
         <aside class="main-sidebar sidebar-open sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
             <a href="{{ route('home') }}" class="brand-link">
-                <img width="64" height="64"
+                <img width="64" height="64" style="margin-left: 0px"
                     src="{{ \Illuminate\Support\Facades\Storage::disk('public')->exists('icon.png')? asset('storage/icon.png'): asset('images/controlpanel_logo.png') }}"
                     alt="{{ config('app.name', 'Laravel') }} Logo" class="brand-image img-circle"
                     style="opacity: .8">
-                <span class="brand-text font-weight-light">{{ config('app.name', 'Laravel') }}</span>
+                <span class="brand-text font-weight-light" style="margin-left: -8px">{{ config('app.name', 'Laravel') }}</span>
             </a>
 
             <!-- Sidebar -->
