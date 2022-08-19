@@ -500,5 +500,20 @@ class SettingsSeeder extends Seeder
             'type'  => 'integer',
             'description'  => 'The Percentage Value a referred user gets'
         ]);
+
+        Settings::firstOrCreate([
+            'key'   => 'SETTINGS::SYSTEM:PTERODACTYL:ADMIN_USER_TOKEN',
+        ], [
+            'value' =>"",
+            'type'  => 'string',
+            'description'  => 'The Client API Key of an Pterodactyl Admin Account'
+        ]);
+        Settings::firstOrCreate([
+            'key'   => 'SETTINGS::SYSTEM:ENABLE_UPGRADE',
+        ], [
+            'value' =>"",
+            'type'  => 'string',
+            'description'  => 'Enables the updgrade/downgrade feature for servers'
+        ]);
     }
 }

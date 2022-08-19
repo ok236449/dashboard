@@ -75,10 +75,10 @@
         document.addEventListener("DOMContentLoaded", function () {
             $('#datatable').DataTable({
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.11.3/i18n/{{config("app.datatable_locale")}}.json'
+                    url: '//cdn.datatables.net/plug-ins/1.11.3/i18n/{{config("SETTINGS::LOCALE:DATATABLES")}}.json'
                 },
                 processing: true,
-                serverSide: true,
+                serverSide: false, //increases loading times too much? change back to "true" if it does
                 stateSave: true,
                 ajax: "{{route('admin.users.datatable')}}",
                 order: [[ 11, "asc" ]],
