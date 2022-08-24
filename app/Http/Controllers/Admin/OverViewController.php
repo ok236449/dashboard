@@ -80,20 +80,20 @@ class OverViewController extends Controller
         $lastEgg = Egg::query()->latest('updated_at')->first();
         $syncLastUpdate = $lastEgg ? $lastEgg->updated_at->isoFormat('LLL') : __('unknown');
         
-
-            $nodes = collect();
+        $nodes = Cache::remember('nodes', self::TTL, function() use($counters){
+            $output = collect();
             foreach($nodes = Node::query()->get() as $node){ //gets all node information and prepares the structure
                 $nodeId = $node['id'];
-                $nodes->put($nodeId, collect());
-                $nodes[$nodeId]->name = $node['name'];
+                $output->put($nodeId, collect());
+                $output[$nodeId]->name = $node['name'];
                 $node = Pterodactyl::getNode($nodeId);
-                $nodes[$nodeId]->usagePercent = round(max($node['allocated_resources']['memory']/($node['memory']*($node['memory_overallocate']+100)/100), $node['allocated_resources']['disk']/($node['disk']*($node['disk_overallocate']+100)/100))*100, 2);
-                $counters['totalUsagePercent'] += $nodes[$nodeId]->usagePercent;
+                $output[$nodeId]->usagePercent = round(max($node['allocated_resources']['memory']/($node['memory']*($node['memory_overallocate']+100)/100), $node['allocated_resources']['disk']/($node['disk']*($node['disk_overallocate']+100)/100))*100, 2);
+                $counters['totalUsagePercent'] += $output[$nodeId]->usagePercent;
 
-                $nodes[$nodeId]->totalServers = 0;
-                $nodes[$nodeId]->activeServers = 0;
-                $nodes[$nodeId]->totalEarnings = 0;
-                $nodes[$nodeId]->activeEarnings = 0;
+                $output[$nodeId]->totalServers = 0;
+                $output[$nodeId]->activeServers = 0;
+                $output[$nodeId]->totalEarnings = 0;
+                $output[$nodeId]->activeEarnings = 0;
             }
             $counters['totalUsagePercent'] = ($nodes->count())?round($counters['totalUsagePercent']/$nodes->count(), 2):0;
 
@@ -105,15 +105,17 @@ class OverViewController extends Controller
                     if (!$CPServer->suspended){
                         $counters['earnings']->active += $prize;
                         $counters['servers']->active ++;
-                        $nodes[$nodeId]->activeEarnings += $prize;
-                        $nodes[$nodeId]->activeServers ++;
+                        $output[$nodeId]->activeEarnings += $prize;
+                        $output[$nodeId]->activeServers ++;
                     }
                     $counters['earnings']->total += $prize;
                     $counters['servers']->total ++;
-                    $nodes[$nodeId]->totalEarnings += $prize;
-                    $nodes[$nodeId]->totalServers ++;
+                    $output[$nodeId]->totalEarnings += $prize;
+                    $output[$nodeId]->totalServers ++;
                 }
             }
+            return $output;
+        });
 
         $tickets = Cache::remember('tickets', self::TTL, function(){
             $output = collect();
