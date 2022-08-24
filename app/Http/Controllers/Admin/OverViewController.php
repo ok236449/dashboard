@@ -22,67 +22,65 @@ class OverViewController extends Controller
 
     public function index()
     {
-        $counters = Cache::remember('counters', self::TTL, function () {
-            $output = collect();
+            $counters = collect();
             //Set basic variables in the collection
-            $output->put('users', User::query()->count());
-            $output->put('credits', number_format(User::query()->where("role","!=","admin")->sum('credits'), 2, '.', ''));
-            $output->put('payments', Payment::query()->count());
-            $output->put('eggs', Egg::query()->count());
-            $output->put('nests', Nest::query()->count());
-            $output->put('locations', Location::query()->count());
+            $counters->put('users', User::query()->count());
+            $counters->put('credits', number_format(User::query()->where("role","!=","admin")->sum('credits'), 2, '.', ''));
+            $counters->put('payments', Payment::query()->count());
+            $counters->put('eggs', Egg::query()->count());
+            $counters->put('nests', Nest::query()->count());
+            $counters->put('locations', Location::query()->count());
 
             //Prepare for counting
-            $output->put('servers', collect());
-            $output['servers']->active = 0;
-            $output['servers']->total = 0;
-            $output->put('earnings', collect());
-            $output['earnings']->active = 0;
-            $output['earnings']->total = 0;
-            $output->put('totalUsagePercent', 0);
+            $counters->put('servers', collect());
+            $counters['servers']->active = 0;
+            $counters['servers']->total = 0;
+            $counters->put('earnings', collect());
+            $counters['earnings']->active = 0;
+            $counters['earnings']->total = 0;
+            $counters->put('totalUsagePercent', 0);
 
             //Prepare subCollection 'payments'
-            $output->put('payments', collect());
+            $counters->put('payments', collect());
             //Get and save payments from last 2 months for later filtering and looping
             $payments = Payment::query()->where('created_at', '>=', Carbon::today()->startOfMonth()->subMonth())->where('status', 'paid')->get();
             //Prepare collections and set a few variables
-            $output['payments']->put('thisMonth', collect());
-            $output['payments']->put('lastMonth', collect());
-            $output['payments']['thisMonth']->timeStart = Carbon::today()->startOfMonth()->toDateString();
-            $output['payments']['thisMonth']->timeEnd = Carbon::today()->toDateString();
-            $output['payments']['lastMonth']->timeStart = Carbon::today()->startOfMonth()->subMonth()->toDateString();
-            $output['payments']['lastMonth']->timeEnd = Carbon::today()->endOfMonth()->subMonth()->toDateString();
+            $counters['payments']->put('thisMonth', collect());
+            $counters['payments']->put('lastMonth', collect());
+            $counters['payments']['thisMonth']->timeStart = Carbon::today()->startOfMonth()->toDateString();
+            $counters['payments']['thisMonth']->timeEnd = Carbon::today()->toDateString();
+            $counters['payments']['lastMonth']->timeStart = Carbon::today()->startOfMonth()->subMonth()->toDateString();
+            $counters['payments']['lastMonth']->timeEnd = Carbon::today()->endOfMonth()->subMonth()->toDateString();
             
             //Fill out variables for each currency separately
             foreach($payments->where('created_at', '>=', Carbon::today()->startOfMonth()) as $payment){
                 $paymentCurrency = $payment->currency_code;
-                if(!isset($output['payments']['thisMonth'][$paymentCurrency])){
-                    $output['payments']['thisMonth']->put($paymentCurrency, collect());
-                    $output['payments']['thisMonth'][$paymentCurrency]->total = 0;
-                    $output['payments']['thisMonth'][$paymentCurrency]->count = 0;
+                if(!isset($counters['payments']['thisMonth'][$paymentCurrency])){
+                    $counters['payments']['thisMonth']->put($paymentCurrency, collect());
+                    $counters['payments']['thisMonth'][$paymentCurrency]->total = 0;
+                    $counters['payments']['thisMonth'][$paymentCurrency]->count = 0;
                 }
-                $output['payments']['thisMonth'][$paymentCurrency]->total += $payment->total_price;
-                $output['payments']['thisMonth'][$paymentCurrency]->count ++;
+                $counters['payments']['thisMonth'][$paymentCurrency]->total += $payment->total_price;
+                $counters['payments']['thisMonth'][$paymentCurrency]->count ++;
             }
             foreach($payments->where('created_at', '<', Carbon::today()->startOfMonth()) as $payment){
                 $paymentCurrency = $payment->currency_code;
-                if(!isset($output['payments']['lastMonth'][$paymentCurrency])){
-                    $output['payments']['lastMonth']->put($paymentCurrency, collect());
-                    $output['payments']['lastMonth'][$paymentCurrency]->total = 0;
-                    $output['payments']['lastMonth'][$paymentCurrency]->count = 0;
+                if(!isset($counters['payments']['lastMonth'][$paymentCurrency])){
+                    $counters['payments']['lastMonth']->put($paymentCurrency, collect());
+                    $counters['payments']['lastMonth'][$paymentCurrency]->total = 0;
+                    $counters['payments']['lastMonth'][$paymentCurrency]->count = 0;
                 }
-                $output['payments']['lastMonth'][$paymentCurrency]->total += $payment->total_price;
-                $output['payments']['lastMonth'][$paymentCurrency]->count ++;
+                $counters['payments']['lastMonth'][$paymentCurrency]->total += $payment->total_price;
+                $counters['payments']['lastMonth'][$paymentCurrency]->count ++;
             }
-            $output['payments']->total = Payment::query()->count();
+            $counters['payments']->total = Payment::query()->count();
             
-            return $output;
-        });
+            
 
         $lastEgg = Egg::query()->latest('updated_at')->first();
         $syncLastUpdate = $lastEgg ? $lastEgg->updated_at->isoFormat('LLL') : __('unknown');
         
-        
+
             $nodes = collect();
             foreach($nodes = Node::query()->get() as $node){ //gets all node information and prepares the structure
                 $nodeId = $node['id'];
