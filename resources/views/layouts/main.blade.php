@@ -328,6 +328,13 @@
                                     <p>{{ __('Vouchers') }}</p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.partners.index') }}"
+                                    class="nav-link @if (Request::routeIs('admin.partners.*')) active @endif">
+                                    <i class="nav-icon fas fa-handshake"></i>
+                                    <p>{{ __('Partners') }}</p>
+                                </a>
+                            </li>
 
                             {{-- <li class="nav-header">Pterodactyl</li> --}}
 
