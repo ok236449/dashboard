@@ -34,7 +34,12 @@ use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalHttp\HttpException;
 use Stripe\Stripe;
 use Symfony\Component\Intl\Currencies;
+use GoPay\Definition\Payment\PaymentInstrument;
+use GoPay\Definition\Payment\BankSwiftCode;
+use GoPay\Definition\Payment\VatRate;
+use GoPay\Definition\Payment\PaymentItemType;
 
+require_once base_path() . '/vendor/autoload.php';
 
 class PaymentController extends Controller
 {
@@ -284,7 +289,7 @@ class PaymentController extends Controller
                     'price_data' => [
                         'currency' => $shopProduct->currency_code,
                         'product_data' => [
-                            'name' => 'Product Tax',
+                            'name' => __('Product Tax'),
                             'description' => $shopProduct->getTaxPercent() . "%",
                         ],
                         'unit_amount_decimal' => round($shopProduct->getTaxValue(), 2) * 100,
@@ -567,6 +572,363 @@ class PaymentController extends Controller
             ?  config("SETTINGS::PAYMENTS:STRIPE:ENDPOINT_TEST_SECRET")
             :  config("SETTINGS::PAYMENTS:STRIPE:ENDPOINT_SECRET");
     }
+
+
+    /*public function GopayPay(Request $request, ShopProduct $shopProduct)
+    {
+        $request = new OrdersCreateRequest();
+        $request->prefer('return=representation');
+        $request->body = [
+            "intent" => "CAPTURE",
+            "purchase_units" => [
+                [
+                    "reference_id" => uniqid(),
+                    "description" => $shopProduct->description,
+                    "amount"       => [
+                        "value"         => $shopProduct->getTotalPrice(),
+                        'currency_code' => strtoupper($shopProduct->currency_code),
+                        'breakdown' => [
+                            'item_total' =>
+                            [
+                                'currency_code' => strtoupper($shopProduct->currency_code),
+                                'value' => $shopProduct->price,
+                            ],
+                            'tax_total' =>
+                            [
+                                'currency_code' => strtoupper($shopProduct->currency_code),
+                                'value' => $shopProduct->getTaxValue(),
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            "application_context" => [
+                "cancel_url" => route('payment.Cancel'),
+                "return_url" => route('payment.PaypalSuccess', ['product' => $shopProduct->id]),
+                'brand_name' =>  config('app.name', 'Laravel'),
+                'shipping_preference'  => 'NO_SHIPPING'
+            ]
+
+
+        ];
+
+
+        try {
+            // Call API with your client and get a response for your call
+            $response = $this->getPayPalClient()->execute($request);
+            return redirect()->away($response->result->links[1]->href);
+
+            // If call returns body in response, you can get the deserialized version from the result attribute of the response
+        } catch (HttpException $ex) {
+            echo $ex->statusCode;
+            dd(json_decode($ex->getMessage()));
+        }
+    }*/
+
+    public function gopay()
+    {
+        return $gopay = \GoPay\payments([
+            'goid' => config('SETTINGS::PAYMENTS:GOPAY:GOID'),
+            'clientId' => env('APP_ENV')=='local'?config('SETTINGS::PAYMENTS:GOPAY:TEST_CLIENT_ID'):config('SETTINGS::PAYMENTS:GOPAY:CLIENT_ID'),
+            'clientSecret' => env('APP_ENV')=='local'?config('SETTINGS::PAYMENTS:GOPAY:TEST_CLIENT_SECRET'):config('SETTINGS::PAYMENTS:GOPAY:CLIENT_SECRET'),
+            'gatewayUrl' => env('APP_ENV')=='local'?"https://gw.sandbox.gopay.com/":"https://gate.gopay.cz/",
+            'scope' => \GoPay\Definition\TokenScope::ALL,
+            'language' => strtoupper(session()->get('language')),
+            'timeout' => 30
+        ]);
+    }
+    public function GopayPay(Request $request, ShopProduct $shopProduct)
+    {
+        $gopay =  $this->gopay();
+        $response = $gopay->createPayment([
+            'payer' => [
+                    //'default_payment_instrument' => PaymentInstrument::MPAYMENT,
+                    'allowed_payment_instruments' => [PaymentInstrument::BANK_ACCOUNT, PaymentInstrument::MPAYMENT, PaymentInstrument::BITCOIN, PaymentInstrument::PAYSAFECARD],
+                    //'default_swift' => BankSwiftCode::FIO_BANKA,
+                    //'allowed_swifts' => [BankSwiftCode::FIO_BANKA, BankSwiftCode::MBANK, BankSwiftCode::CSOB, BankSwiftCode::CESKA_SPORITELNA, BankSwiftCode::KOMERCNI_BANKA, BankSwiftCode::RAIFFEISENBANK, BankSwiftCode::UNICREDIT_BANK_CZ, BankSwiftCode::POSTOVA_BANKA],
+                    /*'contact' => ['first_name' => 'Zbynek',
+                            'last_name' => 'Zak',
+                            'email' => 'test@test.cz',
+                            'phone_number' => '+420777456123',
+                            'city' => 'C.Budejovice',
+                            'street' => 'Plana 67',
+                            'postal_code' => '373 01',
+                            'country_code' => 'CZE'
+                    ]*/
+            ],
+            'amount' => $shopProduct->getTotalPrice()*100,
+            'currency' => strtoupper($shopProduct->currency_code),
+            //'order_number' => '001',
+            'order_description' => $shopProduct->description,
+            'items' => [
+                [
+                    'type' => PaymentItemType::ITEM,
+                    'name' => $shopProduct->display,
+                    'amount' => $shopProduct->price*100,
+                    'count' => 1,
+                    'vat_rate' => 0
+                ],
+                [
+                    'type' => PaymentItemType::ITEM,
+                    'name' => $shopProduct->getTaxPercent() . "%",
+                    'amount' => $shopProduct->getTaxValue()*100,
+                    'count' => 1,
+                    'vat_rate' => 0
+                ]],
+            'callback' => [
+                    //"cancel_url" => route('payment.Cancel'),
+                    'return_url' => route('payment.GopayReturn', ['product' => $shopProduct->id]),
+                    //'notification_url' => 'https://www.eshop.cz/notify'
+            ],
+            'lang' => strtoupper(session()->get('language'))
+        ]);
+        if($response->hasSucceed()){
+            //dd($response);
+            /*$realPayment->payment_token = $response->json['id'];
+            $realPayment->payment_url = $response->json['gw_url'];
+            $realPayment->state = $response->json['state'];
+            $realPayment->save();*/
+            return redirect()->away($response->json['gw_url']);
+        }
+        else dd($response);
+        /*else{
+            $realPayment->state = "Creation failed";
+            $realPayment->save();
+            $fail_messages = [
+                __('We are sorry to inform you your purchase wasn´t successful.'),
+                __('Our system was unable to create a valid GoPay session.'),
+                __('Please try again later. If this happens again, please contact support immediately.'),
+                __('Thanks for understanding.')
+            ];
+            session()->put('fail_messages', $fail_messages);
+            return redirect('failed');
+        }*/
+    }
+
+    public function GopayReturn(Request $laravelRequest)
+    {
+        /** @var ShopProduct $shopProduct */
+        dd($laravelRequest);
+        $shopProduct = ShopProduct::findOrFail($laravelRequest->input('product'));
+        /** @var User $user */
+        $user = Auth::user();
+
+        $request = new OrdersCaptureRequest($laravelRequest->input('token'));
+        $request->prefer('return=representation');
+        try {
+            // Call API with your client and get a response for your call
+            $response = $this->getPayPalClient()->execute($request);
+            if ($response->statusCode == 201 || $response->statusCode == 200) {
+
+                //update server limit
+                if (config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE') !== 0) {
+                    if ($user->server_limit < config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE')) {
+                        $user->update(['server_limit' => config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE')]);
+                    }
+                }
+
+                //update User with bought item
+                if ($shopProduct->type=="Credits") {
+                    $user->increment('credits', $shopProduct->quantity);
+                }elseif ($shopProduct->type=="Server slots"){
+                    $user->increment('server_limit', $shopProduct->quantity);
+                }
+
+
+                //update role give Referral-reward
+                if ($user->role == 'member') {
+                    $user->update(['role' => 'client']);
+
+                    if((config("SETTINGS::REFERRAL:MODE") == "commission" || config("SETTINGS::REFERRAL:MODE") == "both") && $shopProduct->type=="Credits"){
+                        if($ref_user = DB::table("user_referrals")->where('registered_user_id', '=', $user->id)->first()){
+                            $ref_user = User::findOrFail($ref_user->referral_id);
+                            $increment = number_format($shopProduct->quantity/100*config("SETTINGS::REFERRAL:PERCENTAGE"),0,"","");
+                            $ref_user->increment('credits', $increment);
+
+                            //LOGS REFERRALS IN THE ACTIVITY LOG
+                            activity()
+                                ->performedOn($user)
+                                ->causedBy($ref_user)
+                                ->log('gained '. $increment.' '.config("SETTINGS::SYSTEM:CREDITS_DISPLAY_NAME").' for commission-referral of '.$user->name.' (ID:'.$user->id.')');
+                        }
+
+                    }
+
+                }
+
+                //store payment
+                $payment = Payment::create([
+                    'user_id' => $user->id,
+                    'payment_id' => $response->result->id,
+                    'payment_method' => 'paypal',
+                    'type' => $shopProduct->type,
+                    'status' => 'paid',
+                    'amount' => $shopProduct->quantity,
+                    'price' => $shopProduct->price,
+                    'tax_value' => $shopProduct->getTaxValue(),
+                    'tax_percent' => $shopProduct->getTaxPercent(),
+                    'total_price' => $shopProduct->getTotalPrice(),
+                    'currency_code' => $shopProduct->currency_code,
+                    'shop_item_product_id' => $shopProduct->id,
+                ]);
+
+
+                event(new UserUpdateCreditsEvent($user));
+
+                //only create invoice if SETTINGS::INVOICE:ENABLED is true
+                if (config('SETTINGS::INVOICE:ENABLED') == 'true') {
+                    $this->createInvoice($user, $payment, 'paid', $shopProduct->currency_code);
+                }
+
+
+                //redirect back to home
+                return redirect()->route('home')->with('success', __('Your credit balance has been increased!'));
+            }
+
+
+            // If call returns body in response, you can get the deserialized version from the result attribute of the response
+            if (env('APP_ENV') == 'local') {
+                dd($response);
+            } else {
+                abort(500);
+            }
+        } catch (HttpException $ex) {
+            if (env('APP_ENV') == 'local') {
+                echo $ex->statusCode;
+                dd($ex->getMessage());
+            } else {
+                abort(422);
+            }
+        }
+    }
+
+    /**
+     * @return PayPalHttpClient
+     */
+    /*protected function getPayPalClient()
+    {
+        $environment = env('APP_ENV') == 'local'
+            ? new SandboxEnvironment($this->getPaypalClientId(), $this->getPaypalClientSecret())
+            : new ProductionEnvironment($this->getPaypalClientId(), $this->getPaypalClientSecret());
+
+        return new PayPalHttpClient($environment);
+    }*/
+
+    /**
+     * @return string
+     */
+    /*protected function getPaypalClientId()
+    {
+        return env('APP_ENV') == 'local' ?  config("SETTINGS::PAYMENTS:PAYPAL:SANDBOX_CLIENT_ID") : config("SETTINGS::PAYMENTS:PAYPAL:CLIENT_ID");
+    }*/
+
+    /**
+     * @return string
+     */
+    /*protected function getPaypalClientSecret()
+    {
+        return env('APP_ENV') == 'local' ? config("SETTINGS::PAYMENTS:PAYPAL:SANDBOX_SECRET") : config("SETTINGS::PAYMENTS:PAYPAL:SECRET");
+    }*/
+
+    /**
+     * @param Request $laravelRequest
+     */
+    /*public function PaypalSuccess(Request $laravelRequest)
+    {*/
+        /** @var ShopProduct $shopProduct */
+        /*$shopProduct = ShopProduct::findOrFail($laravelRequest->input('product'));
+*/
+        /** @var User $user */
+        /*$user = Auth::user();
+
+        $request = new OrdersCaptureRequest($laravelRequest->input('token'));
+        $request->prefer('return=representation');
+        try {
+            // Call API with your client and get a response for your call
+            $response = $this->getPayPalClient()->execute($request);
+            if ($response->statusCode == 201 || $response->statusCode == 200) {
+
+                //update server limit
+                if (config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE') !== 0) {
+                    if ($user->server_limit < config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE')) {
+                        $user->update(['server_limit' => config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE')]);
+                    }
+                }
+
+                //update User with bought item
+                if ($shopProduct->type=="Credits") {
+                    $user->increment('credits', $shopProduct->quantity);
+                }elseif ($shopProduct->type=="Server slots"){
+                    $user->increment('server_limit', $shopProduct->quantity);
+                }
+
+
+                //update role give Referral-reward
+                if ($user->role == 'member') {
+                    $user->update(['role' => 'client']);
+
+                    if((config("SETTINGS::REFERRAL:MODE") == "commission" || config("SETTINGS::REFERRAL:MODE") == "both") && $shopProduct->type=="Credits"){
+                        if($ref_user = DB::table("user_referrals")->where('registered_user_id', '=', $user->id)->first()){
+                            $ref_user = User::findOrFail($ref_user->referral_id);
+                            $increment = number_format($shopProduct->quantity/100*config("SETTINGS::REFERRAL:PERCENTAGE"),0,"","");
+                            $ref_user->increment('credits', $increment);
+
+                            //LOGS REFERRALS IN THE ACTIVITY LOG
+                            activity()
+                                ->performedOn($user)
+                                ->causedBy($ref_user)
+                                ->log('gained '. $increment.' '.config("SETTINGS::SYSTEM:CREDITS_DISPLAY_NAME").' for commission-referral of '.$user->name.' (ID:'.$user->id.')');
+                        }
+
+                    }
+
+                }
+
+                //store payment
+                $payment = Payment::create([
+                    'user_id' => $user->id,
+                    'payment_id' => $response->result->id,
+                    'payment_method' => 'paypal',
+                    'type' => $shopProduct->type,
+                    'status' => 'paid',
+                    'amount' => $shopProduct->quantity,
+                    'price' => $shopProduct->price,
+                    'tax_value' => $shopProduct->getTaxValue(),
+                    'tax_percent' => $shopProduct->getTaxPercent(),
+                    'total_price' => $shopProduct->getTotalPrice(),
+                    'currency_code' => $shopProduct->currency_code,
+                    'shop_item_product_id' => $shopProduct->id,
+                ]);
+
+
+                event(new UserUpdateCreditsEvent($user));
+
+                //only create invoice if SETTINGS::INVOICE:ENABLED is true
+                if (config('SETTINGS::INVOICE:ENABLED') == 'true') {
+                    $this->createInvoice($user, $payment, 'paid', $shopProduct->currency_code);
+                }
+
+
+                //redirect back to home
+                return redirect()->route('home')->with('success', __('Your credit balance has been increased!'));
+            }
+
+
+            // If call returns body in response, you can get the deserialized version from the result attribute of the response
+            if (env('APP_ENV') == 'local') {
+                dd($response);
+            } else {
+                abort(500);
+            }
+        } catch (HttpException $ex) {
+            if (env('APP_ENV') == 'local') {
+                echo $ex->statusCode;
+                dd($ex->getMessage());
+            } else {
+                abort(422);
+            }
+        }
+    }*/
 
 
     protected function createInvoice($user, $payment, $paymentStatus, $currencyCode)

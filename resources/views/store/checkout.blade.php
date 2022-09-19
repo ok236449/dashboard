@@ -97,6 +97,15 @@
                                             </input>
                                         </label>
                                     @endif
+                                    @if (config('SETTINGS::PAYMENTS:GOPAY:TEST_CLIENT_SECRET') || config('SETTINGS::PAYMENTS:GOPAY:CLIENT_SECRET'))
+                                        <label class="ml-5 text-center " for="gopay">
+                                            <img class="mb-3" height="50"
+                                                src="{{ url('/images/gopay_logo.png') }}" /></br>
+                                            <input x-model="paymentMethod" type="radio" id="gopay" value="gopay"
+                                                name="payment_method">
+                                            </input>
+                                        </label>
+                                    @endif
                                 </div>
 
                             </div>
@@ -162,6 +171,9 @@
                             break;
                         case 'stripe':
                             this.paymentRoute = '{{ route('payment.StripePay', $product->id) }}';
+                            break;
+                        case 'gopay':
+                            this.paymentRoute = '{{ route('payment.GopayPay', $product->id) }}';
                             break;
                         default:
                             this.paymentRoute = '{{ route('payment.PaypalPay', $product->id) }}';
