@@ -106,8 +106,9 @@
                                                 <option value="{{ $nest->id }}">{{ $nest->name }}</option>
                                             @endforeach
                                         </select>
-
                                     </div>
+                                    <button @click="setEggs();" type="button" id="setEggsButton" hidden></button>
+                                    <input type="hidden" value="{{$preNest}}" id="presetNest">
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -124,6 +125,8 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <button @click="fetchLocations();" type="button" id="fetchLocationsButton" hidden></button>
+                                    <input type="hidden" value="{{$preEgg}}" id="presetEgg">
                                 </div>
                             </div>
 
@@ -146,6 +149,8 @@
                                     </template>
 
                                 </select>
+                                <button @click="fetchProducts();" type="button" id="fetchProductsButton" hidden></button>
+                                <input type="hidden" value="{{$preNode}}" id="presetNode">
                             </div>
                         </div>
                     </div>
@@ -248,7 +253,7 @@
 
                 //input fields
                 name: null,
-                selectedNest: null,
+                selectedNest: ((document.getElementById('presetNest').value&&{!! $nests !!}.filter(nest => nest.id === parseInt(document.getElementById('presetNest').value)).length==1)?document.getElementById('presetNest').value:null),
                 selectedEgg: null,
                 selectedNode: null,
                 selectedProduct: null,
@@ -267,7 +272,6 @@
                 locations: [],
                 products: [],
 
-
                 /**
                  * @description set available eggs based on the selected nest
                  * @note called whenever a nest is selected
@@ -278,20 +282,23 @@
                     this.fetchedProducts = false;
                     this.locations = [];
                     this.products = [];
-                    this.selectedEgg = 'null';
                     this.selectedNode = 'null';
                     this.selectedProduct = 'null';
 
                     this.eggs = this.eggsSave.filter(egg => egg.nest_id == this.selectedNest)
 
+                    if(document.getElementById('presetEgg').value!=0 && this.eggs.filter(egg => egg.id === parseInt(document.getElementById('presetEgg').value)).length==1)this.selectedEgg = document.getElementById('presetEgg').value;
+                    else { document.getElementById('presetEgg').value = null; this.selectedEgg = 'null'; }
                     //automatically select the first entry if there is only 1
                     if (this.eggs.length === 1) {
                         this.selectedEgg = this.eggs[0].id;
                         await this.fetchLocations();
                         return;
                     }
-
-                    this.updateSelectedObjects()
+                    
+                    //document.getElementById('presetEgg').value = JSON.stringify(this.eggs.filter(egg => egg.id === parseInt(document.getElementById('presetEgg').value)).length);
+                    this.updateSelectedObjects();
+                    if(document.getElementById('presetEgg').value!=0) document.getElementById('fetchLocationsButton').click();
                 },
 
                 setProduct(productId) {
@@ -328,9 +335,12 @@
                         await this.fetchProducts();
                         return;
                     }
+                    if(document.getElementById('presetNode').value!=0 && this.locations.filter(location => location.id === parseInt(document.getElementById('presetNode').value)).length==1)this.selectedNode = document.getElementById('presetNode').value;
+                    else document.getElementById('presetNode').value = null;
 
                     this.loading = false;
-                    this.updateSelectedObjects()
+                    this.updateSelectedObjects();
+                    if(document.getElementById('presetNode').value!=0) document.getElementById('fetchProductsButton').click();
                 },
 
                 /**
@@ -431,6 +441,10 @@
                     return text;
                 }
             }
+        }
+        window.onload = function(){
+            document.getElementById('setEggsButton').click();
+            //if(document.getElementById('presetEgg').value!=0) document.getElementById('fetchLocationsButton').click();
         }
     </script>
 @endsection

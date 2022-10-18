@@ -64,7 +64,7 @@ class ServerController extends Controller
     }
 
     /** Show the form for creating a new resource. */
-    public function create()
+    public function create(Request $request)
     {
         if (!is_null($this->validateConfigurationRules())) return $this->validateConfigurationRules();
 
@@ -95,6 +95,9 @@ class ServerController extends Controller
             'locations'    => $locations,
             'eggs'         => $eggs,
             'user'         => Auth::user(),
+            'preNest'    => $request->nest?$request->nest:null,
+            'preEgg'    => $request->egg?$request->egg:null,
+            'preNode'    => $request->node?$request->node:null
         ]);
     }
 
