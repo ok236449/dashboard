@@ -224,7 +224,7 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td>{{config('SETTINGS::REFERRAL::REWARD')}} {{config('SETTINGS::SYSTEM:CREDITS_DISPLAY_NAME')}}</td>
+                                                <td>až {{config('SETTINGS::REFERRAL::REWARD')}} {{config('SETTINGS::SYSTEM:CREDITS_DISPLAY_NAME')}}</td>
                                                 <td>{{config('SETTINGS::REFERRAL:PERCENTAGE')}}%</td>
                                             </tr>
                                         </tbody>
