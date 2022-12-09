@@ -75,7 +75,7 @@ class ShopProduct extends Model
      */
     public function getTaxValue()
     {
-        return number_format($this->getPriceAfterDiscount() * $this->getTaxPercent() / 100, 2);
+        return $this->price * $this->getTaxPercent() / 100;
     }
 
     /**
@@ -85,6 +85,6 @@ class ShopProduct extends Model
      */
     public function getTotalPrice()
     {
-        return number_format($this->getPriceAfterDiscount() + $this->getTaxValue(), 2);
+        return $this->price + $this->getTaxValue();
     }
 }

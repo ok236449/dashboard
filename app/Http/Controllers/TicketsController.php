@@ -40,10 +40,10 @@ class TicketsController extends Controller
     }
     public function store(Request $request) {
         $this->validate($request, array(
-        	"title" => "required", 
+        	"title" => "required|max:191", 
         	"ticketcategory" => "required", 
         	"priority" => "required", 
-        	"message" => "required")
+        	"message" => "required|max:65535")
     	);
         $ticket = new Ticket(array(
         	"title" => $request->input("title"), 

@@ -123,10 +123,15 @@ class OverViewController extends Controller
         
 
 
-        //Get node information
+        //Get node information and prepare collection
+        $pteroNodeIds = [];
+        foreach(Pterodactyl::getNodes() as $pteroNode){
+            array_push($pteroNodeIds, $pteroNode['attributes']['id']);
+        }
         $nodes = collect();
         foreach($DBnodes = Node::query()->get() as $DBnode){ //gets all node information and prepares the structure
             $nodeId = $DBnode['id'];
+            if(!in_array($nodeId, $pteroNodeIds)) continue; //Check if node exists on pterodactyl too, if not, skip
             $nodes->put($nodeId, collect());
             $nodes[$nodeId]->name = $DBnode['name'];
             $pteroNode = Pterodactyl::getNode($nodeId);
@@ -144,16 +149,16 @@ class OverViewController extends Controller
             $nodeId = $server['attributes']['node'];
             
             if($CPServer = Server::query()->where('pterodactyl_id', $server['attributes']['id'])->first()){
-                $prize = Product::query()->where('id', $CPServer->product_id)->first()->price;
+                $price = Product::query()->where('id', $CPServer->product_id)->first()->price;
                 if (!$CPServer->suspended){
-                    $counters['earnings']->active += $prize;
+                    $counters['earnings']->active += $price;
                     $counters['servers']->active ++;
-                    $nodes[$nodeId]->activeEarnings += $prize;
+                    $nodes[$nodeId]->activeEarnings += $price;
                     $nodes[$nodeId]->activeServers ++;
                 }
-                $counters['earnings']->total += $prize;
+                $counters['earnings']->total += $price;
                 $counters['servers']->total ++;
-                $nodes[$nodeId]->totalEarnings += $prize;
+                $nodes[$nodeId]->totalEarnings += $price;
                 $nodes[$nodeId]->totalServers ++;
             }
         }
@@ -190,6 +195,7 @@ class OverViewController extends Controller
             'counters'       => $counters,
             'nodes'          => $nodes,
             'syncLastUpdate' => $syncLastUpdate,
+            'deletedNodesPresent'=> ($DBnodes->count() != count($pteroNodeIds))?true:false,
             'perPageLimit'   => ($counters['servers']->total != Server::query()->count())?true:false,
             'tickets'        => $tickets
         ]);
