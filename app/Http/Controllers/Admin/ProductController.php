@@ -70,13 +70,17 @@ class ProductController extends Controller
             "databases" => "required|numeric|max:1000000|min:0",
             "backups" => "required|numeric|max:1000000|min:0",
             "allocations" => "required|numeric|max:1000000|min:0",
+            "max_servers_per_user" => "required|numeric|min:0|max:1000000",
             "nodes.*" => "required|exists:nodes,id",
             "eggs.*" => "required|exists:eggs,id",
             "disabled" => "nullable",
+            "on_sale" => "nullable",
+            "custom_ribbon_text" => "nullable|max:255",
         ]);
 
         $disabled = !is_null($request->input('disabled'));
-        $product = Product::create(array_merge($request->all(), ['disabled' => $disabled]));
+        $on_sale = !is_null($request->input('on_sale'));
+        $product = Product::create(array_merge($request->all(), ['disabled' => $disabled, 'on_sale' => $on_sale]));
 
         #link nodes and eggs
         $product->eggs()->attach($request->input('eggs'));
@@ -136,13 +140,17 @@ class ProductController extends Controller
             "databases" => "required|numeric|max:1000000|min:0",
             "backups" => "required|numeric|max:1000000|min:0",
             "allocations" => "required|numeric|max:1000000|min:0",
+            "max_servers_per_user" => "required|numeric|min:0|max:1000000",
             "nodes.*" => "required|exists:nodes,id",
             "eggs.*" => "required|exists:eggs,id",
             "disabled" => "nullable",
+            "on_sale" => "nullable",
+            "custom_ribbon_text" => "nullable|max:255",
         ]);
 
         $disabled = !is_null($request->input('disabled'));
-        $product->update(array_merge($request->all(), ['disabled' => $disabled]));
+        $on_sale = !is_null($request->input('on_sale'));
+        $product->update(array_merge($request->all(), ['disabled' => $disabled, 'on_sale' => $on_sale]));
 
         #link nodes and eggs
         $product->eggs()->detach();

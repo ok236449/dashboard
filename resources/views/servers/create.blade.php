@@ -26,7 +26,7 @@
     <section x-data="serverApp()" class="content">
         <div class="container-xxl">
             <!-- FORM -->
-            <form action="{{ route('servers.store') }}" method="post" class="row justify-content-center">
+            <form action="{{ route('servers.store') }}" method="post" class="row justify-content-center" id="form">
                 @csrf
                 <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
                     <div class="card">
@@ -159,9 +159,12 @@
 
                 <div class="w-100"></div>
                 <div class="col" x-show="selectedNode != null">
-                    <div class="row mt-4 justify-content-center">
+                    <div class="row mt-4 justify-content-center" id="productSection">
                         <template x-for="product in products" :key="product.id">
-                            <div class="card  col-xl-3 col-lg-3 col-md-4 col-sm-10 mr-2 ml-2 ">
+                            <div class="card  col-xl-3 col-lg-3 col-md-4 col-sm-10 mr-2 ml-2" :class="{ 'ribbon-border': product.on_sale }">
+                                <div class="ribbon" x-show="product.on_sale">
+                                    <span x-text="product.custom_ribbon_text!=null?product.custom_ribbon_text:'{{__("On sale")}}!'"></span>
+                                </div>
                                 <div class="card-body d-flex  flex-column">
                                     <h4 class="card-title" x-text="product.name"></h4>
                                     <div class="mt-2">
@@ -224,15 +227,18 @@
                                         </div>
                                     </div>
                                     <button type="submit" x-model="selectedProduct" name="product"
-                                        :disabled="product.minimum_credits > user.credits||product.doesNotFit == true"
-                                        :class="product.minimum_credits > user.credits ? 'disabled' : ''"
+                                        :disabled="product.minimum_credits > user.credits||product.doesNotFit == true||product.max_servers_per_user_reached == true"
+                                        :class="(product.minimum_credits > user.credits||product.doesNotFit == true||product.max_servers_per_user_reached == true) ? 'disabled' : ''"
                                         class="btn btn-primary btn-block mt-2" @click="setProduct(product.id)"
-                                        x-text=" product.doesNotFit == true? '{{ __('Server can´t fit on this node') }}' : (product.minimum_credits > user.credits ? '{{ __('Not enough') }} {{ CREDITS_DISPLAY_NAME }}!' : '{{ __('Create server') }}')">
+                                        x-text=" product.doesNotFit == true? '{{ __('Server can´t fit on this node') }}' : (product.minimum_credits > user.credits ? '{{ __('Not enough') }} {{ CREDITS_DISPLAY_NAME }}!' : (product.max_servers_per_user_reached?('{{__('Limit of')}} ' + product.max_servers_per_user + ' {{__('servers reached')}}'):'{{ __('Create server') }}'))">
                                     </button>
                                 </div>
                             </div>
                     </div>
                     </template>
+                </div>
+                <div id="creatingInProcessSection" style="display: none; margin: 0 auto;">
+                    <span style="color:green; font-size:26px">{{__('Creating your server, please wait')}}.</span>
                 </div>
         </div>
 
@@ -303,11 +309,16 @@
                 },
 
                 setProduct(productId) {
-                    if (!productId) return
+                    if (!productId) return;
+                    
+                    //hide all products and show waiting text
+                    if(document.getElementById('form').reportValidity()){
+                        document.getElementById('productSection').style.display = "none";
+                        document.getElementById('creatingInProcessSection').style.display = "table";
+                    }
 
                     this.selectedProduct = productId;
                     this.updateSelectedObjects();
-
                 },
 
                 /**

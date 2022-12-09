@@ -460,5 +460,9 @@
     "tr": "Turečtina",
     "ru": "Ruština",
     "sv": "Švédština",
-    "sk": "Slovensky"
+    "sk": "Slovensky",
+    "On sale": "Ve slevě",
+    "Limit of": "Dosažen limit",
+    "servers reached": "serverů",
+    "Creating your server, please wait": "Vytváření vašeho serveru, prosím čekejte"
 }
