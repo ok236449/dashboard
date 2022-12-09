@@ -57,6 +57,14 @@
                                                 data-content="{{__('Will hide this option from being selected')}}"
                                                 class="fas fa-info-circle"></i></label>
                                     </div>
+                                    <div class="custom-control custom-switch mr-3">
+                                        <input type="checkbox" @if($product->on_sale) checked @endif name="on_sale"
+                                               class="custom-control-input custom-control-input-danger" id="switch2">
+                                        <label class="custom-control-label" for="switch2">{{__('On sale')}} <i
+                                                data-toggle="popover" data-trigger="hover"
+                                                data-content="{{__('The product will be highlited')}}"
+                                                class="fas fa-info-circle"></i></label>
+                                    </div>
                                 </div>
 
                                 <div class="row">
@@ -117,6 +125,19 @@
                                                    class="form-control @error('swap') is-invalid @enderror"
                                                    required="required">
                                             @error('swap')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                            @enderror
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="allocations">{{__('Allocations')}}</label>
+                                            <input value="{{ $product->allocations }}" id="allocations"
+                                                   name="allocations" type="number"
+                                                   class="form-control @error('allocations') is-invalid @enderror"
+                                                   required="required">
+                                            @error('allocations')
                                             <div class="invalid-feedback">
                                                 {{ $message }}
                                             </div>
@@ -203,12 +224,28 @@
                                             @enderror
                                         </div>
                                         <div class="form-group">
-                                            <label for="allocations">{{__('Allocations')}}</label>
-                                            <input value="{{ $product->allocations }}" id="allocations"
-                                                   name="allocations" type="number"
-                                                   class="form-control @error('allocations') is-invalid @enderror"
+                                            <label for="max_servers_per_user">{{__('Max servers per user')}} <i
+                                                data-toggle="popover" data-trigger="hover"
+                                                data-content="{{__('Setting to 0 will allow infinite number of servers')}}"
+                                                class="fas fa-info-circle"></i></label>
+                                            <input value="{{$product->max_servers_per_user ?? old('max_servers_per_user') ?? 0}}"
+                                                   id="max_servers_per_user" name="max_servers_per_user"
+                                                   type="number"
+                                                   class="form-control @error('max_servers_per_user') is-invalid @enderror"
                                                    required="required">
-                                            @error('allocations')
+                                            @error('max_servers_per_user')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                            @enderror
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="custom_ribbon_text">{{__('Custom text on sale ribbon')}}</label>
+                                            <input value="{{$product->custom_ribbon_text ?? old('custom_ribbon_text') ?? ""}}"
+                                                   id="custom_ribbon_text" name="custom_ribbon_text"
+                                                   type="text"
+                                                   class="form-control @error('custom_ribbon_text') is-invalid @enderror">
+                                            @error('custom_ribbon_text')
                                             <div class="invalid-feedback">
                                                 {{ $message }}
                                             </div>

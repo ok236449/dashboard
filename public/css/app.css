@@ -20,6 +20,41 @@
     display: flex;
     align-items: center;
 }
+
+/* Custom on sale span */
+.ribbon {
+    margin: 100px auto;
+    width: 220px;
+    height: 110px;
+    display: block;
+    position: absolute;
+    overflow: hidden;
+    right: 0px;
+    top: -100px;
+  }
+  .ribbon span {
+    width: 220px;
+    height: 24px;
+    top: 20px;
+    right: -50px;
+    position: absolute;
+    display: block;
+    background: #FF0000;
+    color: #333;
+    font-size: 18px;
+    color:white;
+    text-align: center;
+    line-height: 24px;
+    transform: rotate(25deg);
+    -webkit-transform: rotate(25deg);
+    -ms-transform: rotate(25deg);
+  }
+.ribbon-border {
+ border: 2px !important;
+ border-color:rgb(255, 187, 0) !important;
+ border-style: solid !important;
+}
+
 /*!
  *   AdminLTE v3.1.0-rc
  *   Author: Colorlib

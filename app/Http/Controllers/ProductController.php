@@ -7,10 +7,12 @@ use App\Models\Egg;
 use App\Models\Location;
 use App\Models\Node;
 use App\Models\Product;
+use App\Models\Server;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -105,6 +107,7 @@ class ProductController extends Controller
         $pteroNode = Pterodactyl::getNode($node->id);
         foreach($products as $key => $product){
             if($product->memory>($pteroNode['memory']*($pteroNode['memory_overallocate']+100)/100)-$pteroNode['allocated_resources']['memory']||$product->disk>($pteroNode['disk']*($pteroNode['disk_overallocate']+100)/100)-$pteroNode['allocated_resources']['disk']) $product->doesNotFit = true;
+            if($product->max_servers_per_user>0&&Server::where('user_id', Auth::user()->id)->where('product_id', $product->id)->count()>=$product->max_servers_per_user) $product->max_servers_per_user_reached = true;
         }
 
         return $products;
