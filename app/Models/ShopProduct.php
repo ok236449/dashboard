@@ -65,7 +65,7 @@ class ShopProduct extends Model
 
     public function getPriceAfterDiscount()
     {
-        return number_format($this->price - ($this->price * PartnerDiscount::getDiscount() / 100), 2);
+        return $this->price - ($this->price * PartnerDiscount::getDiscount() / 100);
     }
 
     /**
