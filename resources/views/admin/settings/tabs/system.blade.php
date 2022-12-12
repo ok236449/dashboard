@@ -223,6 +223,23 @@
                     </div>
                 </div>
 
+                <div class="row mb-2">
+                    <div class="col text-center">
+                        <h1>{{ __('Player log') }}</h1>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="custom-control mb-3 p-0">
+                        <div class="col m-0 p-0 d-flex justify-content-between align-items-center">
+                            <label for="player-log-interval">{{ __('How often to log players in minutes') }}</label>
+                            </i>
+                        </div>
+                        <input x-model="player-log-interval" id="player-log-interval" name="player-log-interval" type="number"
+                            value="{{ config('SETTINGS::SYSTEM:PLAYER_LOG_INTERVAL') }}"
+                            class="form-control @error('player-log-interval') is-invalid @enderror" required min="1">
+                    </div>
+                </div>
 
             </div>
 

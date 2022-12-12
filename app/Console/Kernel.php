@@ -2,6 +2,9 @@
 
 namespace App\Console;
 
+use App\Classes\Pterodactyl;
+use App\Models\Product;
+use App\Models\Server;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Storage;
@@ -31,6 +34,8 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             Storage::disk('logs')->put('cron.log' , "Last activity from cronjobs - " . now());
         })->everyMinute();
+
+        $schedule->command('playerLogger:log')->everyMinute();
     }
 
     /**

@@ -198,6 +198,18 @@ class Pterodactyl
         return $response->json();
     }
 
+    public static function getNetworking($serverId)
+    {
+        try {
+            $response = self::clientAdmin()->get("/client/servers/{$serverId}/network/allocations");
+        } catch (Exception $e) {
+            throw self::getException($e->getMessage());
+        }
+        if ($response->failed()) throw self::getException("Failed to get networking information from pterodactyl - ", $response->status());
+
+        return $response->json();
+    }
+
     /**
      * @param String $route
      * @return string
