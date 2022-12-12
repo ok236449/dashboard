@@ -1,11 +1,9 @@
 <?php
 
 use App\Http\Controllers\Api\NotificationController;
-use App\Http\Controllers\Api\Pricing;
 use App\Http\Controllers\Api\ServerController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VoucherController;
-use App\Models\PlayerLog;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -40,6 +38,4 @@ Route::middleware('api.token')->group(function () {
     Route::delete('/notifications/{user}/{notification}', [NotificationController::class, 'deleteOne']);
 
     //Custom routes
-    Route::resource('players', PlayerLog::class);
-    Route::resource('pricing', Pricing::class);
 });

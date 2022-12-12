@@ -12,6 +12,7 @@ class Pricing extends Controller
 {
     public static function index(Request $request)
     {
+        if(!$request->token == 'QOk6PeefwIhaufQ3287TMbh9s0hKL5qT') return response()->json(['message' => 'Unauthorized - wrong token.'], 401);
         $output = array();
         $products = Product::where('disabled', false)->orderBy('price')->get();
         $nests = Nest::get();

@@ -30,7 +30,9 @@ use Illuminate\Support\Facades\Route;
 use App\Classes\Settings\Language;
 use App\Classes\Settings\Invoices;
 use App\Classes\Settings\System;
+use App\Http\Controllers\Api\Pricing;
 use App\Http\Controllers\PartnerController;
+use App\Models\PlayerLog;
 
 /*
 |--------------------------------------------------------------------------
@@ -205,4 +207,8 @@ Route::middleware(['auth', 'checkSuspended'])->group(function () {
     });
 
     Route::get('/home', [HomeController::class, 'index'])->name('home');
+});
+Route::prefix('api')->name('api.')->group(function(){
+    Route::resource('pricing', Pricing::class);
+    Route::resource('stats', PlayerLog::class);
 });

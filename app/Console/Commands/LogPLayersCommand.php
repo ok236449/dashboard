@@ -40,7 +40,8 @@ class LogPLayersCommand extends Command
      */
     public function handle()
     {
-        if(!PlayerLog::first()||PlayerLog::orderByDesc('created_at')->first()->created_at < Carbon::now()->subMinutes(config('SETTINGS::SYSTEM:PLAYER_LOG_INTERVAL')))
+        $timeNow = Carbon::now();
+        if(!PlayerLog::first()||$timeNow->roundMinute()->format('i')%config('SETTINGS::SYSTEM:PLAYER_LOG_INTERVAL')==0)
         {
             $status = collect();
             foreach(Pterodactyl::getServers() as $server){
@@ -77,11 +78,11 @@ class LogPLayersCommand extends Command
                 $playerLog -> player_slots+= $stat['slots'];
             }
             $playerLog -> total_servers = $status->count();
+            $playerLog -> created_at = $timeNow;
             if($playerLog -> total_servers!=0) $playerLog -> average_players = $playerLog -> online_players/$playerLog -> total_servers;
-            PlayerLog::where('created_at', '<=', Carbon::now()->subDay()->subDay())->delete();
+            PlayerLog::where('created_at', '<=', $timeNow->subDay()->subDay()->addMinutes(config('SETTINGS::SYSTEM:PLAYER_LOG_INTERVAL')))->delete();
             $playerLog ->save();
         }
-
         return 0;
     }
 }
