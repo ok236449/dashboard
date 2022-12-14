@@ -26,6 +26,7 @@ class PlayerLog extends Model
         $todayStart = Carbon::now()->startOfDay();
         $playSeconds = 0;
         $playHours = 0;
+        $players = 0;
 
         $logs = PlayerLog::orderBy('created_at')->get();
         foreach($logs as $key => $log)
@@ -40,6 +41,7 @@ class PlayerLog extends Model
                 $timeDifference = Carbon::createFromTimeString($nextLog->created_at)->unix()-$time->unix();
                 $playSeconds += ($timeDifference);
                 $playHours += ($timeDifference) * $log['online_players'] / 3600;
+                $players += $log['online_players'];
             }
         }
 
@@ -50,6 +52,7 @@ class PlayerLog extends Model
             ],
             'serverCount' => Server::count(),
             'userCount' => User::count(),
+            'averagePlayerCount' => ($logs->count()-1)<=0?"?":round($players/($logs->count()-1), 2),
             'playHoursPerDay' => $playSeconds==0?"?":round(86400/($playSeconds)*$playHours, 2)
         ];
     }
