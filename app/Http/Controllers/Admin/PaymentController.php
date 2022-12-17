@@ -678,7 +678,7 @@ class PaymentController extends Controller
             'callback' => [
                     //"cancel_url" => route('payment.Cancel'),
                     'return_url' => route('payment.GopayReturn', ['product' => $shopProduct->id]),
-                    //'notification_url' => 'https://www.eshop.cz/notify'
+                    'notification_url' => route('payment.GopayReturn', ['product' => $shopProduct->id])
             ],
             'lang' => strtoupper(session()->get('language'))
         ]);
@@ -705,20 +705,24 @@ class PaymentController extends Controller
         }*/
     }
 
-    public function GopayReturn(Request $laravelRequest)
+    public function GopayReturn(Request $request)
     {
         /** @var ShopProduct $shopProduct */
-        dd($laravelRequest);
-        $shopProduct = ShopProduct::findOrFail($laravelRequest->input('product'));
+        $gopay = $this->gopay();
+        $shopProduct = ShopProduct::findOrFail($request->input('product'));
         /** @var User $user */
         $user = Auth::user();
 
-        $request = new OrdersCaptureRequest($laravelRequest->input('token'));
-        $request->prefer('return=representation');
         try {
             // Call API with your client and get a response for your call
-            $response = $this->getPayPalClient()->execute($request);
-            if ($response->statusCode == 201 || $response->statusCode == 200) {
+
+            $paymentStatus = $gopay->getStatus($request->id);
+
+            //get DB entry of this payment ID if existing
+            $paymentDbEntry = Payment::where('payment_id', $request->id)->count();
+
+            // check if payment is 100% completed and payment does not exist in db already
+            if ($paymentStatus->json['state'] == "PAID" && $paymentDbEntry == 0) {
 
                 //update server limit
                 if (config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE') !== 0) {
@@ -759,8 +763,8 @@ class PaymentController extends Controller
                 //store payment
                 $payment = Payment::create([
                     'user_id' => $user->id,
-                    'payment_id' => $response->result->id,
-                    'payment_method' => 'paypal',
+                    'payment_id' => $request->id,
+                    'payment_method' => 'gopay',
                     'type' => $shopProduct->type,
                     'status' => 'paid',
                     'amount' => $shopProduct->quantity,
@@ -784,14 +788,12 @@ class PaymentController extends Controller
                 //redirect back to home
                 return redirect()->route('home')->with('success', __('Your credit balance has been increased!'));
             }
-
-
-            // If call returns body in response, you can get the deserialized version from the result attribute of the response
-            if (env('APP_ENV') == 'local') {
-                dd($response);
-            } else {
-                abort(500);
+            else {
+                //redirect back to home
+                return redirect()->route('home')->with('success', __('Your payment has been canceled!'));
             }
+
+
         } catch (HttpException $ex) {
             if (env('APP_ENV') == 'local') {
                 echo $ex->statusCode;
