@@ -19,7 +19,7 @@ class PlayerLog extends Model
 
     public static function index(Request $request)
     {
-        if(!($request->token == 'QOk6PeefwIhaufQ3287TMbh9s0hKL5qT')) return response()->json(['message' => 'Unauthorized - wrong token.'], 401);
+        if(!($request->token == env('HOME_API_KEY'))) return response()->json(['message' => 'Unauthorized - wrong token.'], 401);
 
         $data = array();
         $labels = array();

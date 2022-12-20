@@ -209,6 +209,7 @@ Route::middleware(['auth', 'checkSuspended'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 });
 Route::prefix('api')->name('api.')->group(function(){
-    Route::resource('pricing', Pricing::class);
-    Route::resource('stats', PlayerLog::class);
+    Route::get('pricing', [Pricing::class, 'index']);
+    Route::get('favourites', [Pricing::class, 'favourites']);
+    Route::get('stats', [PlayerLog::class, 'index']);
 });
