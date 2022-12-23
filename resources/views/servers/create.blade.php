@@ -347,8 +347,9 @@
                         await this.fetchProducts();
                         return;
                     }
-                    if(document.getElementById('presetNode').value!=0 && this.locations.filter(location => location.id === parseInt(document.getElementById('presetNode').value)).length==1)this.selectedNode = document.getElementById('presetNode').value;
-                    else document.getElementById('presetNode').value = null;
+                    //if(document.getElementById('presetNode').value!=0 && this.locations.filter(location => location.id == parseInt(document.getElementById('presetNode').value)).length==1)this.selectedNode = document.getElementById('presetNode').value;
+                    //else document.getElementById('presetNode').value = null;
+                    if(document.getElementById('presetNode').value!=0) this.selectedNode = document.getElementById('presetNode').value;
 
                     this.loading = false;
                     this.updateSelectedObjects();
