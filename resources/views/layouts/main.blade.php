@@ -427,6 +427,7 @@
         </div>
         <!-- /.content-wrapper -->
         <footer class="main-footer">
+            <a href="https://home.vagonbrei.eu/cenik#kontakt" style="float: right;">Kontakt</a>
             <strong>Copyright &copy; 2021-{{ date('Y') }} <a
                     href="{{ url('/') }}">{{ env('APP_NAME', 'Laravel') }}</a>.</strong>
             All rights
