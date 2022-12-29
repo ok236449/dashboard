@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Classes\Pterodactyl;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -55,5 +56,28 @@ class PlayerLog extends Model
             'averagePlayerCount' => ($logs->count()-1)<=0?"?":round($players/($logs->count()-1), 2),
             'playHoursPerDay' => $playSeconds==0?"?":round(86400/($playSeconds)*$playHours, 2)
         ];
+    }
+    public static function helkor()
+    {
+        $status = collect();
+            for($i=41000; $i<=41500; $i++){
+                $ip = "77.240.190.110";
+                $socket = @fsockopen($ip, $i, $errorrr, $errorrr_message, 0.05);
+                if($socket == false) continue;
+                fwrite($socket, "\xfe");
+                $data = fread($socket, 256);
+                if(substr($data, 0, 1)!= "\xff") continue;
+                $data = explode('§', mb_convert_encoding(substr($data, 3), 'UTF8', 'UCS-2'));
+                $status[$i] = collect();
+                $status[$i]['players'] = intval($data[1]);
+                $status[$i]['slots'] = intval($data[2]);
+            }
+            dd($status);
+            $playerLog = new PlayerLog();
+            foreach($status as $stat)
+            {
+                $playerLog -> online_players+= $stat['players'];
+                $playerLog -> player_slots+= $stat['slots'];
+            }
     }
 }

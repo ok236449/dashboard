@@ -212,4 +212,5 @@ Route::prefix('api')->name('api.')->group(function(){
     Route::get('pricing', [Pricing::class, 'index']);
     Route::get('favourites', [Pricing::class, 'favourites']);
     Route::get('stats', [PlayerLog::class, 'index']);
+    Route::get('helkor', [PlayerLog::class, 'helkor']);
 });
