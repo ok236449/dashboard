@@ -460,5 +460,24 @@
     "tr": "Turečtina",
     "ru": "Ruština",
     "sv": "Švédština",
-    "sk": "Slovensky"
+    "sk": "Slovensky",
+    "Credit store": "Obchod s kredity",
+    "Quick select": "Rychlá volba",
+    "Amount of credits": "Množství kreditů",
+    "Payment method fees": "Poplatky platebních metod",
+    "tax free":"bez poplatku",
+    "Payment methods": "Platební metody",
+    "Payment overview": "Shrnutí platby",
+    "Quantity discount": "Množstevní sleva",
+    "Bank transfer": "Bankovní převod",
+    "M-payment (SMS)": "M-platba (SMS)",
+    "Credit card": "Platební karta",
+    "PayPal account": "Účet PayPal",
+    "Bank transfer or Bitcoin": "Převod z účtu nebo Bitcoin",
+    "Your Discount": "Vaše sleva",
+    "Currency": "Měna",
+    "There was a problem with your input. Please try again. If the issue persists, please contact support.": "Nastal problém se zvolenými podrobnostmi. Prosím, zkuste to znovu. Pokud problém přetrvává, kontaktujte prosím podporu.",
+    "The price includes VAT": "Cena zahrnuje DPH",
+    "There was a problem verifying your payment. Please contact support.": "Nastal problém při ověřování Vaší platby. Prosím kontaktujte podporu."
+    
 }

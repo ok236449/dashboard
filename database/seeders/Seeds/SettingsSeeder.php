@@ -144,6 +144,13 @@ class SettingsSeeder extends Seeder
             'type'  => 'integer',
             'description'  => 'The %-value of tax that will be added to the product price on checkout'
         ]);
+        Settings::firstOrCreate([
+            'key'   => 'SETTINGS::PAYMENTS:EUR_RATIO',
+        ], [
+            'value' => '24',
+            'type'  => 'integer',
+            'description'  => '1€ = ?Kč'
+        ]);
         //Invoices enabled
         Settings::firstOrCreate([
             'key'   => 'SETTINGS::INVOICE:ENABLED',

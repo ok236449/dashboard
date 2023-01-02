@@ -204,6 +204,19 @@
                             class="form-control @error('sales-tax') is-invalid @enderror">
                     </div>
                 </div>
+                <div class="form-group mb-3">
+                    <div class="custom-control p-0">
+                        <div class="col m-0 p-0 d-flex justify-content-between align-items-center">
+                            <label for="eur_ratio">{{ __('EUR to CZK ratio') }}:</label>
+                            <i data-toggle="popover" data-trigger="hover" data-html="true"
+                                data-content="1€ = ?Kč"
+                                class="fas fa-info-circle"></i>
+                        </div>
+                        <input x-model="eur_ratio" id="eur_ratio" name="eur_ratio" type="number" step=".01"
+                            value="{{ config('SETTINGS::PAYMENTS:EUR_RATIO') }}"
+                            class="form-control @error('eur_ratio') is-invalid @enderror">
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row">

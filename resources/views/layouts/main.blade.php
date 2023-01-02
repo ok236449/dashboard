@@ -305,13 +305,6 @@
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ route('admin.store.index') }}" class="nav-link @if (Request::routeIs('admin.store.*')) active @endif">
-                                    <i class="nav-icon fas fa-shopping-basket"></i>
-                                    <p>{{ __('Store') }}</p>
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
                                 <a href="{{ route('admin.vouchers.index') }}"
                                     class="nav-link @if (Request::routeIs('admin.vouchers.*')) active @endif">
                                     <i class="nav-icon fas fa-money-check-alt"></i>

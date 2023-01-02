@@ -52,6 +52,7 @@ class Payments
             "SETTINGS::PAYMENTS:STRIPE:ENDPOINT_TEST_SECRET" => "stripe-endpoint-test-secret",
             "SETTINGS::PAYMENTS:STRIPE:METHODS" => "stripe-methods",
             "SETTINGS::PAYMENTS:SALES_TAX" => "sales-tax",
+            "SETTINGS::PAYMENTS:EUR_RATIO" => "eur_ratio",
             "SETTINGS::PAYMENTS:GOPAY:GOID" => "gopay-goid",
             "SETTINGS::PAYMENTS:GOPAY:CLIENT_ID" => "gopay-client-id",
             "SETTINGS::PAYMENTS:GOPAY:CLIENT_SECRET" => "gopay-client-secret",
