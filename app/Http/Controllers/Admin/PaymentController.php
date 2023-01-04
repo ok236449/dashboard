@@ -62,6 +62,7 @@ class PaymentController extends Controller
             ($request->payment_method=="gopay"&&$request->currency=="eur"&&$request->gopay_payment_method=="sms")||
             $this->AmountTooSmall($request->credit_amount, $request->currency, $request->payment_method, $request->gopay_payment_method)
         ) return redirect()->route('home')->with('error', __('There was a problem with your input. Please try again. If the issue persists, please contact support.'));
+        if($request->payment_method=="gopay"&&$request->gopay_payment_method=="paysafecard") return redirect()->route('store.index')->with('error', __('Sorry, this payment method isn´t available yet. Please choose a different one.'));
 
         if($request->payment_method=="paypal") return $this->PaypalPay($request->credit_amount, $request->currency);
         elseif($request->payment_method=="stripe") return $this->StripePay($request->credit_amount, $request->currency);

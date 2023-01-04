@@ -171,17 +171,14 @@
                                                                         <label for="gopay_payment_method_bank_bitcoin" style="display: inline">{{__('Bank transfer or Bitcoin')}}</label>
                                                                     </div>
                                                                     <div>
-                                                                        <input style="display: inline;" type="radio" value="paysafecard" name="gopay_payment_method" id="gopay_payment_method_paysafecard" oninput="changePaymentMethod();">
-                                                                        <label for="gopay_payment_method_paysafecard" style="display: inline">{{__('PaySafeCard')}}</label>
+                                                                        <input disabled style="display: inline;" type="radio" value="paysafecard" name="gopay_payment_method" id="gopay_payment_method_paysafecard" oninput="changePaymentMethod();">
+                                                                        <label for="gopay_payment_method_paysafecard" style="display: inline"><s>{{__('PaySafeCard')}}</s></label>
                                                                     </div>
                                                                     <div class="mb-1">
                                                                         <input style="display: inline" type="radio" value="sms" name="gopay_payment_method" id="gopay_payment_method_sms" oninput="changePaymentMethod();">
                                                                         <label for="gopay_payment_method_sms" style="display: inline">{{__('M-payment (SMS)')}}</label>
                                                                     </div>
                                                                 </div>
-                                                                
-                                                                
-                                                                
                                                             </div>
                                                         @endif
                                                         
@@ -246,13 +243,11 @@
                     </form>
                 </div>
             </div>
-
         </div>
     </section>
     <!-- END CONTENT -->
 
     <script>
-        //var taxes = ["czk": ["paypal": ["fixed": 10, "percent": 3.4]]];
         const taxes = {
             czk: {
                 symbol: "Kč",
