@@ -144,6 +144,13 @@ class SettingsSeeder extends Seeder
             'type'  => 'integer',
             'description'  => 'The %-value of tax that will be added to the product price on checkout'
         ]);
+        Settings::firstOrCreate([
+            'key'   => 'SETTINGS::PAYMENTS:EUR_RATIO',
+        ], [
+            'value' => '24',
+            'type'  => 'integer',
+            'description'  => '1€ = ?Kč'
+        ]);
         //Invoices enabled
         Settings::firstOrCreate([
             'key'   => 'SETTINGS::INVOICE:ENABLED',
@@ -316,6 +323,48 @@ class SettingsSeeder extends Seeder
             'value' => env('STRIPE_METHODS', 'card,sepa_debit'),
             'type'  => 'string',
             'description'  => 'Comma seperated list of payment methods that are enabled (https://stripe.com/docs/payments/payment-methods/integration-options)'
+        ]);
+        Settings::firstOrCreate([
+            'key'   => 'SETTINGS::PAYMENTS:GOPAY:GOID',
+        ], [
+            'value' => env('GOPAY_GOID', ''),
+            'type'  => 'string',
+            'description'  => 'Your GoPay GOID'
+        ]);
+        Settings::firstOrCreate([
+            'key'   => 'SETTINGS::PAYMENTS:GOPAY:CLIENT_ID',
+        ], [
+            'value' => env('GOPAY_CLIENT_ID', ''),
+            'type'  => 'string',
+            'description'  => 'Your GoPay client ID'
+        ]);
+        Settings::firstOrCreate([
+            'key'   => 'SETTINGS::PAYMENTS:GOPAY:CLIENT_SECRET',
+        ], [
+            'value' => env('GOPAY_CLIENT_SECRET', ''),
+            'type'  => 'string',
+            'description'  => 'Your GoPay client secret'
+        ]);
+        Settings::firstOrCreate([
+            'key'   => 'SETTINGS::PAYMENTS:GOPAY:TEST_CLIENT_ID',
+        ], [
+            'value' => env('GOPAY_TEST_CLIENT_ID', ''),
+            'type'  => 'string',
+            'description'  => 'Your GoPay test client ID'
+        ]);
+        Settings::firstOrCreate([
+            'key'   => 'SETTINGS::PAYMENTS:GOPAY:TEST_CLIENT_SECRET',
+        ], [
+            'value' => env('GOPAY_TEST_CLIENT_SECRET', ''),
+            'type'  => 'string',
+            'description'  => 'Your GoPay test client secret'
+        ]);
+        Settings::firstOrCreate([
+            'key'   => 'SETTINGS::PAYMENTS:GOPAY:METHODS',
+        ], [
+            'value' => env('GOPAY_PAYMENT_METHODS', ''),
+            'type'  => 'string',
+            'description'  => 'Your GoPay payment method list'
         ]);
 
         Settings::firstOrCreate([

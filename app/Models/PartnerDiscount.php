@@ -18,12 +18,12 @@ class PartnerDiscount extends Model
         'referral_system_commission'
     ];
 
-    public static function getDiscount()
+    public static function getDiscount($user_id = 0)
     {
-        if($partnerDiscount = PartnerDiscount::where('user_id', Auth::user()->id)->first()){
+        if($partnerDiscount = PartnerDiscount::where('user_id', $user_id?$user_id:Auth::user()->id)->first()){
             return $partnerDiscount->partner_discount;
         }
-        else if($ref_user = DB::table("user_referrals")->where('registered_user_id', '=', Auth::user()->id)->first()){
+        else if($ref_user = DB::table("user_referrals")->where('registered_user_id', '=', $user_id?$user_id:Auth::user()->id)->first()){
             if($partnerDiscount = PartnerDiscount::where('user_id', $ref_user->referral_id)->first()){
                 return $partnerDiscount->registered_user_discount;
             }

@@ -97,6 +97,15 @@
                                             </input>
                                         </label>
                                     @endif
+                                    @if (config('SETTINGS::PAYMENTS:GOPAY:TEST_CLIENT_SECRET') || config('SETTINGS::PAYMENTS:GOPAY:CLIENT_SECRET'))
+                                        <label class="ml-5 text-center " for="gopay">
+                                            <img class="mb-3" height="50"
+                                                src="{{ url('/images/gopay_logo.png') }}" /></br>
+                                            <input x-model="paymentMethod" type="radio" id="gopay" value="gopay"
+                                                name="payment_method">
+                                            </input>
+                                        </label>
+                                    @endif
                                 </div>
 
                             </div>
@@ -146,6 +155,20 @@
                     <!-- /.invoice -->
                 </div><!-- /.col -->
             </div><!-- /.row -->
+            <div class="justify-content-center" style="text-align: center; padding-bottom:50px; padding-top:16px">
+                <img src="{{ asset('images/Stripe.png') }}" width="80" alt="Stripe">
+                <img src="{{ asset('images/PayPal.png') }}" width="100" alt="PayPal">
+                <img src="{{ asset('images/Bitcoin.png') }}" width="100" style="margin-top: -4px; margin-left: 4px" alt="Bitcoin">
+                <img src="{{ asset('images/Visa.png') }}" alt="VISA">
+                <img src="{{ asset('images/Visa Electron.png') }}" alt="VISA Electron">
+                <img src="{{ asset('images/Verified by Visa.png') }}" alt="Verified by Visa">
+                <img src="{{ asset('images/gopay_logo.png') }}" alt="gopay_bannery-bile">
+                <img src="{{ asset('images/Mastercard.png') }}" alt="Mastercard">
+                <img src="{{ asset('images/MasterCard Secure Code.png') }}" alt="MasterCard Secure Code">
+                <img src="{{ asset('images/MasterCard Electronic.png') }}" alt="MasterCard Electronic">
+                <img src="{{ asset('images/Maestro.png') }}" alt="Maestro">
+                <img src="{{ asset('images/Paysafecard.png') }}" width="160" alt="Paysafecard">
+            </div>
         </div>
     </section>
     <!-- END CONTENT -->
@@ -163,6 +186,9 @@
                             break;
                         case 'stripe':
                             this.paymentRoute = '{{ route('payment.StripePay', $product->id) }}';
+                            break;
+                        case 'gopay':
+                            this.paymentRoute = '{{ route('payment.GopayPay', $product->id) }}';
                             break;
                         default:
                             this.paymentRoute = '{{ route('payment.PaypalPay', $product->id) }}';
