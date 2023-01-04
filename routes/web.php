@@ -7,7 +7,6 @@ use App\Http\Controllers\Admin\ApplicationApiController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\OverViewController;
 use App\Http\Controllers\Admin\PaymentController;
-use App\Http\Controllers\Admin\ShopProductController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ServerController as AdminServerController;
 use App\Http\Controllers\Admin\SettingsController;
@@ -80,12 +79,14 @@ Route::middleware(['auth', 'checkSuspended'])->group(function () {
     Route::get('/products/products/{egg?}/{node?}', [FrontProductController::class, 'getProductsBasedOnNode'])->name('products.products.node');
 
     #payments
-    Route::get('checkout/{shopProduct}', [PaymentController::class, 'checkOut'])->name('checkout');
-    Route::get('payment/PaypalPay/{shopProduct}', [PaymentController::class, 'PaypalPay'])->name('payment.PaypalPay');
+    Route::get('payment/PaypalPay', [PaymentController::class, 'PaypalPay'])->name('payment.PaypalPay');
     Route::get('payment/PaypalSuccess', [PaymentController::class, 'PaypalSuccess'])->name('payment.PaypalSuccess');
-    Route::get('payment/StripePay/{shopProduct}', [PaymentController::class, 'StripePay'])->name('payment.StripePay');
+    Route::get('payment/StripePay', [PaymentController::class, 'StripePay'])->name('payment.StripePay');
     Route::get('payment/StripeSuccess', [PaymentController::class, 'StripeSuccess'])->name('payment.StripeSuccess');
+    Route::get('payment/GopayPay', [PaymentController::class, 'GopayPay'])->name('payment.GopayPay');
+    //Route::get('payment/GopayReturn', [PaymentController::class, 'GopayReturn'])->name('payment.GopayReturn');
     Route::get('payment/Cancel', [PaymentController::class, 'Cancel'])->name('payment.Cancel');
+    Route::get('payment/pay', [PaymentController::class, 'Pay'])->name('payment.Pay');
 
     Route::get('users/logbackin', [UserController::class, 'logBackIn'])->name('users.logbackin');
 
@@ -139,13 +140,6 @@ Route::middleware(['auth', 'checkSuspended'])->group(function () {
         Route::get('products/clone/{product}', [ProductController::class, 'clone'])->name('products.clone');
         Route::patch('products/disable/{product}', [ProductController::class, 'disable'])->name('products.disable');
         Route::resource('products', ProductController::class);
-
-        #store
-        Route::get('store/datatable', [ShopProductController::class, 'datatable'])->name('store.datatable');
-        Route::patch('store/disable/{shopProduct}', [ShopProductController::class, 'disable'])->name('store.disable');
-        Route::resource('store', ShopProductController::class)->parameters([
-            'store' => 'shopProduct',
-        ]);
 
         #payments
         Route::get('payments/datatable', [PaymentController::class, 'datatable'])->name('payments.datatable');
@@ -208,6 +202,9 @@ Route::middleware(['auth', 'checkSuspended'])->group(function () {
 
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 });
+
+Route::get('payment/GopayReturn', [PaymentController::class, 'GopayReturn'])->name('payment.GopayReturn');
+
 Route::prefix('api')->name('api.')->group(function(){
     Route::get('pricing', [Pricing::class, 'index']);
     Route::get('favourites', [Pricing::class, 'favourites']);

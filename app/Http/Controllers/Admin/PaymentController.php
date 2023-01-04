@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Models\InvoiceSettings;
 use App\Models\PartnerDiscount;
 use App\Models\Payment;
-use App\Models\ShopProduct;
 use App\Models\Settings;
 use App\Models\User;
 use App\Notifications\InvoiceNotification;
@@ -35,7 +34,10 @@ use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalHttp\HttpException;
 use Stripe\Stripe;
 use Symfony\Component\Intl\Currencies;
+use GoPay\Definition\Payment\PaymentInstrument;
+use GoPay\Definition\Payment\PaymentItemType;
 
+require_once base_path() . '/vendor/autoload.php';
 
 class PaymentController extends Controller
 {
@@ -50,31 +52,82 @@ class PaymentController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @param ShopProduct $shopProduct
-     * @return Application|Factory|View
-     */
-    public function checkOut(Request $request, ShopProduct $shopProduct)
+    public function Pay(Request $request)
     {
-        return view('store.checkout')->with([
-            'product'           => $shopProduct,
-            'discountpercent'   => PartnerDiscount::getDiscount(),
-            'discountvalue'     => PartnerDiscount::getDiscount() * $shopProduct->price/100,
-            'discountedprice'   => $shopProduct->getPriceAfterDiscount(),
-            'taxvalue'          => $shopProduct->getTaxValue(),
-            'taxpercent'        => $shopProduct->getTaxPercent(),
-            'total'             => $shopProduct->getTotalPrice()
-        ]);
+        if(!$request->credit_amount||!$request->currency||!$request->payment_method||
+            $request->credit_amount<25||$request->credit_amount>2000||
+            !($request->currency=="czk"||$request->currency=="eur")||
+            !($request->payment_method=="paypal"||$request->payment_method=="stripe"||$request->payment_method=="gopay")||
+            ($request->payment_method=="gopay"&&!($request->gopay_payment_method=="bank_bitcoin"||$request->gopay_payment_method=="sms"||$request->gopay_payment_method=="paysafecard"))||
+            ($request->payment_method=="gopay"&&$request->currency=="eur"&&$request->gopay_payment_method=="sms")||
+            $this->AmountTooSmall($request->credit_amount, $request->currency, $request->payment_method, $request->gopay_payment_method)
+        ) return redirect()->route('home')->with('error', __('There was a problem with your input. Please try again. If the issue persists, please contact support.'));
+
+        if($request->payment_method=="paypal") return $this->PaypalPay($request->credit_amount, $request->currency);
+        elseif($request->payment_method=="stripe") return $this->StripePay($request->credit_amount, $request->currency);
+        elseif($request->payment_method=="gopay") return $this->GopayPay($request->credit_amount, $request->currency, $request->gopay_payment_method);
     }
 
-    /**
-     * @param Request $request
-     * @param ShopProduct $shopProduct
-     * @return RedirectResponse
-     */
-    public function PaypalPay(Request $request, ShopProduct $shopProduct)
+    public function getDiscountByAmount($amount)
     {
+        /*if($amount<100) return 100;
+        else if($amount<200) return 95;
+        else if($amount<500) return 90;
+        else if($amount<1000) return 85;
+        else return 80;*/
+
+        if($amount<50) return 100;
+        else if($amount<100) return (100-($amount-50)*3/50);
+        else if($amount<200) return (100-($amount-100)*3/100)-3;
+        else if($amount<300) return (100-($amount-200)*2/100)-6;
+        else if($amount<500) return (100-($amount-300)*2/200)-8;
+        else if($amount<1000) return (100-($amount-500)*4/500)-10;
+        else return (100-($amount-1000)*6/1000)-14;
+    }
+
+    public function getTaxesArray(){
+        return [
+            "czk" => [
+                "paypal" => ["fixed" => 10, "percent" => 3.4, "minimum" => 0],
+                "stripe" => ["fixed" => 6.5, "percent" => 1.4, "minimum" => 15],
+                "gopay" => [
+                    "bank_bitcoin" => ["fixed" => 1.5, "percent" => 1.2, "minimum" => 0],
+                    "sms" => ["fixed" => 0, "percent" => 12.1, "minimum" => 0],
+                    "paysafecard" => ["fixed" => 0, "percent" => 13, "minimum" => 0]]],
+            "eur" => [
+                "paypal" => ["fixed" => 0.35, "percent" => 3.4, "minimum" => 0],
+                "stripe" => ["fixed" => 0.25, "percent" => 1.4, "minimum" => 0.5],
+                "gopay" => [
+                    "bank_bitcoin" => ["fixed" => 0.06, "percent" => 1.2, "minimum" => 0],
+                    //"sms" => ["fixed" => 0, "percent" => 45.2],
+                    "paysafecard" => ["fixed" => 0, "percent" => 13, "minimum" => 0]]]
+        ];
+    }
+
+    public function getTaxes($amount, $currency, $payment_method, $gopay_payment_method=null)
+    {
+        $taxes = $this->getTaxesArray();
+        $taxArray = $payment_method!="gopay"?$taxes[$currency][$payment_method]:$taxes[$currency][$payment_method][$gopay_payment_method];
+        return $taxArray["fixed"] + $taxArray["percent"]*$amount/100;
+    }
+
+    public function AmountTooSmall($amount, $currency, $payment_method, $gopay_payment_method=null)
+    {
+        $taxes = $this->getTaxesArray();
+        $taxArray = $payment_method!="gopay"?$taxes[$currency][$payment_method]:$taxes[$currency][$payment_method][$gopay_payment_method];
+        $price = ($this->getDiscountByAmount($amount)*$amount/100);
+        if($currency=="eur") $price = $price/config('SETTINGS::PAYMENTS:EUR_RATIO');
+        $subtotal = ($price)*(100-PartnerDiscount::getDiscount())/100;
+        return $subtotal + $this->getTaxes($subtotal, $currency, $payment_method, $gopay_payment_method) <= $taxArray['minimum'];
+    }
+
+    public function PaypalPay($amount, $currency)
+    {
+        $subtotal = ($this->getDiscountByAmount($amount)*$amount/100)*(100-PartnerDiscount::getDiscount())/100;
+        if($currency=="eur") $subtotal = $subtotal/config("SETTINGS::PAYMENTS:EUR_RATIO");
+        $tax = $this->getTaxes($subtotal, $currency, "paypal");
+
+
         $request = new OrdersCreateRequest();
         $request->prefer('return=representation');
         $request->body = [
@@ -82,20 +135,20 @@ class PaymentController extends Controller
             "purchase_units" => [
                 [
                     "reference_id" => uniqid(),
-                    "description" => $shopProduct->display . (PartnerDiscount::getDiscount()?(" (" . __('Discount') . " " . PartnerDiscount::getDiscount() . '%)'):""),
+                    "description" => $amount . " " . CREDITS_DISPLAY_NAME,
                     "amount"       => [
-                        "value"         => $shopProduct->getTotalPrice(),
-                        'currency_code' => strtoupper($shopProduct->currency_code),
+                        "value"         => round($subtotal + $tax, 2),
+                        'currency_code' => strtoupper($currency),
                         'breakdown' => [
                             'item_total' =>
                             [
-                                'currency_code' => strtoupper($shopProduct->currency_code),
-                                'value' => $shopProduct->getPriceAfterDiscount(),
+                                'currency_code' => strtoupper($currency),
+                                'value' => round($subtotal, 2),
                             ],
                             'tax_total' =>
                             [
-                                'currency_code' => strtoupper($shopProduct->currency_code),
-                                'value' => $shopProduct->getTaxValue(),
+                                'currency_code' => strtoupper($currency),
+                                'value' => round($tax, 2),
                             ]
                         ]
                     ]
@@ -103,14 +156,11 @@ class PaymentController extends Controller
             ],
             "application_context" => [
                 "cancel_url" => route('payment.Cancel'),
-                "return_url" => route('payment.PaypalSuccess', ['product' => $shopProduct->id]),
+                "return_url" => route('payment.PaypalSuccess', ['user_id' => Auth::user()->id]),
                 'brand_name' =>  config('app.name', 'Laravel'),
                 'shipping_preference'  => 'NO_SHIPPING'
             ]
-
-
         ];
-
 
         try {
             // Call API with your client and get a response for your call
@@ -157,18 +207,19 @@ class PaymentController extends Controller
      */
     public function PaypalSuccess(Request $laravelRequest)
     {
-        /** @var ShopProduct $shopProduct */
-        $shopProduct = ShopProduct::findOrFail($laravelRequest->input('product'));
-
-        /** @var User $user */
-        $user = Auth::user();
+        $user = User::where('id', $laravelRequest->user_id)->first();
 
         $request = new OrdersCaptureRequest($laravelRequest->input('token'));
         $request->prefer('return=representation');
         try {
             // Call API with your client and get a response for your call
             $response = $this->getPayPalClient()->execute($request);
-            if ($response->statusCode == 201 || $response->statusCode == 200) {
+            $amount = str_replace(" " . CREDITS_DISPLAY_NAME, "", $response->result->purchase_units[0]->description);
+            $price = strtolower($response->result->purchase_units[0]->amount->currency_code)=='eur'?$this->getDiscountByAmount($amount)*$amount/100/config("SETTINGS::PAYMENTS:EUR_RATIO"):$this->getDiscountByAmount($amount)*$amount/100;
+            $subtotal = ($price)*(100-PartnerDiscount::getDiscount($laravelRequest->user_id))/100;
+            $tax = $this->getTaxes($subtotal, strtolower($response->result->purchase_units[0]->amount->currency_code), "paypal");
+
+            if (($response->statusCode == 201 || $response->statusCode == 200)) {
 
                 //update server limit
                 if (config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE') !== 0) {
@@ -178,17 +229,13 @@ class PaymentController extends Controller
                 }
 
                 //update User with bought item
-                if ($shopProduct->type=="Credits") {
-                    $user->increment('credits', $shopProduct->quantity);
-                }elseif ($shopProduct->type=="Server slots"){
-                    $user->increment('server_limit', $shopProduct->quantity);
-                }
+                $user->increment('credits', $amount);
 
                 //give referral commission always
-                if((config("SETTINGS::REFERRAL:MODE") == "commission" || config("SETTINGS::REFERRAL:MODE") == "both") && $shopProduct->type=="Credits" && config("SETTINGS::REFERRAL::ALWAYS_GIVE_COMMISSION") == "true"){
+                if((config("SETTINGS::REFERRAL:MODE") == "commission" || config("SETTINGS::REFERRAL:MODE") == "both") && config("SETTINGS::REFERRAL::ALWAYS_GIVE_COMMISSION") == "true"){
                     if($ref_user = DB::table("user_referrals")->where('registered_user_id', '=', $user->id)->first()){
                         $ref_user = User::findOrFail($ref_user->referral_id);
-                        $increment = number_format($shopProduct->quantity*(PartnerDiscount::getCommission($ref_user->id))/100,0,"","");
+                        $increment = number_format($amount/100*(PartnerDiscount::getCommission($ref_user->id))/100,0,"","");
                         $ref_user->increment('credits', $increment);
 
                         //LOGS REFERRALS IN THE ACTIVITY LOG
@@ -205,10 +252,10 @@ class PaymentController extends Controller
                     $user->update(['role' => 'client']);
 
                     //give referral commission only on first purchase
-                    if((config("SETTINGS::REFERRAL:MODE") == "commission" || config("SETTINGS::REFERRAL:MODE") == "both") && $shopProduct->type=="Credits" && config("SETTINGS::REFERRAL::ALWAYS_GIVE_COMMISSION") == "false"){
+                    if((config("SETTINGS::REFERRAL:MODE") == "commission" || config("SETTINGS::REFERRAL:MODE") == "both") && config("SETTINGS::REFERRAL::ALWAYS_GIVE_COMMISSION") == "false"){
                         if($ref_user = DB::table("user_referrals")->where('registered_user_id', '=', $user->id)->first()){
                             $ref_user = User::findOrFail($ref_user->referral_id);
-                            $increment = number_format($shopProduct->quantity*(PartnerDiscount::getCommission($ref_user->id))/100,0,"","");
+                            $increment = number_format($amount/100*(PartnerDiscount::getCommission($ref_user->id))/100,0,"","");
                             $ref_user->increment('credits', $increment);
 
                             //LOGS REFERRALS IN THE ACTIVITY LOG
@@ -227,30 +274,27 @@ class PaymentController extends Controller
                     'user_id' => $user->id,
                     'payment_id' => $response->result->id,
                     'payment_method' => 'paypal',
-                    'type' => $shopProduct->type,
+                    'type' => 'Credits',
                     'status' => 'paid',
-                    'amount' => $shopProduct->quantity,
-                    'price' => $shopProduct->price - ($shopProduct->price*PartnerDiscount::getDiscount()/100),
-                    'tax_value' => $shopProduct->getTaxValue(),
-                    'tax_percent' => $shopProduct->getTaxPercent(),
-                    'total_price' => $shopProduct->getTotalPrice(),
-                    'currency_code' => $shopProduct->currency_code,
-                    'shop_item_product_id' => $shopProduct->id,
+                    'amount' => $amount,
+                    'price' => $price,
+                    'tax_value' => $tax,
+                    'total_price' => $subtotal + $tax,
+                    'tax_percent' => config("SETTINGS::PAYMENTS:SALES_TAX")<0?0:config("SETTINGS::PAYMENTS:SALES_TAX"),
+                    'currency_code' => $response->result->purchase_units[0]->amount->currency_code,
+                    'shop_item_product_id' => 'none',
                 ]);
-
 
                 event(new UserUpdateCreditsEvent($user));
 
                 //only create invoice if SETTINGS::INVOICE:ENABLED is true
                 if (config('SETTINGS::INVOICE:ENABLED') == 'true') {
-                    $this->createInvoice($user, $payment, 'paid', $shopProduct->currency_code);
+                    $this->createInvoice($user, $payment, 'paid', $response->result->purchase_units[0]->amount->currency_code);
                 }
-
 
                 //redirect back to home
                 return redirect()->route('home')->with('success', __('Your credit balance has been increased!'));
             }
-
 
             // If call returns body in response, you can get the deserialized version from the result attribute of the response
             if (env('APP_ENV') == 'local') {
@@ -268,7 +312,6 @@ class PaymentController extends Controller
         }
     }
 
-
     /**
      * @param Request $request
      */
@@ -277,37 +320,35 @@ class PaymentController extends Controller
         return redirect()->route('store.index')->with('success', 'Payment was Canceled');
     }
 
-    /**
-     * @param Request $request
-     * @param ShopProduct $shopProduct
-     * @return RedirectResponse
-     */
-    public function StripePay(Request $request, ShopProduct $shopProduct)
+    public function StripePay($amount, $currency)
     {
-        $stripeClient = $this->getStripeClient();
+        $subtotal = ($this->getDiscountByAmount($amount)*$amount/100)*(100-PartnerDiscount::getDiscount())/100;
+        if($currency=="eur") $subtotal = $subtotal/config("SETTINGS::PAYMENTS:EUR_RATIO");
+        $tax = $this->getTaxes($subtotal, $currency, "stripe");
 
+        $stripeClient = $this->getStripeClient();
 
         $request = $stripeClient->checkout->sessions->create([
             'line_items' => [
                 [
                     'price_data' => [
-                        'currency' => $shopProduct->currency_code,
+                        'currency' => strtoupper($currency),
                         'product_data' => [
-                            'name' => $shopProduct->display . (PartnerDiscount::getDiscount()?(" (" . __('Discount') . " " . PartnerDiscount::getDiscount() . '%)'):""),
-                            'description' => $shopProduct->description,
+                            'name' => $amount . " " . CREDITS_DISPLAY_NAME,
+                            'description' => $amount . " " . CREDITS_DISPLAY_NAME,
                         ],
-                        'unit_amount_decimal' => round($shopProduct->getPriceAfterDiscount() * 100, 2),
+                        'unit_amount_decimal' => round($subtotal * 100),
                     ],
                     'quantity' => 1,
                 ],
                 [
                     'price_data' => [
-                        'currency' => $shopProduct->currency_code,
+                        'currency' => strtoupper($currency),
                         'product_data' => [
                             'name' => __('Tax'),
-                            'description' => $shopProduct->getTaxPercent() . "%",
+                            'description' => __('Tax'),
                         ],
-                        'unit_amount_decimal' => round($shopProduct->getTaxValue(), 2) * 100,
+                        'unit_amount_decimal' => round($tax * 100),
                     ],
                     'quantity' => 1,
                 ]
@@ -315,7 +356,7 @@ class PaymentController extends Controller
 
             'mode' => 'payment',
             "payment_method_types" => str_getcsv(config("SETTINGS::PAYMENTS:STRIPE:METHODS")),
-            'success_url' => route('payment.StripeSuccess',  ['product' => $shopProduct->id]) . '&session_id={CHECKOUT_SESSION_ID}',
+            'success_url' => route('payment.StripeSuccess',  ['amount' => $amount, 'user_id' => Auth::user()->id]) . '&session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => route('payment.Cancel'),
         ]);
 
@@ -329,26 +370,28 @@ class PaymentController extends Controller
      */
     public function StripeSuccess(Request $request)
     {
-        /** @var ShopProduct $shopProduct */
-        $shopProduct = ShopProduct::findOrFail($request->input('product'));
-
-        /** @var User $user */
-        $user = Auth::user();
+        $subtotal = 0;
+        $tax = 0;
+        $user = User::where('id', $request->user_id)->first();
 
         $stripeClient = $this->getStripeClient();
-
         try {
             //get stripe data
             $paymentSession = $stripeClient->checkout->sessions->retrieve($request->input('session_id'));
             $paymentIntent = $stripeClient->paymentIntents->retrieve($paymentSession->payment_intent);
+            $price = $paymentSession->currency=='eur'?$this->getDiscountByAmount($request->amount)*$request->amount/100/config("SETTINGS::PAYMENTS:EUR_RATIO"):$this->getDiscountByAmount($request->amount)*$request->amount/100;
+            $subtotal = ($price)*(100-PartnerDiscount::getDiscount($request->user_id))/100;
+            $tax = $this->getTaxes($subtotal, $paymentSession->currency, "stripe");
+
+            //dd($paymentSession->amount_total);
+            if(abs($subtotal+$tax-$paymentSession->amount_total/100)>=0.05) return redirect()->route('home')->with('error', __('There was a problem verifying your payment. Please contact support.'));
+            else $amount = $request->amount;
 
             //get DB entry of this payment ID if existing
             $paymentDbEntry = Payment::where('payment_id', $paymentSession->payment_intent)->count();
 
             // check if payment is 100% completed and payment does not exist in db already
             if ($paymentSession->status == "complete" && $paymentIntent->status == "succeeded" && $paymentDbEntry == 0) {
-
-
 
                 //update server limit
                 if (config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE') !== 0) {
@@ -358,20 +401,16 @@ class PaymentController extends Controller
                 }
 
                 //update User with bought item
-                if ($shopProduct->type=="Credits") {
-                    $user->increment('credits', $shopProduct->quantity);
-                }elseif ($shopProduct->type=="Server slots"){
-                    $user->increment('server_limit', $shopProduct->quantity);
-                }
+                $user->increment('credits', $amount);
 
                 //update role give Referral-reward
                 if ($user->role == 'member') {
                     $user->update(['role' => 'client']);
 
-                    if((config("SETTINGS::REFERRAL:MODE") == "commission"  || config("SETTINGS::REFERRAL:MODE") == "both") && $shopProduct->type=="Credits"){
+                    if((config("SETTINGS::REFERRAL:MODE") == "commission"  || config("SETTINGS::REFERRAL:MODE") == "both")){
                         if($ref_user = DB::table("user_referrals")->where('registered_user_id', '=', $user->id)->first()){
                             $ref_user = User::findOrFail($ref_user->referral_id);
-                            $increment = number_format($shopProduct->quantity/100*config("SETTINGS::REFERRAL:PERCENTAGE"),0,"","");
+                            $increment = number_format($amount/100*config("SETTINGS::REFERRAL:PERCENTAGE"),0,"","");
                             $ref_user->increment('credits', $increment);
 
                             //LOGS REFERRALS IN THE ACTIVITY LOG
@@ -390,15 +429,15 @@ class PaymentController extends Controller
                     'user_id' => $user->id,
                     'payment_id' => $paymentSession->payment_intent,
                     'payment_method' => 'stripe',
-                    'type' => $shopProduct->type,
+                    'type' => 'Credits',
                     'status' => 'paid',
-                    'amount' => $shopProduct->quantity,
-                    'price' => $shopProduct->price - ($shopProduct->price*PartnerDiscount::getDiscount()/100),
-                    'tax_value' => $shopProduct->getTaxValue(),
-                    'total_price' => $shopProduct->getTotalPrice(),
-                    'tax_percent' => $shopProduct->getTaxPercent(),
-                    'currency_code' => $shopProduct->currency_code,
-                    'shop_item_product_id' => $shopProduct->id,
+                    'amount' => $amount,
+                    'price' => $price,
+                    'tax_value' => $tax,
+                    'total_price' => $subtotal + $tax,
+                    'tax_percent' => config("SETTINGS::PAYMENTS:SALES_TAX")<0?0:config("SETTINGS::PAYMENTS:SALES_TAX"),
+                    'currency_code' => strtoupper($paymentSession->currency),
+                    'shop_item_product_id' => 'none',
                 ]);
 
                 //payment notification
@@ -408,7 +447,7 @@ class PaymentController extends Controller
 
                 //only create invoice if SETTINGS::INVOICE:ENABLED is true
                 if (config('SETTINGS::INVOICE:ENABLED') == 'true') {
-                    $this->createInvoice($user, $payment, 'paid', $shopProduct->currency_code);
+                    $this->createInvoice($user, $payment, 'paid', strtoupper($paymentSession->currency));
                 }
 
                 //redirect back to home
@@ -421,20 +460,20 @@ class PaymentController extends Controller
                         'user_id' => $user->id,
                         'payment_id' => $paymentSession->payment_intent,
                         'payment_method' => 'stripe',
-                        'type' => $shopProduct->type,
+                        'type' => 'Credits',
                         'status' => 'processing',
-                        'amount' => $shopProduct->quantity,
-                        'price' => $shopProduct->price,
-                        'tax_value' => $shopProduct->getTaxValue(),
-                        'total_price' => $shopProduct->getTotalPrice(),
-                        'tax_percent' => $shopProduct->getTaxPercent(),
-                        'currency_code' => $shopProduct->currency_code,
-                        'shop_item_product_id' => $shopProduct->id,
+                        'amount' => $amount,
+                        'price' => $this->getDiscountByAmount($request->amount)*$request->amount/100,
+                        'tax_value' => $tax,
+                        'total_price' => $subtotal + $tax,
+                        'tax_percent' => config("SETTINGS::PAYMENTS:SALES_TAX")<0?0:config("SETTINGS::PAYMENTS:SALES_TAX"),
+                        'currency_code' => strtoupper($paymentSession->currency),
+                        'shop_item_product_id' => 'none',
                     ]);
 
                     //only create invoice if SETTINGS::INVOICE:ENABLED is true
                     if (config('SETTINGS::INVOICE:ENABLED') == 'true') {
-                        $this->createInvoice($user, $payment, 'paid', $shopProduct->currency_code);
+                        $this->createInvoice($user, $payment, 'paid', strtoupper($paymentSession->currency));
                     }
 
                     //redirect back to home
@@ -469,8 +508,11 @@ class PaymentController extends Controller
             $payment = Payment::where('payment_id', $paymentIntent->id)->first();
             $user = User::where('id', $payment->user_id)->first();
 
-            if ($paymentIntent->status == 'succeeded' && $payment->status == 'processing') {
+            $price = strtolower($payment->currency_code)=='eur'?$this->getDiscountByAmount($payment->amount)*$payment->amount/100/config("SETTINGS::PAYMENTS:EUR_RATIO"):$this->getDiscountByAmount($payment->amount)*$payment->amount/100;
+            $subtotal = ($price)*(100-PartnerDiscount::getDiscount($payment->user_id))/100;
+            $tax = $this->getTaxes($subtotal, strtolower($payment->currency_code), "stripe");
 
+            if ($paymentIntent->status == 'succeeded' && $payment->status == 'processing') {
 
                 //update server limit
                 if (config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE') !== 0) {
@@ -479,20 +521,16 @@ class PaymentController extends Controller
                     }
                 }
                 //update User with bought item
-                if ($shopProduct->type=="Credits") {
-                    $user->increment('credits', $shopProduct->quantity);
-                }elseif ($shopProduct->type=="Server slots"){
-                    $user->increment('server_limit', $shopProduct->quantity);
-                }
+                $user->increment('credits', $payment->amount);
 
                 //update role give Referral-reward
                 if ($user->role == 'member') {
                     $user->update(['role' => 'client']);
 
-                    if((config("SETTINGS::REFERRAL:MODE") == "commission"  || config("SETTINGS::REFERRAL:MODE") == "both")&& $shopProduct->type=="Credits"){
+                    if((config("SETTINGS::REFERRAL:MODE") == "commission"  || config("SETTINGS::REFERRAL:MODE") == "both")){
                         if($ref_user = DB::table("user_referrals")->where('registered_user_id', '=', $user->id)->first()){
                             $ref_user = User::findOrFail($ref_user->referral_id);
-                            $increment = number_format($shopProduct->quantity/100*config("SETTINGS::REFERRAL:PERCENTAGE"),0,"","");
+                            $increment = number_format($payment->amount/100*config("SETTINGS::REFERRAL:PERCENTAGE"),0,"","");
                             $ref_user->increment('credits', $increment);
 
                             //LOGS REFERRALS IN THE ACTIVITY LOG
@@ -589,9 +627,187 @@ class PaymentController extends Controller
     }
 
 
+    public function gopay()
+    {
+        return $gopay = \GoPay\payments([
+            'goid' => config('SETTINGS::PAYMENTS:GOPAY:GOID'),
+            'clientId' => env('APP_ENV')=='local'?config('SETTINGS::PAYMENTS:GOPAY:TEST_CLIENT_ID'):config('SETTINGS::PAYMENTS:GOPAY:CLIENT_ID'),
+            'clientSecret' => env('APP_ENV')=='local'?config('SETTINGS::PAYMENTS:GOPAY:TEST_CLIENT_SECRET'):config('SETTINGS::PAYMENTS:GOPAY:CLIENT_SECRET'),
+            'gatewayUrl' => env('APP_ENV')=='local'?"https://gw.sandbox.gopay.com/":"https://gate.gopay.cz/",
+            'scope' => \GoPay\Definition\TokenScope::ALL,
+            'language' => strtoupper(session()->get('language')),
+            'timeout' => 30
+        ]);
+    }
+    public function GopayPay($amount, $currency, $method)
+    {
+        $subtotal = ($this->getDiscountByAmount($amount)*$amount/100)*(100-PartnerDiscount::getDiscount())/100;
+        if($currency=="eur") $subtotal = $subtotal/config("SETTINGS::PAYMENTS:EUR_RATIO");
+        $tax = $this->getTaxes($subtotal, $currency, "gopay", $method);
+
+        $gopay =  $this->gopay();
+        $gopay_methods = array();
+        if($method=="bank_bitcoin") array_push($gopay_methods, PaymentInstrument::BANK_ACCOUNT, PaymentInstrument::BITCOIN);
+        elseif($method=="sms") array_push($gopay_methods, PaymentInstrument::MPAYMENT);
+        elseif($method=="paysafecard") array_push($gopay_methods, PaymentInstrument::PAYSAFECARD);
+
+        $response = $gopay->createPayment([
+            'payer' => [
+                    //'default_payment_instrument' => PaymentInstrument::MPAYMENT,
+                    'allowed_payment_instruments' => $gopay_methods,
+                    //'default_swift' => BankSwiftCode::FIO_BANKA,
+                    //'allowed_swifts' => [BankSwiftCode::FIO_BANKA, BankSwiftCode::MBANK, BankSwiftCode::CSOB, BankSwiftCode::CESKA_SPORITELNA, BankSwiftCode::KOMERCNI_BANKA, BankSwiftCode::RAIFFEISENBANK, BankSwiftCode::UNICREDIT_BANK_CZ, BankSwiftCode::POSTOVA_BANKA],
+                    /*'contact' => ['first_name' => 'Zbynek',
+                            'last_name' => 'Zak',
+                            'email' => 'test@test.cz',
+                            'phone_number' => '+420777456123',
+                            'city' => 'C.Budejovice',
+                            'street' => 'Plana 67',
+                            'postal_code' => '373 01',
+                            'country_code' => 'CZE'
+                    ]*/
+            ],
+            'amount' => Round($subtotal*100) + Round($tax*100),
+            'currency' => strtoupper($currency),
+            //'order_number' => '001',
+            'order_description' => $amount . " " . CREDITS_DISPLAY_NAME,
+            'items' => [
+                [
+                    'type' => PaymentItemType::ITEM,
+                    'name' => $amount . " " . CREDITS_DISPLAY_NAME,
+                    'amount' => Round($subtotal*100),
+                    'count' => 1,
+                    'vat_rate' => 0
+                ],
+                [
+                    'type' => PaymentItemType::ITEM,
+                    'name' => __('Tax'),
+                    'amount' => Round($tax*100),
+                    'count' => 1,
+                    'vat_rate' => 0
+                ]],
+            'callback' => [
+                    'return_url' => route('payment.GopayReturn', ['amount' => $amount, 'user_id' => Auth::user()->id]),
+                    'notification_url' => route('payment.GopayReturn', ['amount' => $amount, 'user_id' => Auth::user()->id])
+            ],
+            'lang' => strtoupper(session()->get('language'))
+        ]);
+        if($response->hasSucceed()){
+            return redirect()->away($response->json['gw_url']);
+        }
+        else dd($response);
+    }
+    public function getGopayMethod($instruments){
+        foreach($instruments as $instrument){
+            switch ($instrument){
+                case 'MPAYMENT':
+                    return "sms";
+                    break;
+                case 'PAYSAFECARD':
+                    return "paysafecard";
+                    break;
+                default:
+                    return 'bank_bitcoin';
+                    break;
+            }
+        }
+    }
+
+    public function GopayReturn(Request $request)
+    {
+        $gopay = $this->gopay();
+        $user = User::where('id', $request->user_id)->first();
+
+        try {
+            // Call API with your client and get a response for your call
+            $paymentStatus = $gopay->getStatus($request->id);
+            
+            $price = strtolower($paymentStatus->json['currency'])=='eur'?$this->getDiscountByAmount($request->amount)*$request->amount/100/config("SETTINGS::PAYMENTS:EUR_RATIO"):$this->getDiscountByAmount($request->amount)*$request->amount/100;
+            $subtotal = ($price)*(100-PartnerDiscount::getDiscount($request->user_id))/100;
+            $tax = $this->getTaxes($subtotal, strtolower($paymentStatus->json['currency']), "gopay", $this->getGopayMethod($paymentStatus->json['payer']['allowed_payment_instruments']));
+
+            if(abs($subtotal+$tax-$paymentStatus->json['amount']/100)>=0.05) return redirect()->route('home')->with('error', __('There was a problem verifying your payment. Please contact support.'));
+            else $amount = $request->amount;
+
+            //get DB entry of this payment ID if existing
+            $paymentDbEntry = Payment::where('payment_id', $request->id)->count();
+
+            // check if payment is 100% completed and payment does not exist in db already
+            if ($paymentStatus->json['state'] == "PAID" && $paymentDbEntry == 0) {
+
+                //update server limit
+                if (config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE') !== 0) {
+                    if ($user->server_limit < config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE')) {
+                        $user->update(['server_limit' => config('SETTINGS::USER:SERVER_LIMIT_AFTER_IRL_PURCHASE')]);
+                    }
+                }
+
+                //update User with bought item
+                $user->increment('credits', $amount);
+
+                //update role give Referral-reward
+                if ($user->role == 'member') {
+                    $user->update(['role' => 'client']);
+
+                    if((config("SETTINGS::REFERRAL:MODE") == "commission" || config("SETTINGS::REFERRAL:MODE") == "both")){
+                        if($ref_user = DB::table("user_referrals")->where('registered_user_id', '=', $user->id)->first()){
+                            $ref_user = User::findOrFail($ref_user->referral_id);
+                            $increment = number_format($amount/100*config("SETTINGS::REFERRAL:PERCENTAGE"),0,"","");
+                            $ref_user->increment('credits', $increment);
+
+                            //LOGS REFERRALS IN THE ACTIVITY LOG
+                            activity()
+                                ->performedOn($user)
+                                ->causedBy($ref_user)
+                                ->log('gained '. $increment.' '.config("SETTINGS::SYSTEM:CREDITS_DISPLAY_NAME").' for commission-referral of '.$user->name.' (ID:'.$user->id.')');
+                        }
+                    }
+                }
+
+                //store payment
+                $payment = Payment::create([
+                    'user_id' => $user->id,
+                    'payment_id' => $request->id,
+                    'payment_method' => 'gopay(' . $this->getGopayMethod($paymentStatus->json['payer']['allowed_payment_instruments']) . ')',
+                    'type' => 'Credits',
+                    'status' => 'paid',
+                    'amount' => $amount,
+                    'price' => $price,
+                    'tax_value' => $tax,
+                    'tax_percent' => config("SETTINGS::PAYMENTS:SALES_TAX")<0?0:config("SETTINGS::PAYMENTS:SALES_TAX"),
+                    'total_price' => $subtotal + $tax,
+                    'currency_code' => $paymentStatus->json['currency'],
+                    'shop_item_product_id' => 'none',
+                ]);
+
+                event(new UserUpdateCreditsEvent($user));
+
+                //only create invoice if SETTINGS::INVOICE:ENABLED is true
+                if (config('SETTINGS::INVOICE:ENABLED') == 'true') {
+                    $this->createInvoice($user, $payment, 'paid', $paymentStatus->json['currency']);
+                }
+
+                //redirect back to home
+                return redirect()->route('home')->with('success', __('Your credit balance has been increased!'));
+            }
+            else {
+                //redirect back to home
+                return redirect()->route('home')->with('success', __('Your payment has been canceled!'));
+            }
+
+
+        } catch (HttpException $ex) {
+            if (env('APP_ENV') == 'local') {
+                echo $ex->statusCode;
+                dd($ex->getMessage());
+            } else {
+                abort(422);
+            }
+        }
+    }
+
     protected function createInvoice($user, $payment, $paymentStatus, $currencyCode)
     {
-        $shopProduct = ShopProduct::where('id', $payment->shop_item_product_id)->first();
         //create invoice
         $lastInvoiceID = \App\Models\Invoice::where("invoice_name", "like", "%" . now()->format('mY') . "%")->count("id");
         $newInvoiceID = $lastInvoiceID + 1;
@@ -608,7 +824,6 @@ class PaymentController extends Controller
             ],
         ]);
 
-
         $customer = new Buyer([
             'name' => $user->name,
             'custom_fields' => [
@@ -617,22 +832,24 @@ class PaymentController extends Controller
             ],
         ]);
         $item = (new InvoiceItem())
-            ->title($shopProduct->description)
-            ->pricePerUnit($shopProduct->price);
+            ->title($payment->amount . " " . CREDITS_DISPLAY_NAME)
+            ->pricePerUnit($payment->price/$payment->amount)
+            ->quantity($payment->amount);
 
         $notes = [
+            "",
             __("Payment method") . ": " . $payment->payment_method,
+            __('The price includes VAT')
         ];
         $notes = implode("<br>", $notes);
-
 
         $invoice = Invoice::make()
             ->template('controlpanel')
             ->name(__("Invoice"))
             ->buyer($customer)
             ->seller($seller)
-            ->discountByPercent(PartnerDiscount::getDiscount())
-            ->taxRate(floatval($shopProduct->getTaxPercent()))
+            ->discountByPercent(PartnerDiscount::getDiscount($payment->user_id))
+            ->totalTaxes($payment->tax_value)
             ->shipping(0)
             ->addItem($item)
             ->status(__($paymentStatus))
@@ -652,7 +869,6 @@ class PaymentController extends Controller
         $invoice->filename = $invoice->getSerialNumber() . '.pdf';
         $invoice->render();
         Storage::disk("local")->put("invoice/" . $user->id . "/" . now()->format('Y') . "/" . $invoice->filename, $invoice->output);
-
 
         \App\Models\Invoice::create([
             'invoice_user' => $user->id,
