@@ -80,7 +80,7 @@ class LogPLayersCommand extends Command
             $playerLog -> total_servers = $status->count();
             $playerLog -> created_at = $timeNow;
             if($playerLog -> total_servers!=0) $playerLog -> average_players = $playerLog -> online_players/$playerLog -> total_servers;
-            PlayerLog::where('created_at', '<', $timeNow->subDay()->subDay()->subMinutes(Round(config('SETTINGS::SYSTEM:PLAYER_LOG_INTERVAL')*1.5)))->delete();
+            PlayerLog::where('created_at', '<', $timeNow->subDay()->subDay()->subMinutes(Round(config('SETTINGS::SYSTEM:PLAYER_LOG_INTERVAL')*0.5)))->delete();
             $playerLog ->save();
         }
         return 0;
