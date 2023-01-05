@@ -281,6 +281,7 @@
             });
         }
         function changeValue(value){
+            if(value>{{$max_amount}}) value = {{$max_amount}}; //max limit
             document.getElementById('slider').value = value;
             document.getElementById('credit_amount').value = value;
             overviewCalc();
@@ -322,7 +323,7 @@
         function overviewCalc(){
             var credits = parseInt(document.getElementById('credit_amount').value);
             var currency = document.querySelector('input[name="currency"]:checked').value;
-            if((document.querySelector('input[name="payment_method"]:checked').value!="gopay"||document.querySelector('input[name="gopay_payment_method"]:checked')!=null)&&document.querySelector('input[name="payment_method"]:checked').value!=null){
+            if(credits>={{$min_amount}}&&(document.querySelector('input[name="payment_method"]:checked').value!="gopay"||document.querySelector('input[name="gopay_payment_method"]:checked')!=null)&&document.querySelector('input[name="payment_method"]:checked').value!=null){
                 document.getElementById('amount').textContent = credits;
                 document.getElementById('quantity_discount').textContent = (100-getDiscountByAmount(credits)).toFixed(2) + "%";
 
@@ -385,8 +386,7 @@
     </script>
     <script>
         document.getElementById('credit_amount').addEventListener('change', () => {
-            if(document.getElementById('credit_amount').value > {{$max_amount}}){document.getElementById('credit_amount').value = {{$max_amount}};}
-            else if(document.getElementById('credit_amount').value < {{$min_amount}}){document.getElementById('credit_amount').value = {{$min_amount}};}
+            if(document.getElementById('credit_amount').value < {{$min_amount}})document.getElementById('credit_amount').value = {{$min_amount}};
         })
     </script>
 
