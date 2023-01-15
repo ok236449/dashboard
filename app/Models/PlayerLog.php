@@ -30,7 +30,7 @@ class PlayerLog extends Model
             $players = 0;
 
             $logs = PlayerLog::orderBy('created_at')->get();
-            for($i = Carbon::now()->startOfHour()->subDay()->subDay()->unix(); $i <= Carbon::now()->addHour()->startOfHour()->unix(); $i += 3600)
+            for($i = Carbon::now()->startOfHour()->subDay()->subDay()->unix(); $i < Carbon::now()->addHour()->startOfHour()->unix(); $i += 3600)
             {
                 $time = $i>Carbon::now()->unix()?Carbon::now()->unix() - Carbon::now()->unix()%(config('SETTINGS::SYSTEM:PLAYER_LOG_INTERVAL')*60):$i; //make the latest point rounded to X minute intervals.
                 $index = ($i-Carbon::now()->startOfHour()->subDay()->subDay()->unix())/3600;
