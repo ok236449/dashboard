@@ -21,31 +21,40 @@ class PlayerLog extends Model
     public static function index(Request $request)
     {
         if(!($request->token == env('HOME_API_KEY'))) return response()->json(['message' => 'Unauthorized - wrong token.'], 401);
-        $stats = Cache::remember('stats', 1, function(){
+        $stats = Cache::remember('stats', 60, function(){
             $data = array();
             $labels = array();
-            $todayStart = Carbon::now()->startOfDay();
+            $todayStart = Carbon::now()->startOfDay()->unix();
             $playSeconds = 0;
             $playHours = 0;
             $players = 0;
 
             $logs = PlayerLog::orderBy('created_at')->get();
-            foreach($logs as $key => $log)
+            for($i = Carbon::now()->startOfHour()->subDay()->subDay()->unix(); $i <= Carbon::now()->addHour()->startOfHour()->unix(); $i += 3600)
             {
-                array_push($data, $log->online_players);
-                $time = Carbon::createFromTimeString($log->created_at);
-                array_push($labels, $time<$todayStart?$time->format('d.m. H:i'):$time->format('H:i'));
-
-                if(isset($logs[$key+1]))
+                $time = $i>Carbon::now()->unix()?Carbon::now()->unix() - Carbon::now()->unix()%(config('SETTINGS::SYSTEM:PLAYER_LOG_INTERVAL')*60):$i; //make the latest point rounded to X minute intervals.
+                $index = ($i-Carbon::now()->startOfHour()->subDay()->subDay()->unix())/3600;
+                $data[$index] = 0;
+                $labels[$index] = $time<$todayStart?Carbon::createFromTimestamp($time)->format('d.m. H:i'):Carbon::createFromTimestamp($time)->format('H:i');
+                foreach($logs->where('created_at', '>', date('Y-m-d H:i:s', $time-3600))->where('created_at', '<=', date('Y-m-d H:i:s', $time)) as $key => $log)
                 {
-                    $nextLog = $logs[$key+1];
-                    $timeDifference = Carbon::createFromTimeString($nextLog->created_at)->unix()-$time->unix();
-                    $playSeconds += ($timeDifference);
-                    $playHours += ($timeDifference) * $log['online_players'] / 3600;
-                    $players += $log['online_players'];
+                    if($log->online_players > $data[$index])$data[$index] = $log->online_players;
+
+                    if(isset($logs[$key+1]))
+                    {
+                        $nextLog = $logs[$key+1];
+                        $timeDifference = Carbon::createFromTimeString($nextLog->created_at)->unix()-Carbon::createFromTimeString($log->created_at)->unix();
+                        $playSeconds += ($timeDifference);
+                        $playHours += ($timeDifference) * $log['online_players'] / 3600;
+                        $players += $log['online_players'];
+                    }
+                }
+                if($data[$index]==0)
+                {
+                    unset($data[$index]);
+                    unset($labels[$index]);
                 }
             }
-
             return [
                 'players' =>[
                     'data' => $data,
