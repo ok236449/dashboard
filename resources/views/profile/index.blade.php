@@ -105,7 +105,7 @@
                                             <div class="mt-1">
                                                     <span class="badge badge-success"><i
                                                             class="fa fa-user-check mr-2"></i>
-                                                        {{__("Referral URL")}} :
+                                                        {{__("Your referral URL")}} :
                                                         <span onclick="onClickCopy()" id="RefLink" style="cursor: pointer;">
                                                             {{route("register")}}?ref={{$user->referral_code}}</span>
                                                     </span>
@@ -116,7 +116,7 @@
                                         @endif
                                             </div>
                                             <div class="mt-1">
-                                                <span class="badge badge-info">{{__("Number of referred users:")}} {{$numberOfReferrals}}</span>
+                                                <span class="badge badge-info">{{__("Number of referred users")}}: {{$numberOfReferrals}}</span>
                                             </div>
                                         @endif
                                         </div>

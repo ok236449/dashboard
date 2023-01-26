@@ -99,7 +99,7 @@ class TicketsController extends Controller
 
         return datatables($query)
             ->addColumn('category', function (Ticket $tickets) {
-                return $tickets->ticketcategory->name;
+                return __($tickets->ticketcategory->name);
             })
             ->editColumn('title', function (Ticket $tickets) {
                 return '<a class="text-info"  href="' . route('ticket.show', ['ticket_id' => $tickets->ticket_id]) . '">' . "#" . $tickets->ticket_id . " - " . $tickets->title . '</a>';
@@ -120,7 +120,7 @@ class TicketsController extends Controller
                         break;
                 }
 
-                return '<span class="badge ' . $badgeColor . '">' . $tickets->status . '</span>';
+                return '<span class="badge ' . $badgeColor . '">' . __($tickets->status) . '</span>';
             })
             ->editColumn('updated_at', function (Ticket $tickets) {
                 return $tickets->updated_at ? $tickets->updated_at->diffForHumans() : '';

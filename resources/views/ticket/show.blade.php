@@ -6,7 +6,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>{{ __('Ticket') }}</h1>
+                    <h1>{{ __('Tickets') }}</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -35,22 +35,22 @@
                         <div class="card-body">
                             <div class="ticket-info">
                                 @if(!empty($server))
-                                <p><b>Server:</b> <a href="{{ config('SETTINGS::SYSTEM:PTERODACTYL:URL') }}/server/{{ $server->identifier }}" target="__blank">{{ $server->name }} </a></p>
+                                <p><b>{{__('Server')}}:</b> <a href="{{ config('SETTINGS::SYSTEM:PTERODACTYL:URL') }}/server/{{ $server->identifier }}" target="__blank">{{ $server->name }} </a></p>
                                 @endif
-                                <p><b>Title:</b> {{ $ticket->title }}</p>
-                                <p><b>Category:</b> {{ $ticketcategory->name }}</p>
+                                <p><b>{{__('Title')}}:</b> {{ $ticket->title }}</p>
+                                <p><b>{{__('Category')}}:</b> {{ __($ticketcategory->name) }}</p>
                                 <p>
                                     @if ($ticket->status === 'Open')
-                                    <b>Status:</b> <span class="badge badge-success">Open</span>
+                                    <b>{{__('Status')}}:</b> <span class="badge badge-success">{{__('Open')}}</span>
                                     @elseif ($ticket->status === 'Closed')
-                                    <b>Status:</b> <span class="badge badge-danger">Closed</span>
+                                    <b>{{__('Status')}}:</b> <span class="badge badge-danger">{{__('Closed')}}</span>
                                     @elseif ($ticket->status === 'Answered')
-                                    <b>Status:</b> <span class="badge badge-info">Answered</span>
+                                    <b>{{__('Status')}}:</b> <span class="badge badge-info">{{__('Answered')}}</span>
                                     @elseif ($ticket->status === 'Client Reply')
-                                    <b>Status:</b> <span class="badge badge-warning">Client Reply</span>
+                                    <b>{{__('Status')}}:</b> <span class="badge badge-warning">{{__('Client Reply')}}</span>
                                     @endif
                                 </p>
-                                <p><b>Created on:</b> {{ $ticket->created_at->diffForHumans() }}</p>
+                                <p><b>{{__('Created')}}:</b> {{ $ticket->created_at->diffForHumans() }}</p>
                             </div>
                         </div>
                     </div>
@@ -59,7 +59,7 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="d-flex justify-content-between">
-                                <h5 class="card-title"><i class="fas fa-cloud mr-2"></i>{{__('Comment')}}</h5>
+                                <h5 class="card-title"><i class="fas fa-cloud mr-2"></i>{{__('Messages')}}</h5>
                             </div>
                         </div>
                         <div class="card-body">
@@ -71,13 +71,13 @@
                                             class="user-image" alt="User Image">
                                         <a href="/admin/users/{{$ticket->user->id}}">{{ $ticket->user->name }} </a>
                                         @if($ticket->user->role === "member")
-                                            <span class="badge badge-secondary"> Member </span>
+                                            <span class="badge badge-secondary"> {{__('Member')}} </span>
                                         @elseif ($ticket->user->role === "client")
-                                            <span class="badge badge-success"> Client </span>
+                                            <span class="badge badge-success"> {{__('Client')}} </span>
                                         @elseif ($ticket->user->role === "moderator")
-                                            <span class="badge badge-info"> Moderator </span>
+                                            <span class="badge badge-info"> {{__('Moderator')}} </span>
                                         @elseif ($ticket->user->role === "admin")
-                                            <span class="badge badge-danger"> Admin </span>
+                                            <span class="badge badge-danger"> {{__('Admin')}} </span>
                                         @endif
                                         </h5>
                                         <span class="badge badge-primary">{{ $ticket->created_at->diffForHumans() }}</span>
@@ -94,13 +94,13 @@
                                             class="user-image" alt="User Image">
                                         <a href="/admin/users/{{$ticketcomment->user->id}}">{{ $ticketcomment->user->name }}</a>
                                         @if($ticketcomment->user->role === "member")
-                                            <span class="badge badge-secondary"> Member </span>
+                                            <span class="badge badge-secondary"> {{__('Member')}} </span>
                                         @elseif ($ticketcomment->user->role === "client")
-                                            <span class="badge badge-success"> Client </span>
+                                            <span class="badge badge-success"> {{__('Client')}} </span>
                                         @elseif ($ticketcomment->user->role === "moderator")
-                                            <span class="badge badge-info"> Moderator </span>
+                                            <span class="badge badge-info"> {{__('Moderator')}} </span>
                                         @elseif ($ticketcomment->user->role === "admin")
-                                            <span class="badge badge-danger"> Admin </span>
+                                            <span class="badge badge-danger"> {{__('Admin')}} </span>
                                         @endif
                                     </h5>
                                         <span class="badge badge-primary">{{ $ticketcomment->created_at->diffForHumans() }}</span>
@@ -122,7 +122,7 @@
                                         @endif
                                     </div>
                                     <div class="form-group">
-                                        <button type="submit" class="btn btn-primary reply-once">Submit</button>
+                                        <button type="submit" class="btn btn-primary reply-once">{{__('Submit')}}</button>
                                     </div>
                                 </form>
                             </div>

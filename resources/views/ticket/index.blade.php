@@ -6,7 +6,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>{{ __('Ticket') }}</h1>
+                    <h1>{{ __('Tickets') }}</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -29,7 +29,7 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="d-flex justify-content-between">
-                                <h5 class="card-title"><i class="fas fa-ticket-alt mr-2"></i>{{__('My Ticket')}}</h5>
+                                <h5 class="card-title"><i class="fas fa-ticket-alt mr-2"></i>{{__('My Tickets')}}</h5>
                                 <a href="{{route('ticket.new')}}" class="btn btn-sm btn-primary"><i
                                         class="fas fa-plus mr-1"></i>{{__('New Ticket')}}</a>
                             </div>
@@ -61,8 +61,7 @@
                                 class="fas fa-info-circle"></i></h5>
                         </div>
                         <div class="card-body">
-                            <p>Can't start your server? Need an additional port? Do you have any other questions? Let us know by
-                                opening a ticket.</p>
+                            <p>{{__("Can't start your server? Need an additional port or more disk space? Do you have any other questions? Let us know by opening a ticket.")}}</p>
 
                         </div>
                     </div>

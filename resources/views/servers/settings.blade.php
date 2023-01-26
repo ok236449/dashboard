@@ -33,7 +33,7 @@
                       <div class="row">
                         <div class="col-8">
                           <div class="numbers">
-                            <p class="text-sm mb-0 text-uppercase font-weight-bold">SERVER NAME</p>
+                            <p class="text-sm mb-0 text-uppercase font-weight-bold">{{__('Server name')}}</p>
                             <h5 class="font-weight-bolder" id="domain_text">
                               <span class="text-success text-sm font-weight-bolder">{{ $server->name }}</span>
                             </h5>
@@ -54,9 +54,9 @@
                       <div class="row">
                         <div class="col-8">
                           <div class="numbers">
-                            <p class="text-sm mb-0 text-uppercase font-weight-bold">CPU</p>
+                            <p class="text-sm mb-0 text-uppercase font-weight-bold">{{__('CPU')}}</p>
                             <h5 class="font-weight-bolder">
-                              <span class="text-success text-sm font-weight-bolder">@if($server->product->cpu == 0)Unlimited @else {{$server->product->cpu}} % @endif</span>
+                              <span class="text-success text-sm font-weight-bolder">@if($server->product->cpu == 0){{__('Unlimited')}} @else {{$server->product->cpu}} % @endif</span>
                             </h5>
                           </div>
                         </div>
@@ -75,9 +75,9 @@
                       <div class="row">
                         <div class="col-8">
                           <div class="numbers">
-                            <p class="text-sm mb-0 text-uppercase font-weight-bold">Memory</p>
+                            <p class="text-sm mb-0 text-uppercase font-weight-bold">{{__('Memory')}}</p>
                             <h5 class="font-weight-bolder">
-                              <span class="text-success text-sm font-weight-bolder">@if($server->product->memory == 0)Unlimited @else {{$server->product->memory}}MB @endif</span>
+                              <span class="text-success text-sm font-weight-bolder">@if($server->product->memory == 0){{__('Unlimited')}} @else {{$server->product->memory}}MB @endif</span>
                             </h5>
                           </div>
                         </div>
@@ -96,9 +96,9 @@
                       <div class="row">
                         <div class="col-8">
                           <div class="numbers">
-                            <p class="text-sm mb-0 text-uppercase font-weight-bold">STORAGE</p>
+                            <p class="text-sm mb-0 text-uppercase font-weight-bold">{{__('Storage')}}</p>
                             <h5 class="font-weight-bolder">
-                              <span class="text-success text-sm font-weight-bolder">@if($server->product->disk == 0)Unlimited @else {{$server->product->disk}}MB @endif</span>
+                              <span class="text-success text-sm font-weight-bolder">@if($server->product->disk == 0){{__('Unlimited')}} @else {{$server->product->disk}}MB @endif</span>
                             </h5>
                           </div>
                         </div>
@@ -206,7 +206,7 @@
                         <div class="col-lg-6">
                             <div class="row">
                                 <div class="col-lg-4">
-                                    <label>{{__('MySQL Database')}}</label>
+                                    <label>{{__('Databases')}}</label>
                                 </div>
                                 <div class="col-lg-8">
                                     <span style="max-width: 250px;" class="d-inline-block text-truncate">
@@ -242,17 +242,14 @@
                                         </button>
                                     </div>
                                     <div class="modal-body card-body">
-                                        <strong>{{__("FOR DOWNGRADE PLEASE CHOOSE A PLAN BELOW YOUR PLAN")}}</strong>
-                                        <br>
-                                        <br>
-                                        <strong>{{__("YOUR PRODUCT")}} : </strong> {{ $server->product->name }}
+                                        <strong>{{__("Your product")}} : </strong> {{ $server->product->name }}
                                         <br>
                                         <br>
 
                                     <form action="{{ route('servers.upgrade', ['server' => $server->id]) }}" method="POST" class="upgrade-form">
                                       @csrf
                                           <select name="product_upgrade" id="product_upgrade" class="form-input2 form-control">
-                                            <option value="">{{__("Select the product")}}</option>
+                                            <option value="">{{__("Select new product")}}</option>
                                               @foreach($products as $product)
                                                   @if(in_array($server->egg, $product->eggs) && $product->id != $server->product->id && $product->disabled == false)
                                                     <option value="{{ $product->id }}" @if($product->doesNotFit)disabled @endif>{{ $product->name }} [ {{ CREDITS_DISPLAY_NAME }} {{ $product->price }} @if($product->doesNotFit)] {{__('Server can´t fit on this node')}} @else @if($product->minimum_credits!=-1) /
@@ -261,7 +258,7 @@
                                               @endforeach
                                           </select>
                                           <br> {{__("Once the Upgrade button is pressed, we will automatically deduct the amount for the first hour according to the new product from your credits")}}. <br>
-                                          <br> {{__("Server will be automatically restarted once upgraded")}}
+                                          <br> {{__("Server will be automatically restarted once upgraded")}}.
                                     </div>
                                     <div class="modal-footer card-body">
                                         <button type="submit" class="btn btn-primary upgrade-once" style="width: 100%"><strong>{{__("Change Product")}}</strong></button>

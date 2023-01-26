@@ -840,7 +840,8 @@ class PaymentController extends Controller
         $notes = [
             "",
             __("Payment method") . ": " . $payment->payment_method,
-            __('The price includes VAT')
+            __('The price includes VAT'),
+            __('The seller is registered in the trade register')
         ];
         $notes = implode("<br>", $notes);
 

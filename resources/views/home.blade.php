@@ -154,8 +154,7 @@
                                         @elseif(str_starts_with($log->description,"updated"))
                                             <small><i class="fas text-info fa-pen mr-2"></i></small>
                                         @endif
-                                        {{ explode('\\', $log->subject_type)[2] }}
-                                        {{ ucfirst($log->description) }}
+                                        {{ __(explode('\\', $log->subject_type)[2] . " " . ucfirst($log->description)) }}
                                     </span>
                                     <small>
                                         {{ $log->created_at->diffForHumans() }}
@@ -189,7 +188,7 @@
                                         </span>
                                     </div>
                                     <div class="mt-3 col-md-4">
-                                        <span class="badge badge-info" style="font-size: 14px">{{__("Number of referred users:")}} {{$numberOfReferrals}}</span>
+                                        <span class="badge badge-info" style="font-size: 14px">{{__("Number of referred users")}}: {{$numberOfReferrals}}</span>
                                     </div>
                                 </div>
                                 @if($partnerDiscount)
