@@ -549,5 +549,6 @@
     "Server will be automatically restarted once upgraded": "Server bude automaticky restartován",
     "Change Product": "Změnit balíček",
     "Required": "Minimálně",
-    "Make a purchase to reveal your referral-URL": "Zvací odkaz se zobrazí po prvním dobití kreditů"
+    "Make a purchase to reveal your referral-URL": "Zvací odkaz se zobrazí po prvním dobití kreditů",
+    "The selected payment method comes with very high taxes. Please consider choosing a different one.": "Zvolená platební metoda zahrnuje velmi vysoké poplatky. Prosím zvažte použití jiné."
 }

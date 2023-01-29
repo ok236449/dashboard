@@ -212,13 +212,18 @@
                                                         <td id="subtotal"></td>
                                                     </tr>
                                                     <tr class="checkout_table">
-                                                        <th>{{ __('Tax') }}<span id="tax_span"></span>:</th>
+                                                        <th>{{ __('Tax') }}<span id="tax_span"></span>:
+                                                            <div class="tool-tip" style="position: relative; justify-content:center">
+                                                                <i id="exclamation_mark_tax" class="fas fa-exclamation-triangle" style="color: rgb(189, 46, 27); display: none;"></i>
+                                                                <span class="tool-tip-text tool-tip-text-up">{{__('The selected payment method comes with very high taxes. Please consider choosing a different one.')}}</span>
+                                                            </div>
+                                                        </th>
                                                         <td id="tax"></td>
                                                     </tr>
                                                     <tr class="checkout_table">
                                                         <th>{{ __('Total') }}:
                                                             <div class="tool-tip" style="position: relative; justify-content:center">
-                                                                <i id="exclamation_mark" class="fas fa-exclamation-triangle" style="color: rgb(189, 46, 27); display: none;"></i>
+                                                                <i id="exclamation_mark_total" class="fas fa-exclamation-triangle" style="color: rgb(189, 46, 27); display: none;"></i>
                                                                 <span class="tool-tip-text tool-tip-text-up">{{__('Minimum possible amount for this payment method is')}} <span id="minimum_amount"></span>.</span>
                                                             </div>
                                                         </th>
@@ -263,7 +268,7 @@
                 stripe: {fixed: 0.25, percent: 1.4, minimum: 0.5},
                 gopay: {
                     bank_bitcoin: {fixed: 0.06, percent: 1.2, minimum: 0},
-                    //sms: {fixed: 0, percent: 45.2},
+                    sms: {fixed: 0, percent: 45.2, minimum: 0},
                     paysafecard: {fixed: 0, percent: 13, minimum: 0}}
             }};
 
@@ -287,8 +292,6 @@
             overviewCalc();
         }
         function changeCurrency(){
-            if(document.querySelector('input[name="currency"]:checked').value=="eur") document.getElementById('gopay_payment_method_sms').checked = false;
-
             var taxArray = taxes[document.querySelector('input[name="currency"]:checked').value]["paypal"];
             document.getElementById('paypal_tax').textContent = ((taxArray.fixed!=0)?(taxArray.fixed + taxes[document.querySelector('input[name="currency"]:checked').value].symbol + ((taxArray.percent!=0)?(" + "):"")):"") + ((taxArray.percent!=0)?(taxArray.percent + "%"):"");
             taxArray = taxes[document.querySelector('input[name="currency"]:checked').value]["stripe"];
@@ -296,7 +299,7 @@
             taxArray = taxes[document.querySelector('input[name="currency"]:checked').value]["gopay"]["bank_bitcoin"];
             var bank_bitcoin = ((taxArray.fixed!=0)?(taxArray.fixed + taxes[document.querySelector('input[name="currency"]:checked').value].symbol + ((taxArray.percent!=0)?(" + "):"")):"") + ((taxArray.percent!=0)?(taxArray.percent + "%"):"");
             taxArray = taxes[document.querySelector('input[name="currency"]:checked').value]["gopay"]["sms"];
-            var sms = document.querySelector('input[name="currency"]:checked').value=="eur"?"---":((taxArray.fixed!=0)?(taxArray.fixed + taxes[document.querySelector('input[name="currency"]:checked').value].symbol + ((taxArray.percent!=0)?(" + "):"")):"") + ((taxArray.percent!=0)?(taxArray.percent + "%"):"");
+            var sms =  ((taxArray.fixed!=0)?(taxArray.fixed + taxes[document.querySelector('input[name="currency"]:checked').value].symbol + ((taxArray.percent!=0)?(" + "):"")):"") + ((taxArray.percent!=0)?(taxArray.percent + "%"):"");
             taxArray = taxes[document.querySelector('input[name="currency"]:checked').value]["gopay"]["paysafecard"];
             var paysafecard = ((taxArray.fixed!=0)?(taxArray.fixed + taxes[document.querySelector('input[name="currency"]:checked').value].symbol + ((taxArray.percent!=0)?(" + "):"")):"") + ((taxArray.percent!=0)?(taxArray.percent + "%"):"");
             document.getElementById('gopay_tax').textContent = bank_bitcoin + "\r\n" + sms + "\r\n" + paysafecard + "\r\n" + bank_bitcoin;
@@ -316,8 +319,6 @@
                 document.getElementById('gopay_payment_method').style.display = "none";
             }
 
-            if(document.querySelector('input[name="currency"]:checked').value=="eur") document.getElementById('gopay_payment_method_sms').setAttribute("disabled", "disabled");
-            else document.getElementById('gopay_payment_method_sms').removeAttribute("disabled");
             overviewCalc();
         }
         function overviewCalc(){
@@ -343,17 +344,19 @@
                 if(taxArray.fixed+taxArray.percent>0) document.getElementById('tax_span').textContent = " (" + ((taxArray.fixed!=0)?(taxArray.fixed + taxes[currency].symbol + ((taxArray.percent!=0)?(" + "):"")):"") + ((taxArray.percent!=0)?(taxArray.percent + "%"):"") + ")";
                 else document.getElementById('tax_span').textContent = "";
 
-                var tax = taxArray.fixed + taxArray.percent*subtotal/100;
+                var tax = (taxArray.fixed + subtotal) * 100 / (100 - taxArray.percent) - subtotal;
                 document.getElementById('tax').textContent = tax.toFixed(2) + taxes[currency].symbol;
                 var total = (parseFloat(subtotal.toFixed(2)) + parseFloat(tax.toFixed(2))).toFixed(2);
                 document.getElementById('total').textContent = total + taxes[currency].symbol;
                 document.getElementById('minimum_amount').textContent = taxArray.minimum + taxes[currency].symbol;
+                if(taxArray.percent>15) document.getElementById('exclamation_mark_tax').style.display = "";
+                else document.getElementById('exclamation_mark_tax').style.display = "none";
                 if(taxArray.minimum<=total){
-                    document.getElementById('exclamation_mark').style.display = "none";
+                    document.getElementById('exclamation_mark_total').style.display = "none";
                     document.getElementById('submit_button').classList.remove("disabled");
                 }
                 else{
-                    document.getElementById('exclamation_mark').style.display = "";
+                    document.getElementById('exclamation_mark_total').style.display = "";
                     document.getElementById('submit_button').classList.add("disabled");
                 }
             }
@@ -366,7 +369,7 @@
                 document.getElementById('tax_span').textContent = "";
                 document.getElementById('tax').textContent = "";
                 document.getElementById('total').textContent = "";
-                document.getElementById('exclamation_mark').style.display = "none";
+                document.getElementById('exclamation_mark_total').style.display = "none";
                 document.getElementById('submit_button').classList.add("disabled");
             }
         }

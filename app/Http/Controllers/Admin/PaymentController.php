@@ -59,7 +59,6 @@ class PaymentController extends Controller
             !($request->currency=="czk"||$request->currency=="eur")||
             !($request->payment_method=="paypal"||$request->payment_method=="stripe"||$request->payment_method=="gopay")||
             ($request->payment_method=="gopay"&&!($request->gopay_payment_method=="bank_bitcoin"||$request->gopay_payment_method=="sms"||$request->gopay_payment_method=="paysafecard"))||
-            ($request->payment_method=="gopay"&&$request->currency=="eur"&&$request->gopay_payment_method=="sms")||
             $this->AmountTooSmall($request->credit_amount, $request->currency, $request->payment_method, $request->gopay_payment_method)
         ) return redirect()->route('home')->with('error', __('There was a problem with your input. Please try again. If the issue persists, please contact support.'));
         if($request->payment_method=="gopay"&&$request->gopay_payment_method=="paysafecard") return redirect()->route('store.index')->with('error', __('Sorry, this payment method isn´t available yet. Please choose a different one.'));
@@ -100,7 +99,7 @@ class PaymentController extends Controller
                 "stripe" => ["fixed" => 0.25, "percent" => 1.4, "minimum" => 0.5],
                 "gopay" => [
                     "bank_bitcoin" => ["fixed" => 0.06, "percent" => 1.2, "minimum" => 0],
-                    //"sms" => ["fixed" => 0, "percent" => 45.2],
+                    "sms" => ["fixed" => 0, "percent" => 45.2, "minimum" => 0],
                     "paysafecard" => ["fixed" => 0, "percent" => 13, "minimum" => 0]]]
         ];
     }
@@ -109,7 +108,7 @@ class PaymentController extends Controller
     {
         $taxes = $this->getTaxesArray();
         $taxArray = $payment_method!="gopay"?$taxes[$currency][$payment_method]:$taxes[$currency][$payment_method][$gopay_payment_method];
-        return $taxArray["fixed"] + $taxArray["percent"]*$amount/100;
+        return ($taxArray["fixed"] + $amount) * 100 / (100 - $taxArray["percent"]) - $amount;
     }
 
     public function AmountTooSmall($amount, $currency, $payment_method, $gopay_payment_method=null)
