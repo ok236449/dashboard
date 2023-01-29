@@ -4,10 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Events\UserUpdateCreditsEvent;
 use App\Http\Controllers\Controller;
-use App\Models\InvoiceSettings;
 use App\Models\PartnerDiscount;
 use App\Models\Payment;
-use App\Models\Settings;
 use App\Models\User;
 use App\Notifications\InvoiceNotification;
 use App\Notifications\ConfirmPaymentNotification;
@@ -16,11 +14,9 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use LaravelDaily\Invoices\Classes\Buyer;
 use LaravelDaily\Invoices\Classes\InvoiceItem;
@@ -41,14 +37,13 @@ require_once base_path() . '/vendor/autoload.php';
 
 class PaymentController extends Controller
 {
-
     /**
      * @return Application|Factory|View
      */
     public function index()
     {
         return view('admin.payments.index')->with([
-            'payments' => Payment::paginate(15)
+            'payments' => Payment::paginate(15),
         ]);
     }
 
@@ -318,7 +313,7 @@ class PaymentController extends Controller
      */
     public function Cancel(Request $request)
     {
-        return redirect()->route('store.index')->with('success', 'Payment was Canceled');
+        return redirect()->route('store.index')->with('info', 'Payment was Canceled');
     }
 
     public function StripePay($amount, $currency)
@@ -841,7 +836,7 @@ class PaymentController extends Controller
             "",
             __("Payment method") . ": " . $payment->payment_method,
             __('The price includes VAT'),
-            __('The seller is registered in the trade register')
+            __('The seller is registered in the trade register.')
         ];
         $notes = implode("<br>", $notes);
 
@@ -884,6 +879,7 @@ class PaymentController extends Controller
 
     /**
      * @return JsonResponse|mixed
+     *
      * @throws Exception
      */
     public function dataTable()
@@ -891,9 +887,9 @@ class PaymentController extends Controller
         $query = Payment::with('user');
 
         return datatables($query)
-            ->editColumn('user', function (Payment $payment) {
-                return 
-                ($payment->user)?'<a href="'.route('admin.users.show', $payment->user->id).'">'.$payment->user->name.'</a>':__('Unknown user');
+
+            ->addColumn('user', function (Payment $payment) {
+                return ($payment->user) ? '<a href="' . route('admin.users.show', $payment->user->id) . '">' . $payment->user->name . '</a>' : __('Unknown user');
             })
             ->editColumn('price', function (Payment $payment) {
                 return $payment->formatToCurrency($payment->price);
@@ -909,10 +905,13 @@ class PaymentController extends Controller
             })
 
             ->editColumn('created_at', function (Payment $payment) {
-                return $payment->created_at ? $payment->created_at->diffForHumans() : '';
+                return [
+                    'display' => $payment->created_at ? $payment->created_at->diffForHumans() : '',
+                    'raw' => $payment->created_at ? strtotime($payment->created_at) : ''
+                ];
             })
             ->addColumn('actions', function (Payment $payment) {
-                return '<a data-content="' . __("Download") . '" data-toggle="popover" data-trigger="hover" data-placement="top"  href="' . route('admin.invoices.downloadSingleInvoice', "id=" . $payment->payment_id) . '" class="btn btn-sm text-white btn-info mr-1"><i class="fas fa-file-download"></i></a>';
+                return '<a data-content="' . __('Download') . '" data-toggle="popover" data-trigger="hover" data-placement="top"  href="' . route('admin.invoices.downloadSingleInvoice', 'id=' . $payment->payment_id) . '" class="btn btn-sm text-white btn-info mr-1"><i class="fas fa-file-download"></i></a>';
             })
             ->rawColumns(['actions', 'user'])
             ->make(true);

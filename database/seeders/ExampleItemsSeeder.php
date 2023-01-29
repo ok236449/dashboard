@@ -19,8 +19,7 @@ class ExampleItemsSeeder extends Seeder
         $this->call([
             ProductSeeder::class,
             ApplicationApiSeeder::class,
-            UsefulLinksSeeder::class
+            UsefulLinksSeeder::class,
         ]);
-
     }
 }
