@@ -94,7 +94,7 @@
                                                         <div class="col-lg-5 col-7 taxtable">
                                                             <p>
                                                                 {{__('Bank transfer')}}:<br>
-                                                                {{__('M-payment (SMS)')}}:<br>
+                                                                {{__('SMS')}}<span id="sms_method"></span>:<br>
                                                                 {{__('Paysafecard')}}:<br>
                                                                 {{__('Bitcoin')}}:
                                                             </p>
@@ -159,7 +159,7 @@
                                                             <div class="col-12">
                                                                 <div class="tool-tip mb-3" style="position: relative; justify-content:center">
                                                                     <label for="gopay">
-                                                                        <span class="tool-tip-text">{{__('M-payment (SMS)')}}, {{__('Bank transfer')}}, {{__('Paysafecard')}}, {{__('Bitcoin')}}</span>
+                                                                        <span class="tool-tip-text">{{__('SMS (M-payment, Premium SMS)')}}, {{__('Bank transfer')}}, {{__('Paysafecard')}}, {{__('Bitcoin')}}</span>
                                                                         <input   style="position: absolute; top: 50%; transform: translateY(-50%);" type="radio" value="gopay" name="payment_method" id="gopay" oninput="changePaymentMethod();" required>
                                                                         <img height="40px" style="position: absolute; top: 50%; transform: translateY(-50%); margin-left: 20px" src="{{ asset('images/gopay_logo.png') }}"/>
                                                                     </label>
@@ -171,12 +171,12 @@
                                                                         <label for="gopay_payment_method_bank_bitcoin" style="display: inline">{{__('Bank transfer or Bitcoin')}}</label>
                                                                     </div>
                                                                     <div>
-                                                                        <input disabled style="display: inline;" type="radio" value="paysafecard" name="gopay_payment_method" id="gopay_payment_method_paysafecard" oninput="changePaymentMethod();">
-                                                                        <label for="gopay_payment_method_paysafecard" style="display: inline"><s>{{__('PaySafeCard')}}</s></label>
+                                                                        <input style="display: inline;" type="radio" value="paysafecard" name="gopay_payment_method" id="gopay_payment_method_paysafecard" oninput="changePaymentMethod();">
+                                                                        <label for="gopay_payment_method_paysafecard" style="display: inline">{{__('PaySafeCard')}}</label>
                                                                     </div>
                                                                     <div class="mb-1">
                                                                         <input style="display: inline" type="radio" value="sms" name="gopay_payment_method" id="gopay_payment_method_sms" oninput="changePaymentMethod();">
-                                                                        <label for="gopay_payment_method_sms" style="display: inline">{{__('M-payment (SMS)')}}</label>
+                                                                        <label for="gopay_payment_method_sms" id="gopay_mayment_method_sms_label" style="display: inline">{{__('SMS (M-payment, Premium SMS)')}}</label>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -214,7 +214,7 @@
                                                     <tr class="checkout_table">
                                                         <th>{{ __('Tax') }}<span id="tax_span"></span>:
                                                             <div class="tool-tip" style="position: relative; justify-content:center">
-                                                                <i id="exclamation_mark_tax" class="fas fa-exclamation-triangle" style="color: rgb(189, 46, 27); display: none;"></i>
+                                                                <i id="exclamation_mark_tax" class="fas fa-exclamation-triangle" style="color: rgb(236, 154, 30); display: none;"></i>
                                                                 <span class="tool-tip-text tool-tip-text-up">{{__('The selected payment method comes with very high taxes. Please consider choosing a different one.')}}</span>
                                                             </div>
                                                         </th>
@@ -225,6 +225,10 @@
                                                             <div class="tool-tip" style="position: relative; justify-content:center">
                                                                 <i id="exclamation_mark_total" class="fas fa-exclamation-triangle" style="color: rgb(189, 46, 27); display: none;"></i>
                                                                 <span class="tool-tip-text tool-tip-text-up">{{__('Minimum possible amount for this payment method is')}} <span id="minimum_amount"></span>.</span>
+                                                            </div>
+                                                            <div class="tool-tip" style="position: relative; justify-content:center">
+                                                                <i id="exclamation_mark_sms" class="fas fa-exclamation-triangle" style="color: rgb(236, 154, 30); display: none;"></i>
+                                                                <span class="tool-tip-text tool-tip-text-up" id="sms_exclamation_mark_text" style="width: 260px;"></span>
                                                             </div>
                                                         </th>
                                                         <td id="total" style="font-weight: bold"></td>
@@ -292,16 +296,19 @@
             overviewCalc();
         }
         function changeCurrency(){
-            var taxArray = taxes[document.querySelector('input[name="currency"]:checked').value]["paypal"];
-            document.getElementById('paypal_tax').textContent = ((taxArray.fixed!=0)?(taxArray.fixed + taxes[document.querySelector('input[name="currency"]:checked').value].symbol + ((taxArray.percent!=0)?(" + "):"")):"") + ((taxArray.percent!=0)?(taxArray.percent + "%"):"");
-            taxArray = taxes[document.querySelector('input[name="currency"]:checked').value]["stripe"];
-            document.getElementById('stripe_tax').textContent = ((taxArray.fixed!=0)?(taxArray.fixed + taxes[document.querySelector('input[name="currency"]:checked').value].symbol + ((taxArray.percent!=0)?(" + "):"")):"") + ((taxArray.percent!=0)?(taxArray.percent + "%"):"");
-            taxArray = taxes[document.querySelector('input[name="currency"]:checked').value]["gopay"]["bank_bitcoin"];
-            var bank_bitcoin = ((taxArray.fixed!=0)?(taxArray.fixed + taxes[document.querySelector('input[name="currency"]:checked').value].symbol + ((taxArray.percent!=0)?(" + "):"")):"") + ((taxArray.percent!=0)?(taxArray.percent + "%"):"");
-            taxArray = taxes[document.querySelector('input[name="currency"]:checked').value]["gopay"]["sms"];
-            var sms =  ((taxArray.fixed!=0)?(taxArray.fixed + taxes[document.querySelector('input[name="currency"]:checked').value].symbol + ((taxArray.percent!=0)?(" + "):"")):"") + ((taxArray.percent!=0)?(taxArray.percent + "%"):"");
-            taxArray = taxes[document.querySelector('input[name="currency"]:checked').value]["gopay"]["paysafecard"];
-            var paysafecard = ((taxArray.fixed!=0)?(taxArray.fixed + taxes[document.querySelector('input[name="currency"]:checked').value].symbol + ((taxArray.percent!=0)?(" + "):"")):"") + ((taxArray.percent!=0)?(taxArray.percent + "%"):"");
+            var currency = document.querySelector('input[name="currency"]:checked').value;
+            var taxArray = taxes[currency]["paypal"];
+            document.getElementById('paypal_tax').textContent = ((taxArray.fixed!=0)?(taxArray.fixed + taxes[currency].symbol + ((taxArray.percent!=0)?(" + "):"")):"") + ((taxArray.percent!=0)?(taxArray.percent + "%"):"");
+            taxArray = taxes[currency]["stripe"];
+            document.getElementById('stripe_tax').textContent = ((taxArray.fixed!=0)?(taxArray.fixed + taxes[currency].symbol + ((taxArray.percent!=0)?(" + "):"")):"") + ((taxArray.percent!=0)?(taxArray.percent + "%"):"");
+            taxArray = taxes[currency]["gopay"]["bank_bitcoin"];
+            var bank_bitcoin = ((taxArray.fixed!=0)?(taxArray.fixed + taxes[currency].symbol + ((taxArray.percent!=0)?(" + "):"")):"") + ((taxArray.percent!=0)?(taxArray.percent + "%"):"");
+            taxArray = taxes[currency]["gopay"]["sms"];
+            var sms =  ((taxArray.fixed!=0)?(taxArray.fixed + taxes[currency].symbol + ((taxArray.percent!=0)?(" + "):"")):"") + ((taxArray.percent!=0)?(taxArray.percent + "%"):"");
+            taxArray = taxes[currency]["gopay"]["paysafecard"];
+            var paysafecard = ((taxArray.fixed!=0)?(taxArray.fixed + taxes[currency].symbol + ((taxArray.percent!=0)?(" + "):"")):"") + ((taxArray.percent!=0)?(taxArray.percent + "%"):"");
+            document.getElementById('sms_method').textContent = " " + (currency=="czk"?"({{__('M-payment')}})":"({{__('Premium SMS')}})");
+            document.getElementById('gopay_mayment_method_sms_label').textContent = "{{__('SMS')}} " + (currency=="czk"?"({{__('M-payment')}})":"({{__('Premium SMS')}})");
             document.getElementById('gopay_tax').textContent = bank_bitcoin + "\r\n" + sms + "\r\n" + paysafecard + "\r\n" + bank_bitcoin;
             changePaymentMethod();
         }
@@ -324,6 +331,7 @@
         function overviewCalc(){
             var credits = parseInt(document.getElementById('credit_amount').value);
             var currency = document.querySelector('input[name="currency"]:checked').value;
+            var eurPremiumSMSAmounts = {{json_encode($eurPremiumSMSAmounts)}};
             if(credits>={{$min_amount}}&&(document.querySelector('input[name="payment_method"]:checked').value!="gopay"||document.querySelector('input[name="gopay_payment_method"]:checked')!=null)&&document.querySelector('input[name="payment_method"]:checked').value!=null){
                 document.getElementById('amount').textContent = credits;
                 document.getElementById('quantity_discount').textContent = (100-getDiscountByAmount(credits)).toFixed(2) + "%";
@@ -347,8 +355,7 @@
                 var tax = (taxArray.fixed + subtotal) * 100 / (100 - taxArray.percent) - subtotal;
                 document.getElementById('tax').textContent = tax.toFixed(2) + taxes[currency].symbol;
                 var total = (parseFloat(subtotal.toFixed(2)) + parseFloat(tax.toFixed(2))).toFixed(2);
-                document.getElementById('total').textContent = total + taxes[currency].symbol;
-                document.getElementById('minimum_amount').textContent = taxArray.minimum + taxes[currency].symbol;
+
                 if(taxArray.percent>15) document.getElementById('exclamation_mark_tax').style.display = "";
                 else document.getElementById('exclamation_mark_tax').style.display = "none";
                 if(taxArray.minimum<=total){
@@ -359,8 +366,33 @@
                     document.getElementById('exclamation_mark_total').style.display = "";
                     document.getElementById('submit_button').classList.add("disabled");
                 }
+
+                if(currency=="eur"&&document.querySelector('input[name="payment_method"]:checked').value=="gopay"&&document.querySelector('input[name="gopay_payment_method"]:checked').value=="sms"&&!eurPremiumSMSAmounts.includes(total)){
+                    for(let i = 0; i<eurPremiumSMSAmounts.length; i++){
+                        if(eurPremiumSMSAmounts[i]>=total){
+                            document.getElementById('exclamation_mark_sms').style.display = "";
+                            document.getElementById('sms_exclamation_mark_text').textContent = "{{__('This method supports only allows some predefined amounts. Because of this, the currently shown total is rounded to the closest higher allowable value.')}} {{__('Current value')}}: " + total + taxes[currency].symbol;
+                            document.getElementById('exclamation_mark_sms').style.color = "rgb(236, 154, 30)";
+                            total = eurPremiumSMSAmounts[i];
+                            break;
+                        }
+                        if(i==eurPremiumSMSAmounts.length-1){
+                            document.getElementById('exclamation_mark_sms').style.display = "";
+                            document.getElementById('sms_exclamation_mark_text').textContent = "{{__('The maximum possible payment with the chosen payment method is')}} " + eurPremiumSMSAmounts[eurPremiumSMSAmounts.length-1] + taxes[currency].symbol + ".";
+                            document.getElementById('exclamation_mark_sms').style.color = "rgb(189, 46, 27)";
+                            document.getElementById('submit_button').classList.add("disabled");
+                        }
+                    }
+                }
+                else{
+                    document.getElementById('exclamation_mark_sms').style.display = "none";
+                }
+                document.getElementById('total').textContent = total + taxes[currency].symbol;
+                document.getElementById('minimum_amount').textContent = taxArray.minimum + taxes[currency].symbol;
+                
             }
             else{
+                //error:
                 document.getElementById('amount').textContent = "";
                 document.getElementById('quantity_discount').textContent = "";
                 document.getElementById('your_discount').textContent = "";
@@ -369,7 +401,9 @@
                 document.getElementById('tax_span').textContent = "";
                 document.getElementById('tax').textContent = "";
                 document.getElementById('total').textContent = "";
+                document.getElementById('exclamation_mark_tax').style.display = "none";
                 document.getElementById('exclamation_mark_total').style.display = "none";
+                document.getElementById('exclamation_mark_sms').style.display = "none";
                 document.getElementById('submit_button').classList.add("disabled");
             }
         }

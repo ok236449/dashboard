@@ -61,7 +61,6 @@ class PaymentController extends Controller
             ($request->payment_method=="gopay"&&!($request->gopay_payment_method=="bank_bitcoin"||$request->gopay_payment_method=="sms"||$request->gopay_payment_method=="paysafecard"))||
             $this->AmountTooSmall($request->credit_amount, $request->currency, $request->payment_method, $request->gopay_payment_method)
         ) return redirect()->route('home')->with('error', __('There was a problem with your input. Please try again. If the issue persists, please contact support.'));
-        if($request->payment_method=="gopay"&&$request->gopay_payment_method=="paysafecard") return redirect()->route('store.index')->with('error', __('Sorry, this payment method isn´t available yet. Please choose a different one.'));
 
         if($request->payment_method=="paypal") return $this->PaypalPay($request->credit_amount, $request->currency);
         elseif($request->payment_method=="stripe") return $this->StripePay($request->credit_amount, $request->currency);
@@ -126,6 +125,7 @@ class PaymentController extends Controller
         $subtotal = ($this->getDiscountByAmount($amount)*$amount/100)*(100-PartnerDiscount::getDiscount())/100;
         if($currency=="eur") $subtotal = $subtotal/config("SETTINGS::PAYMENTS:EUR_RATIO");
         $tax = $this->getTaxes($subtotal, $currency, "paypal");
+        $total = Round(Round($subtotal, 2) + Round($tax, 2), 2);
 
 
         $request = new OrdersCreateRequest();
@@ -137,7 +137,7 @@ class PaymentController extends Controller
                     "reference_id" => uniqid(),
                     "description" => $amount . " " . CREDITS_DISPLAY_NAME,
                     "amount"       => [
-                        "value"         => round($subtotal + $tax, 2),
+                        "value"         => $total,
                         'currency_code' => strtoupper($currency),
                         'breakdown' => [
                             'item_total' =>
@@ -639,16 +639,37 @@ class PaymentController extends Controller
             'timeout' => 30
         ]);
     }
+
+    public static function gopayEurPremiumSMSamounts()
+    {
+        $amounts = array();
+        for($i = 10; $i<=2000; $i+=5) if($i<=105||($i%10==0&&$i<=1100)||$i%100==0||($i%100==5&&$i<1100))array_push($amounts, $i/100);
+        return $amounts;
+    }
+
     public function GopayPay($amount, $currency, $method)
     {
         $subtotal = ($this->getDiscountByAmount($amount)*$amount/100)*(100-PartnerDiscount::getDiscount())/100;
         if($currency=="eur") $subtotal = $subtotal/config("SETTINGS::PAYMENTS:EUR_RATIO");
         $tax = $this->getTaxes($subtotal, $currency, "gopay", $method);
+        $total = Round(Round($subtotal, 2) + Round($tax, 2), 2);
+
+        $allowedEurAmounts = $this->gopayEurPremiumSMSamounts();
+        if($currency=="eur"&&$method=="sms"&&!in_array($total, $allowedEurAmounts)){
+            for($i = 0; $i<count($allowedEurAmounts); $i++){
+                if($allowedEurAmounts[$i]>=$total){
+                    $total = $allowedEurAmounts[$i];
+                    $tax = $total - $subtotal;
+                    break;
+                }
+                if($i==count($allowedEurAmounts)-1) return redirect()->route('store.index')->with('error', __('The maximum possible payment with the chosen payment method is') . " " . $allowedEurAmounts[count($allowedEurAmounts)-1]);
+            }
+        }
 
         $gopay =  $this->gopay();
         $gopay_methods = array();
         if($method=="bank_bitcoin") array_push($gopay_methods, PaymentInstrument::BANK_ACCOUNT, PaymentInstrument::BITCOIN);
-        elseif($method=="sms") array_push($gopay_methods, PaymentInstrument::MPAYMENT);
+        elseif($method=="sms") array_push($gopay_methods, $currency=='czk'?PaymentInstrument::MPAYMENT:PaymentInstrument::PREMIUM_SMS);
         elseif($method=="paysafecard") array_push($gopay_methods, PaymentInstrument::PAYSAFECARD);
 
         $response = $gopay->createPayment([
@@ -703,6 +724,9 @@ class PaymentController extends Controller
                 case 'MPAYMENT':
                     return "sms";
                     break;
+                case 'PREMIUM_SMS':
+                    return "sms";
+                    break;
                 case 'PAYSAFECARD':
                     return "paysafecard";
                     break;
@@ -722,11 +746,29 @@ class PaymentController extends Controller
             // Call API with your client and get a response for your call
             $paymentStatus = $gopay->getStatus($request->id);
             
-            $price = strtolower($paymentStatus->json['currency'])=='eur'?$this->getDiscountByAmount($request->amount)*$request->amount/100/config("SETTINGS::PAYMENTS:EUR_RATIO"):$this->getDiscountByAmount($request->amount)*$request->amount/100;
+            $currency = strtolower($paymentStatus->json['currency']);
+            $method = $this->getGopayMethod($paymentStatus->json['payer']['allowed_payment_instruments']);
+            $price = $currency=='eur'?$this->getDiscountByAmount($request->amount)*$request->amount/100/config("SETTINGS::PAYMENTS:EUR_RATIO"):$this->getDiscountByAmount($request->amount)*$request->amount/100;
             $subtotal = ($price)*(100-PartnerDiscount::getDiscount($request->user_id))/100;
-            $tax = $this->getTaxes($subtotal, strtolower($paymentStatus->json['currency']), "gopay", $this->getGopayMethod($paymentStatus->json['payer']['allowed_payment_instruments']));
+            $tax = $this->getTaxes($subtotal, $currency, "gopay", $method);
 
-            if(abs($subtotal+$tax-$paymentStatus->json['amount']/100)>=0.05) return redirect()->route('home')->with('error', __('There was a problem verifying your payment. Please contact support.'));
+            $total = Round(Round($subtotal, 2) + Round($tax, 2), 2);
+
+            $allowedEurAmounts = $this->gopayEurPremiumSMSamounts();
+            if($currency=="eur"&&$method=="sms"&&!in_array($total, $allowedEurAmounts)){
+                for($i = 0; $i<count($allowedEurAmounts); $i++){
+                    if($allowedEurAmounts[$i]>=$total){
+                        $total = $allowedEurAmounts[$i];
+                        $tax = $total - $subtotal;
+                        break;
+                    }
+                    if($i==count($allowedEurAmounts)-1){
+                        return redirect()->route('store.index')->with('error', __('The maximum possible payment with the chosen payment method is') . " " . $allowedEurAmounts[count($allowedEurAmounts)-1]);
+                    }
+                }
+            }
+
+            if(abs($total-$paymentStatus->json['amount']/100)>=0.05) return redirect()->route('home')->with('error', __('There was a problem verifying your payment. If you have already paid, please contact support.'));
             else $amount = $request->amount;
 
             //get DB entry of this payment ID if existing
@@ -839,8 +881,7 @@ class PaymentController extends Controller
         $notes = [
             "",
             __("Payment method") . ": " . $payment->payment_method,
-            __('The price includes VAT'),
-            __('The seller is registered in the trade register')
+            __('The seller is registered in the trade register') . "."
         ];
         $notes = implode("<br>", $notes);
 

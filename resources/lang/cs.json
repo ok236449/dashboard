@@ -474,7 +474,7 @@
     "Payment overview": "Shrnutí platby",
     "Quantity discount": "Množstevní sleva",
     "Bank transfer": "Bankovní převod",
-    "M-payment (SMS)": "M-platba (SMS)",
+    "SMS (M-payment, Premium SMS)": "SMS (M-platba, Premium SMS)",
     "Credit card": "Platební karta",
     "PayPal account": "Účet PayPal",
     "Bank transfer or Bitcoin": "Převod z účtu nebo Bitcoin",
@@ -482,7 +482,7 @@
     "Currency": "Měna",
     "There was a problem with your input. Please try again. If the issue persists, please contact support.": "Nastal problém se zvolenými podrobnostmi. Prosím, zkuste to znovu. Pokud problém přetrvává, kontaktujte prosím podporu.",
     "The price includes VAT": "Cena zahrnuje DPH",
-    "There was a problem verifying your payment. Please contact support.": "Nastal problém při ověřování Vaší platby. Prosím kontaktujte podporu.",
+    "There was a problem verifying your payment. If you have already paid, please contact support.": "Nastal problém při ověřování Vaší platby. Pokud je platba již uhrazena, prosím kontaktujte podporu.",
     "By buying credits you agree with our": "Dobitím kreditů souhlasíte s",
     "GTC": "VOP",
     "paid": "zaplaceno",
@@ -550,5 +550,10 @@
     "Change Product": "Změnit balíček",
     "Required": "Minimálně",
     "Make a purchase to reveal your referral-URL": "Zvací odkaz se zobrazí po prvním dobití kreditů",
-    "The selected payment method comes with very high taxes. Please consider choosing a different one.": "Zvolená platební metoda zahrnuje velmi vysoké poplatky. Prosím zvažte použití jiné."
+    "The selected payment method comes with very high taxes. Please consider choosing a different one.": "Zvolená platební metoda zahrnuje velmi vysoké poplatky. Prosím zvažte použití jiné.",
+    "Server can´t fit on this node": "Server se na tento uzel nevejde",
+    "This method supports only allows some predefined amounts. Because of this, the currently shown total is rounded to the closest higher allowable value.": "Tato metoda podporuje pouze některá předdefinovaná množství. Z tohoto důvodu je aktuálně zobrazený součet zaokrouhlen na nejbližší vyšší platnou možnost.",
+    "M-payment": "M-platba",
+    "Current value": "Aktuální hodnota",
+    "The maximum possible payment with the chosen payment method is": "Maximální možná platba pomocí zvolené platební metody je"
 }

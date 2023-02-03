@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Admin\PaymentController;
 use App\Models\PartnerDiscount;
-use App\Models\Settings;
 use Illuminate\Support\Facades\Auth;
 
 class StoreController extends Controller
@@ -34,7 +34,8 @@ class StoreController extends Controller
             'min_amount' => 25,
             'max_amount' => 2000,
             'quick_select_values' => [50, 100, 200, 300, 500, 1000],
-            'PD_percent'   => PartnerDiscount::getDiscount()
+            'PD_percent'   => PartnerDiscount::getDiscount(),
+            'eurPremiumSMSAmounts' => PaymentController::gopayEurPremiumSMSamounts()
         ]);
     }
 }
