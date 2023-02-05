@@ -5,7 +5,9 @@ namespace App\Console\Commands;
 use App\Classes\Pterodactyl;
 use App\Models\PlayerLog;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Http;
 
 class LogPLayersCommand extends Command
 {
@@ -43,10 +45,13 @@ class LogPLayersCommand extends Command
         $timeNow = Carbon::now();
         if(!PlayerLog::first()||$timeNow->roundMinute()->format('i')%config('SETTINGS::SYSTEM:PLAYER_LOG_INTERVAL')==0)
         {
+            $appIDs = [ //NestIDs and Steam AppIDs
+                64 => 304930 //Unturned
+            ];
             $status = collect();
             foreach(Pterodactyl::getServers() as $server){
                 if($server['attributes']['suspended']) continue;
-                if($server['attributes']['nest']==1)
+                if($server['attributes']['nest']==1) //Minecraft
                 {
                     $networking = Pterodactyl::getNetworking($server['attributes']['identifier']);
                     $ip = "";
@@ -69,6 +74,49 @@ class LogPLayersCommand extends Command
                     $status[$server['attributes']['identifier']] = collect();
                     $status[$server['attributes']['identifier']]['players'] = intval($data[1]);
                     $status[$server['attributes']['identifier']]['slots'] = intval($data[2]);
+                }
+                elseif($server['attributes']['nest']==15&&isset($appIDs[$server['attributes']['egg']])&&env('STEAM_WEB_API_KEY')) //SteamGames
+                {
+                    $networking = Pterodactyl::getNetworking($server['attributes']['identifier']);
+                    $ip = "";
+                    foreach($networking['data'] as $network)
+                    {
+                        if($network['attributes']['is_default'])
+                        {
+                            $ip = $network['attributes']['ip'] . ':' . $network['attributes']['port'];
+                            break;
+                        }
+                    }
+                    $request = Http::baseUrl('https://api.steampowered.com/IGameServersService/GetServerList/v1');
+                    try {
+                        $response = $request->get('/?filter=\appid\\' . $appIDs[$server['attributes']['egg']] . '\addr\\' . $ip . '&key=' . env('STEAM_WEB_API_KEY'));
+                    } catch (Exception $e) { continue; }
+                    if ($response->failed()||!isset($response->json()['response']['servers'][0])) continue;
+                    $response =  $response->json()['response']['servers'][0];
+                    $status[$server['attributes']['identifier']] = collect();
+                    $status[$server['attributes']['identifier']]['players'] = intval($response['players']);
+                    $status[$server['attributes']['identifier']]['slots'] = intval($response['max_players']);
+                }
+                elseif($server['attributes']['nest']==15&&$server['attributes']['egg']==80) //FiveM
+                {
+                    $networking = Pterodactyl::getNetworking($server['attributes']['identifier']);
+                    $ip = "";
+                    foreach($networking['data'] as $network)
+                    {
+                        if($network['attributes']['is_default'])
+                        {
+                            $ip = $network['attributes']['ip'] . ':' . $network['attributes']['port'];
+                            break;
+                        }
+                    }
+                    try {
+                        $response1 = Http::get($ip . '/players.json');
+                        $response2 = Http::get($ip . '/info.json');
+                    } catch (Exception $e) { continue; }
+                    if ($response1->failed()||$response2->failed()||!isset($response2->json()['vars']['sv_maxClients'])) continue;
+                    $status[$server['attributes']['identifier']] = collect();
+                    $status[$server['attributes']['identifier']]['players'] = count($response1->json());
+                    $status[$server['attributes']['identifier']]['slots'] = intval($response2->json()['vars']['sv_maxClients']);
                 }
             }
             $playerLog = new PlayerLog();
