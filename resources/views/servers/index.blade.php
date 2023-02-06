@@ -151,12 +151,12 @@
                             <div class="card-footer d-flex align-items-center justify-content-between">
                                 <a href="{{ config('SETTINGS::SYSTEM:PTERODACTYL:URL') }}/server/{{ $server->identifier }}"
                                     target="__blank"
-                                    class="btn btn-info mx-3 w-100 align-items-center justify-content-center d-flex">
-                                    <i class="fas fa-tools mr-2"></i>
+                                    class="btn btn-info mr-3 w-100 align-items-center justify-content-center d-flex">
+                                    <i class="fas fa-tools mr-1"></i>
                                     <span>{{ __('Manage') }}</span>
                                 </a>
-                                <a href="{{ route('servers.show', ['server' => $server->id])}}" class="btn btn-warning mx-3 w-100 align-items-center justify-content-center d-flex">
-                                    <i class="fas fa-cog mr-2"></i>
+                                <a href="{{ route('servers.show', ['server' => $server->id])}}" class="btn btn-warning w-100 align-items-center justify-content-center d-flex">
+                                    <i class="fas fa-cog mr-1"></i>
                                     <span>{{ __('Settings') }}</span>
                                 </a>
                             </div>

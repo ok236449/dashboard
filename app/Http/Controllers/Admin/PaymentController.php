@@ -709,7 +709,7 @@ class PaymentController extends Controller
                 ]],
             'callback' => [
                     'return_url' => route('payment.GopayReturn', ['amount' => $amount, 'user_id' => Auth::user()->id]),
-                    'notification_url' => route('payment.GopayReturn', ['amount' => $amount, 'user_id' => Auth::user()->id])
+                    'notification_url' => route('payment.GopayReturn', ['amount' => $amount, 'user_id' => Auth::user()->id, 'bot' => true])
             ],
             'lang' => strtoupper(session()->get('language'))
         ]);
@@ -724,7 +724,7 @@ class PaymentController extends Controller
                 case 'MPAYMENT':
                     return "sms";
                     break;
-                case 'PREMIUM_SMS':
+                case 'PR_SMS':
                     return "sms";
                     break;
                 case 'PAYSAFECARD':
@@ -763,12 +763,16 @@ class PaymentController extends Controller
                         break;
                     }
                     if($i==count($allowedEurAmounts)-1){
-                        return redirect()->route('store.index')->with('error', __('The maximum possible payment with the chosen payment method is') . " " . $allowedEurAmounts[count($allowedEurAmounts)-1]);
+                        if($request->bot==true) abort(400);
+                        else return redirect()->route('store.index')->with('error', __('The maximum possible payment with the chosen payment method is') . " " . $allowedEurAmounts[count($allowedEurAmounts)-1]);
                     }
                 }
             }
 
-            if(abs($total-$paymentStatus->json['amount']/100)>=0.05) return redirect()->route('home')->with('error', __('There was a problem verifying your payment. If you have already paid, please contact support.'));
+            if(abs($total-$paymentStatus->json['amount']/100)>=0.05){
+                if($request->bot==true) abort(409);
+                else return redirect()->route('home')->with('error', __('There was a problem verifying y    our payment. If you have already paid, please contact support.'));
+            } 
             else $amount = $request->amount;
 
             //get DB entry of this payment ID if existing
