@@ -769,9 +769,11 @@ class PaymentController extends Controller
                 }
             }
 
+            dd([$total, $paymentStatus->json['amount'], $total-$paymentStatus->json['amount']/100]);
+
             if(abs($total-$paymentStatus->json['amount']/100)>=0.05){
                 if($request->bot==true) abort(409);
-                else return redirect()->route('home')->with('error', __('There was a problem verifying y    our payment. If you have already paid, please contact support.'));
+                else return redirect()->route('home')->with('error', __('There was a problem verifying your payment. If you have already paid, please contact support.'));
             } 
             else $amount = $request->amount;
 
