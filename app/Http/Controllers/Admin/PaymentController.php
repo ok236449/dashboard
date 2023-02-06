@@ -724,7 +724,7 @@ class PaymentController extends Controller
                 case 'MPAYMENT':
                     return "sms";
                     break;
-                case 'PR_SMS':
+                case 'PRSMS':
                     return "sms";
                     break;
                 case 'PAYSAFECARD':
@@ -768,8 +768,6 @@ class PaymentController extends Controller
                     }
                 }
             }
-
-            dd([$total, $paymentStatus->json['amount'], $total-$paymentStatus->json['amount']/100, $method, $paymentStatus->json]);
 
             if(abs($total-$paymentStatus->json['amount']/100)>=0.05){
                 if($request->bot==true) abort(409);
