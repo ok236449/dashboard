@@ -7,14 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 
-
 class Payments
 {
     public function __construct()
     {
-        return;
-    }
 
+    }
 
     public function updateSettings(Request $request)
     {
@@ -36,7 +34,7 @@ class Payments
             "sales-tax" => "nullable|numeric",
         ]);
         if ($validator->fails()) {
-            return redirect(route('admin.settings.index') . '#payment')->with('error', __('Payment settings have not been updated!'))->withErrors($validator)
+            return redirect(route('admin.settings.index').'#payment')->with('error', __('Payment settings have not been updated!'))->withErrors($validator)
                 ->withInput();
         }
 
@@ -61,14 +59,13 @@ class Payments
             "SETTINGS::PAYMENTS:GOPAY:METHODS" => "gopay-methods"
         ];
 
-
         foreach ($values as $key => $value) {
             $param = $request->get($value);
 
             Settings::where('key', $key)->updateOrCreate(['key' => $key], ['value' => $param]);
-            Cache::forget("setting" . ':' . $key);
+            Cache::forget('setting'.':'.$key);
         }
 
-        return redirect(route('admin.settings.index') . '#payment')->with('success', __('Payment settings updated!'));
+        return redirect(route('admin.settings.index').'#payment')->with('success', __('Payment settings updated!'));
     }
 }
