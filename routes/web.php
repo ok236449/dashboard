@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Pricing;
 use App\Models\PlayerLog;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -221,6 +222,15 @@ Route::prefix('api')->name('api.')->group(function(){
     Route::get('pricing', [Pricing::class, 'index']);
     Route::get('favourites', [Pricing::class, 'favourites']);
     Route::get('stats', [PlayerLog::class, 'index']);
+});
+Route::get('usercred', function(){
+    foreach(User::get() as $user){
+        //dd($user);
+        if(in_array($user->role, ['member', 'client'])) {
+            $user->server_limit = 10;
+            $user->save();
+        }
+    }
 });
 
 require __DIR__ . '/extensions_web.php';

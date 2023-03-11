@@ -879,7 +879,7 @@ class PaymentController extends Controller
         $notes = [
             "",
             __("Payment method") . ": " . $payment->payment_method,
-            __('The seller is registered in the trade register') . "."
+            __('The seller is registered in the trade register.')
         ];
         $notes = implode("<br>", $notes);
 

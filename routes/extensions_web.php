@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => 'extensions'], function () {
+/*Route::group(['prefix' => 'extensions'], function () {
 
     // get all extensions that are inside App/Extensions
     // It is important that the extensions are inside a folder with the name of the extension
@@ -19,4 +19,4 @@ Route::group(['prefix' => 'extensions'], function () {
             include_once $routesFile;
         }
     }
-});
+});*/
