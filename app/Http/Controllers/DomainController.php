@@ -302,7 +302,7 @@ class DomainController extends Controller
         $domain -> cf_id = $cf['result']['id'];
 
         //generate certificate
-        $this->getDomainCertificate($request->subdomain_prefix . $request->subdomain_suffix);
+        dd($this->getDomainCertificate($request->subdomain_prefix . $request->subdomain_suffix));
 
         //create nginx config file
         if(!$this->writeNginxConfigFile($request->subdomain_prefix . $request->subdomain_suffix, $domain->node_domain, $domain->port)){
@@ -383,7 +383,7 @@ class DomainController extends Controller
         $domain->port = $request->web_port;
 
         //generate certificate
-        dd($this->getDomainCertificate($request->subdomain_prefix . $request->subdomain_suffix));
+        $this->getDomainCertificate($request->subdomain_prefix . $request->subdomain_suffix);
 
         //create nginx config file
         if(!$this->writeNginxConfigFile($request->domain, $domain->node_domain, $domain->port))
@@ -414,7 +414,7 @@ class DomainController extends Controller
 
     public function getDomainCertificate($domain)
     {
-        dd(exec('doas certbot certonly --nginx -d ' . $domain . ' -n --quiet'));
+        return exec('doas certbot certonly --nginx -d ' . $domain . ' -n --quiet');
     }
     
     public function writeNginxConfigFile($domain, $node_domain, $port)
