@@ -302,7 +302,7 @@ class DomainController extends Controller
         $domain -> cf_id = $cf['result']['id'];
 
         //generate certificate
-        dd($this->getDomainCertificate($request->subdomain_prefix . $request->subdomain_suffix));
+        if($this->getDomainCertificate($request->subdomain_prefix . $request->subdomain_suffix)!=1) return response()->json(['errors' => ['web_subdomain' => __('An error occured while generating the certificate.')]], 422);;
 
         //create nginx config file
         if(!$this->writeNginxConfigFile($request->subdomain_prefix . $request->subdomain_suffix, $domain->node_domain, $domain->port)){
@@ -383,7 +383,7 @@ class DomainController extends Controller
         $domain->port = $request->web_port;
 
         //generate certificate
-        $this->getDomainCertificate($request->subdomain_prefix . $request->subdomain_suffix);
+        if($this->getDomainCertificate($request->subdomain_prefix . $request->subdomain_suffix)!=1) return response()->json(['errors' => ['web_subdomain' => __('An error occured while generating the certificate.') . ' ' . __('Please make sure your domain records are set correctly. Some domain registrators may need up to 12 hours for the records to take effect.')]], 422);
 
         //create nginx config file
         if(!$this->writeNginxConfigFile($request->domain, $domain->node_domain, $domain->port))
