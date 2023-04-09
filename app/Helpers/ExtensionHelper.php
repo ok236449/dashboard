@@ -9,7 +9,7 @@ class ExtensionHelper
      * @param string $extensionName
      * @param string $configname
      */
-    public static function getExtensionConfig(string $extensionName, string $configname)
+    /*public static function getExtensionConfig(string $extensionName, string $configname)
     {
         $extensions = ExtensionHelper::getAllExtensions();
 
@@ -56,13 +56,13 @@ class ExtensionHelper
         }
 
         return $result;
-    }
+    }*/
 
     /**
      * Get all extensions
      * @return array
      */
-    public static function getAllExtensions()
+    /*public static function getAllExtensions()
     {
         $extensionNamespaces = glob(app_path() . '/Extensions/*', GLOB_ONLYDIR);
         $extensions = [];
@@ -78,5 +78,5 @@ class ExtensionHelper
         $extensions = glob(app_path() . '/Extensions/' . $namespace . '/*', GLOB_ONLYDIR);
 
         return $extensions;
-    }
+    }*/
 }

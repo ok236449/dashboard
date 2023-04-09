@@ -1,10 +1,12 @@
 <?php
 
+use App\Classes\Cloudflare;
 use App\Classes\Settings\Invoices;
 use App\Classes\Settings\Language;
 use App\Classes\Settings\Misc;
 use App\Classes\Settings\Payments;
 use App\Classes\Settings\System;
+use App\Console\Commands\LogPLayersCommand;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\ApplicationApiController;
 use App\Http\Controllers\Admin\InvoiceController;
@@ -20,6 +22,7 @@ use App\Http\Controllers\Admin\UsefulLinkController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Auth\SocialiteController;
+use App\Http\Controllers\DomainController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Moderation\TicketCategoryController;
 use App\Http\Controllers\Moderation\TicketsController as ModTicketsController;
@@ -30,9 +33,12 @@ use App\Http\Controllers\ServerController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\TicketsController;
 use App\Http\Controllers\TranslationController;
+use App\Models\Domain;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\Pricing;
+use App\Models\PlayerLog;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +67,8 @@ Route::get('/tos', function () {
     return view('information.tos');
 })->name('tos');
 
+Route::post('payment/StripeWebhooks', [PaymentController::class, 'StripeWebhooks'])->name('payment.StripeWebhooks');
+
 Route::middleware(['auth', 'checkSuspended'])->group(function () {
     //resend verification email
     Route::get('/email/verification-notification', function (Request $request) {
@@ -88,10 +96,13 @@ Route::middleware(['auth', 'checkSuspended'])->group(function () {
     Route::get('/products/products/{egg?}/{node?}', [FrontProductController::class, 'getProductsBasedOnNode'])->name('products.products.node');
 
     //payments
-    Route::get('checkout/{shopProduct}', [PaymentController::class, 'checkOut'])->name('checkout');
-    Route::post('payment/pay', [PaymentController::class, 'pay'])->name('payment.pay');
-    Route::get('payment/FreePay/{shopProduct}', [PaymentController::class, 'FreePay'])->name('payment.FreePay');
+    Route::get('payment/PaypalPay', [PaymentController::class, 'PaypalPay'])->name('payment.PaypalPay');
+    Route::get('payment/PaypalSuccess', [PaymentController::class, 'PaypalSuccess'])->name('payment.PaypalSuccess');
+    Route::get('payment/StripePay', [PaymentController::class, 'StripePay'])->name('payment.StripePay');
+    Route::get('payment/StripeSuccess', [PaymentController::class, 'StripeSuccess'])->name('payment.StripeSuccess');
+    Route::get('payment/GopayPay', [PaymentController::class, 'GopayPay'])->name('payment.GopayPay');
     Route::get('payment/Cancel', [PaymentController::class, 'Cancel'])->name('payment.Cancel');
+    Route::get('payment/pay', [PaymentController::class, 'Pay'])->name('payment.Pay');
 
     Route::get('users/logbackin', [UserController::class, 'logBackIn'])->name('users.logbackin');
 
@@ -115,6 +126,44 @@ Route::middleware(['auth', 'checkSuspended'])->group(function () {
         Route::post('ticket/reply', [TicketsController::class, 'reply'])->middleware(['throttle:ticket-reply'])->name('ticket.reply');
         Route::post('ticket/status/{ticket_id}', [TicketsController::class, 'changeStatus'])->name('ticket.changeStatus');
     }
+
+    //please commend the next line
+    Route::post('/domain', [DomainController::class, 'link'])->name('domain');
+
+    //domain and subdomain linking
+    Route::prefix('subdomain')->name('subdomain.')->group(function () {
+        Route::prefix('minecraft')->name('minecraft.')->group(function () {
+            Route::post('link', [DomainController::class, 'linkMinecraftSubdomain'])->name('link');
+            Route::post('unlink', [DomainController::class, 'unlinkMinecraftSubdomain'])->name('unlink');
+            Route::post('refresh', [DomainController::class, 'refreshMinecraftSubdomain'])->name('refresh');
+        });
+        Route::prefix('web')->name('web.')->group(function () {
+            Route::post('link', [DomainController::class, 'linkWebSubdomain'])->name('link');
+            Route::post('unlink', [DomainController::class, 'unlinkWebSubdomain'])->name('unlink');
+        });
+    });
+    Route::prefix('domain')->name('domain.')->group(function () {
+        Route::prefix('minecraft')->name('minecraft.')->group(function () {
+            Route::post('link', [DomainController::class, 'linkMinecraftDomain'])->name('link');
+            Route::post('unlink', [DomainController::class, 'unlinkMinecraftDomain'])->name('unlink');
+            Route::post('refresh', [DomainController::class, 'refreshMinecraftDomain'])->name('refresh');
+        });
+        Route::prefix('web')->name('web.')->group(function () {
+            Route::post('link', [DomainController::class, 'linkWebDomain'])->name('link');
+            Route::post('unlink', [DomainController::class, 'unlinkWebDomain'])->name('unlink');
+        });
+    });
+
+    Route::post('/domain/checkAvailability', [DomainController::class, 'checkAvailability'])->name('domain.checkAvailability');
+    //Route::patch('/domain/update/protection', [DomainController::class, 'update'])->name('domain.update.protection');
+    //Route::patch('servers/settings/update/domains', [Domain::class, 'updateSettingsDomains'])->name('servers.settings.update.domains');
+    Route::patch('servers/settings/update/protection', [DomainController::class, 'updateProtection'])->name('servers.settings.update.protection');
+    Route::patch('servers/settings/update/lobby', [DomainController::class, 'updateLobby'])->name('servers.settings.update.lobby');
+    Route::get('test', function(){
+        //return LogPLayersCommand::handle();
+        //DomainController::uploadBungeeGuard('a7eb5624');
+        //DomainController::deleteBungeeGuard('a7eb5624');
+    });
 
     //admin
     Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
@@ -229,4 +278,12 @@ Route::middleware(['auth', 'checkSuspended'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 });
 
-require __DIR__ . '/extensions_web.php';
+Route::get('payment/GopayReturn', [PaymentController::class, 'GopayReturn'])->name('payment.GopayReturn');
+
+Route::prefix('api')->name('api.')->group(function(){
+    Route::get('pricing', [Pricing::class, 'index']);
+    Route::get('favourites', [Pricing::class, 'favourites']);
+    Route::get('stats', [PlayerLog::class, 'index']);
+});
+
+//require __DIR__ . '/extensions_web.php';

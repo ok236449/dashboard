@@ -26,8 +26,7 @@
     <section x-data="serverApp()" class="content">
         <div class="container-xxl">
             <!-- FORM -->
-            <form action="{{ route('servers.store') }}" x-on:submit="submitClicked = true" method="post"
-                class="row justify-content-center">
+            <form action="{{ route('servers.store') }}" method="post" class="row justify-content-center" id="form">
                 @csrf
                 <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
                     <div class="card">
@@ -35,12 +34,7 @@
                             <div class="card-title"><i class="fas fa-cogs mr-2"></i>{{ __('Server configuration') }}
                             </div>
                         </div>
-                        @if (!config('SETTINGS::SYSTEM:CREATION_OF_NEW_SERVERS'))
-                            <div class="alert alert-warning p-2 m-2">
-                                The creation of new servers has been disabled for regular users, enable it again
-                                <a href="{{ route('admin.settings.system') }}">{{ __('here') }}</a>.
-                            </div>
-                        @endif
+
                         @if ($productCount === 0 || $nodeCount === 0 || count($nests) === 0 || count($eggs) === 0)
                             <div class="alert alert-danger p-2 m-2">
                                 <h5><i class="icon fas fa-exclamation-circle"></i>{{ __('Error!') }}</h5>
@@ -48,7 +42,7 @@
                                     @if (Auth::user()->role == 'admin')
                                         {{ __('Make sure to link your products to nodes and eggs.') }} <br>
                                         {{ __('There has to be at least 1 valid product for server creation') }}
-                                        <a href="{{ route('admin.overview.sync') }}">{{ __('Sync now') }}</a>
+                                        <a href="{{route('admin.overview.sync')}}">{{ __('Sync now') }}</a>
                                     @endif
 
                                 </p>
@@ -103,8 +97,8 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="nest">{{ __('Software / Games') }}</label>
-                                        <select class="custom-select" required name="nest" id="nest"
-                                            x-model="selectedNest" @change="setEggs();">
+                                        <select class="custom-select" required name="nest" id="nest" x-model="selectedNest"
+                                            @change="setEggs();">
                                             <option selected disabled hidden value="null">
                                                 {{ count($nests) > 0 ? __('Please select software ...') : __('---') }}
                                             </option>
@@ -112,8 +106,9 @@
                                                 <option value="{{ $nest->id }}">{{ $nest->name }}</option>
                                             @endforeach
                                         </select>
-
                                     </div>
+                                    <button @click="setEggs();" type="button" id="setEggsButton" hidden></button>
+                                    <input type="hidden" value="{{$preNest}}" id="presetNest">
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -130,13 +125,15 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <button @click="fetchLocations();" type="button" id="fetchLocationsButton" hidden></button>
+                                    <input type="hidden" value="{{$preEgg}}" id="presetEgg">
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label for="node">{{ __('Node') }}</label>
-                                <select name="node" required id="node" x-model="selectedNode"
-                                    :disabled="!fetchedLocations" @change="fetchProducts();" class="custom-select">
+                                <select name="node" required id="node" x-model="selectedNode" :disabled="!fetchedLocations"
+                                    @change="fetchProducts();" class="custom-select">
                                     <option x-text="getNodeInputText()" disabled selected hidden value="null">
                                     </option>
 
@@ -152,16 +149,22 @@
                                     </template>
 
                                 </select>
+                                <button @click="fetchProducts();" type="button" id="fetchProductsButton" hidden></button>
+                                <input type="hidden" value="{{$preNode}}" id="presetNode">
                             </div>
+                            <i class="fas fa-info-circle"></i> {{__('There may not be all nodes available. That means the node might be full or it is not available for the selected game.')}}
                         </div>
                     </div>
                 </div>
 
                 <div class="w-100"></div>
                 <div class="col" x-show="selectedNode != null">
-                    <div class="row mt-4 justify-content-center">
+                    <div class="row mt-4 justify-content-center" id="productSection">
                         <template x-for="product in products" :key="product.id">
-                            <div class="card  col-xl-3 col-lg-3 col-md-4 col-sm-10 mr-2 ml-2 ">
+                            <div class="card  col-xl-3 col-lg-3 col-md-4 col-sm-10 mr-2 ml-2" :class="{ 'ribbon-border': product.on_sale }">
+                                <div class="ribbon" x-show="product.on_sale">
+                                    <span x-text="product.custom_ribbon_text!=null?product.custom_ribbon_text:'{{__("On sale")}}!'"></span>
+                                </div>
                                 <div class="card-body d-flex  flex-column">
                                     <h4 class="card-title" x-text="product.name"></h4>
                                     <div class="mt-2">
@@ -207,19 +210,11 @@
                                                         ({{ __('ports') }})</span>
                                                     <span class="d-inline-block" x-text="product.allocations"></span>
                                                 </li>
-                                                <li class="d-flex justify-content-between">
-                                                    <span class="d-inline-block"><i class="fa fa-coins"></i>
-                                                        {{ __('Required') }} {{ CREDITS_DISPLAY_NAME }}
-                                                        {{ __('to create this server') }}</span>
-                                                    <span class="d-inline-block"
-                                                        x-text="product.minimum_credits == -1 ? {{ config('SETTINGS::USER:MINIMUM_REQUIRED_CREDITS_TO_MAKE_SERVER') }} : product.minimum_credits"></span>
-                                                </li>
                                             </ul>
                                         </div>
                                         <div class="mt-2 mb-2">
                                             <span class="card-text text-muted">{{ __('Description') }}</span>
-                                            <p class="card-text" style="white-space:pre-wrap"
-                                                x-text="product.description"></p>
+                                            <p class="card-text" style="white-space:pre-wrap" x-text="product.description"></p>
                                         </div>
                                     </div>
                                     <div class="mt-auto border rounded border-secondary">
@@ -231,23 +226,19 @@
                                                 x-text="product.price + ' {{ CREDITS_DISPLAY_NAME }}'"></span>
                                         </div>
                                     </div>
-                                    <div>
-                                        <input type="hidden" name="product" x-model="selectedProduct">
-                                    </div>
-                                    <div>
-                                        <button type="submit" x-model="selectedProduct" name="product"
-                                            :disabled="product.minimum_credits > user.credits || product.doesNotFit == true ||
-                                                submitClicked"
-                                            :class="product.minimum_credits > user.credits || product.doesNotFit == true ||
-                                                submitClicked ? 'disabled' : ''"
-                                            class="btn btn-primary btn-block mt-2" @click="setProduct(product.id);"
-                                            x-text=" product.doesNotFit == true ? '{{ __('Server cant fit on this Node') }}' : (product.minimum_credits > user.credits ? '{{ __('Not enough') }} {{ CREDITS_DISPLAY_NAME }}!' : '{{ __('Create server') }}')">
-                                        </button>
-                                    </div>
+                                    <button type="submit" x-model="selectedProduct" name="product"
+                                        :disabled="product.minimum_credits > user.credits||product.doesNotFit == true||product.max_servers_per_user_reached == true"
+                                        :class="(product.minimum_credits > user.credits||product.doesNotFit == true||product.max_servers_per_user_reached == true) ? 'disabled' : ''"
+                                        class="btn btn-primary btn-block mt-2" @click="setProduct(product.id)"
+                                        x-text=" product.doesNotFit == true? '{{ __('Server can´t fit on this node') }}' : (product.minimum_credits > user.credits ? '{{ __('Not enough') }} {{ CREDITS_DISPLAY_NAME }}!' : (product.max_servers_per_user_reached?('{{__('Limit of')}} ' + product.max_servers_per_user + ' {{__('servers reached')}}'):'{{ __('Create server') }}'))">
+                                    </button>
                                 </div>
                             </div>
                     </div>
                     </template>
+                </div>
+                <div id="creatingInProcessSection" style="display: none; margin: 0 auto;">
+                    <span style="color:green; font-size:26px">{{__('Creating your server, please wait')}}.</span>
                 </div>
         </div>
 
@@ -269,7 +260,7 @@
 
                 //input fields
                 name: null,
-                selectedNest: null,
+                selectedNest: ((document.getElementById('presetNest').value&&{!! $nests !!}.filter(nest => nest.id === parseInt(document.getElementById('presetNest').value)).length==1)?document.getElementById('presetNest').value:null),
                 selectedEgg: null,
                 selectedNode: null,
                 selectedProduct: null,
@@ -288,9 +279,6 @@
                 locations: [],
                 products: [],
 
-                submitClicked: false,
-
-
                 /**
                  * @description set available eggs based on the selected nest
                  * @note called whenever a nest is selected
@@ -301,28 +289,36 @@
                     this.fetchedProducts = false;
                     this.locations = [];
                     this.products = [];
-                    this.selectedEgg = 'null';
                     this.selectedNode = 'null';
                     this.selectedProduct = 'null';
 
                     this.eggs = this.eggsSave.filter(egg => egg.nest_id == this.selectedNest)
 
+                    if(document.getElementById('presetEgg').value!=0 && this.eggs.filter(egg => egg.id === parseInt(document.getElementById('presetEgg').value)).length==1)this.selectedEgg = document.getElementById('presetEgg').value;
+                    else { document.getElementById('presetEgg').value = null; this.selectedEgg = 'null'; }
                     //automatically select the first entry if there is only 1
                     if (this.eggs.length === 1) {
                         this.selectedEgg = this.eggs[0].id;
                         await this.fetchLocations();
                         return;
                     }
-
-                    this.updateSelectedObjects()
+                    
+                    //document.getElementById('presetEgg').value = JSON.stringify(this.eggs.filter(egg => egg.id === parseInt(document.getElementById('presetEgg').value)).length);
+                    this.updateSelectedObjects();
+                    if(document.getElementById('presetEgg').value!=0) document.getElementById('fetchLocationsButton').click();
                 },
 
                 setProduct(productId) {
-                    if (!productId) return
+                    if (!productId) return;
+                    
+                    //hide all products and show waiting text
+                    if(document.getElementById('form').reportValidity()){
+                        document.getElementById('productSection').style.display = "none";
+                        document.getElementById('creatingInProcessSection').style.display = "table";
+                    }
 
                     this.selectedProduct = productId;
                     this.updateSelectedObjects();
-
                 },
 
                 /**
@@ -351,9 +347,13 @@
                         await this.fetchProducts();
                         return;
                     }
+                    //if(document.getElementById('presetNode').value!=0 && this.locations.filter(location => location.id == parseInt(document.getElementById('presetNode').value)).length==1)this.selectedNode = document.getElementById('presetNode').value;
+                    //else document.getElementById('presetNode').value = null;
+                    if(document.getElementById('presetNode').value!=0) this.selectedNode = document.getElementById('presetNode').value;
 
                     this.loading = false;
-                    this.updateSelectedObjects()
+                    this.updateSelectedObjects();
+                    if(document.getElementById('presetNode').value!=0) document.getElementById('fetchProductsButton').click();
                 },
 
                 /**
@@ -373,8 +373,7 @@
 
                     this.fetchedProducts = true;
                     // TODO: Sortable by user chosen property (cpu, ram, disk...)
-                    this.products = response.data.sort((p1, p2) => parseInt(p1.price, 10) > parseInt(p2.price, 10) &&
-                        1 || -1)
+                    this.products = response.data.sort((p1, p2) => parseInt(p1.price,10) > parseInt(p2.price,10) && 1 || -1)
 
                     //divide cpu by 100 for each product
                     this.products.forEach(product => {
@@ -455,6 +454,10 @@
                     return text;
                 }
             }
+        }
+        window.onload = function(){
+            document.getElementById('setEggsButton').click();
+            //if(document.getElementById('presetEgg').value!=0) document.getElementById('fetchLocationsButton').click();
         }
     </script>
 @endsection

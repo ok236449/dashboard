@@ -5,6 +5,7 @@
 /vendor
 /storage/credit_deduction_log
 storage/debugbar
+/storage/web_domains
 .env
 .env.testing
 .env.backup

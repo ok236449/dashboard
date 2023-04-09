@@ -114,6 +114,62 @@
                 </div>
             </div>
 
+            {{-- GoPay --}}
+            <div class="col-md-3 px-3">
+
+                <div class="row mb-2">
+                    <div class="col text-center">
+                        <h1>GoPay</h1>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <div class="custom-control p-0">
+                        <label for="gopay-goid">{{ __('GoPay GOID') }}:</label>
+                        <input x-model="gopay-goid" id="gopay-goid" name="gopay-goid" type="text"
+                            value="{{ config('SETTINGS::PAYMENTS:GOPAY:GOID') }}"
+                            class="form-control @error('gopay-goid') is-invalid @enderror">
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <div class="custom-control p-0">
+                        <label for="gopay-client-id">{{ __('GoPay Client ID') }}:</label>
+                        <input x-model="gopay-client-id" id="gopay-client-id" name="gopay-client-id" type="text"
+                            value="{{ config('SETTINGS::PAYMENTS:GOPAY:CLIENT_ID') }}"
+                            class="form-control @error('gopay-client-id') is-invalid @enderror">
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <div class="custom-control p-0">
+                        <label for="gopay-client-secret">{{ __('GoPay Client Secret') }}:</label>
+                        <input x-model="gopay-client-secret" id="gopay-client-secret"
+                            name="gopay-client-secret" type="text"
+                            value="{{ config('SETTINGS::PAYMENTS:GOPAY:CLIENT_SECRET') }}"
+                            class="form-control @error('gopay-client-secret') is-invalid @enderror">
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <div class="custom-control p-0">
+                        <label for="gopay-test-client-id">{{ __('GoPay Test Client ID') }}:</label>
+                        <small class="text-muted">({{ __('optional') }})</small>
+                        <input x-model="gopay-test-client-id" id="gopay-test-client-id" name="gopay-test-client-id"
+                            type="text" value="{{ config('SETTINGS::PAYMENTS:GOPAY:TEST_CLIENT_ID') }}"
+                            class="form-control @error('gopay-test-client-id') is-invalid @enderror">
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <div class="custom-control p-0">
+                        <label for="gopay-test-client-secret">{{ __('GoPay Test Client Secret') }}:</label>
+                        <small class="text-muted">({{ __('optional') }})</small>
+                        <input x-model="gopay-test-client-secret" id="gopay-test-client-secret"
+                            name="gopay-test-client-secret" type="text"
+                            value="{{ config('SETTINGS::PAYMENTS:GOPAY:TEST_CLIENT_SECRET') }}"
+                            class="form-control @error('gopay-test-client-secret') is-invalid @enderror">
+                    </div>
+                </div>
+            </div>
+
             {{-- Other --}}
             <div class="col-md-3 px-3">
                 <div class="row mb-2">
@@ -133,6 +189,19 @@
                         <input x-model="sales-tax" id="sales-tax" name="sales-tax" type="number" step="0.01" min="0" max="99999999"
                             value="{{ config('SETTINGS::PAYMENTS:SALES_TAX') }}"
                             class="form-control @error('sales-tax') is-invalid @enderror">
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <div class="custom-control p-0">
+                        <div class="col m-0 p-0 d-flex justify-content-between align-items-center">
+                            <label for="eur_ratio">{{ __('EUR to CZK ratio') }}:</label>
+                            <i data-toggle="popover" data-trigger="hover" data-html="true"
+                                data-content="1€ = ?Kč"
+                                class="fas fa-info-circle"></i>
+                        </div>
+                        <input x-model="eur_ratio" id="eur_ratio" name="eur_ratio" type="number" step=".01"
+                            value="{{ config('SETTINGS::PAYMENTS:EUR_RATIO') }}"
+                            class="form-control @error('eur_ratio') is-invalid @enderror">
                     </div>
                 </div>
             </div>

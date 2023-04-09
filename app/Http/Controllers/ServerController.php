@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Classes\Pterodactyl;
+use App\Models\Domain;
 use App\Models\Egg;
 use App\Models\Location;
 use App\Models\Nest;
@@ -17,6 +18,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request as FacadesRequest;
+use Qirolab\Theme\Theme;
 
 class ServerController extends Controller
 {
@@ -29,7 +31,7 @@ class ServerController extends Controller
         foreach ($servers as $server) {
 
             //Get server infos from ptero
-            $serverAttributes = Pterodactyl::getServerAttributes($server->pterodactyl_id, true);
+            $serverAttributes = Pterodactyl::getServerAttributes($server->pterodactyl_id); //remove delete on 404
             if (! $serverAttributes) {
                 continue;
             }
@@ -65,7 +67,7 @@ class ServerController extends Controller
     }
 
     /** Show the form for creating a new resource. */
-    public function create()
+    public function create(Request $request)
     {
         if (! is_null($this->validateConfigurationRules())) {
             return $this->validateConfigurationRules();
@@ -91,14 +93,17 @@ class ServerController extends Controller
                 });
             })->get();
 
-        return view('servers.create')->with([
-            'productCount' => $productCount,
-            'nodeCount' => $nodeCount,
-            'nests' => $nests,
-            'locations' => $locations,
-            'eggs' => $eggs,
-            'user' => Auth::user(),
-        ]);
+            return view('servers.create')->with([
+                'productCount' => $productCount,
+                'nodeCount'    => $nodeCount,
+                'nests'        => $nests,
+                'locations'    => $locations,
+                'eggs'         => $eggs,
+                'user'         => Auth::user(),
+                'preNest'    => $request->nest?$request->nest:null,
+                'preEgg'    => $request->egg?$request->egg:null,
+                'preNode'    => $request->node?$request->node:null
+            ]);
     }
 
     /**
@@ -261,6 +266,21 @@ class ServerController extends Controller
         $serverRelationships = $serverAttributes['relationships'];
         $serverLocationAttributes = $serverRelationships['location']['attributes'];
 
+        //Get server networking
+        $address = "";
+        $port = "";
+        $web_ports = array();
+        foreach(Pterodactyl::getNetworking($server->identifier)['data'] as $network)
+        {
+            if($network['attributes']['is_default'])
+            {
+                $address = $network['attributes']['ip_alias'];
+                $port = $network['attributes']['port'];
+                if(in_array($serverAttributes['nest'], [8, 12])) $web_ports[] = $network['attributes']['port'];
+            }
+            else $web_ports[] = $network['attributes']['port'];
+        }
+
         //Get current product
         $currentProduct = Product::where('id', $server->product_id)->first();
 
@@ -289,11 +309,100 @@ class ServerController extends Controller
             }
         }
 
-        return view('servers.settings')->with([
+        //Get all tabs as laravel view paths
+        $tabs = [];
+        if(file_exists(Theme::getViewPaths()[0] . '/servers/tabs/')){
+            $tabspath = glob(Theme::getViewPaths()[0] . '/servers/tabs/*.blade.php');
+        }else{
+            $tabspath = glob(Theme::path($path = 'views', $themeName = 'default').'/servers/tabs/*.blade.php');
+        }
+
+          foreach ($tabspath as $filename) {
+            $tabs[] = 'servers.tabs.'.basename($filename, '.blade.php');
+        }
+        //dd($tabs);
+
+        //swap tabs
+        switch($serverAttributes['egg']){
+            case 2://minecraft eggs
+            case 3:
+            case 22:
+            case 58:
+                //show all tabs
+                [$tabs[0], $tabs[3]] = [$tabs[3], $tabs[0]];
+                [$tabs[0], $tabs[1]] = [$tabs[1], $tabs[0]];
+                //[$tabListItems[0], $tabListItems[3]] = [$tabListItems[3], $tabListItems[0]];
+                //[$tabListItems[0], $tabListItems[1]] = [$tabListItems[1], $tabListItems[0]];
+                break;
+            
+            case 21://web eggs
+            case 81:
+            case 31://discord.js
+            case 61://discord.py
+                //show only web tabs
+                foreach([0, 1, 2] as $i){
+                    unset($tabs[$i]);
+                //    unset($tabListItems[$i]);
+                }
+                break;
+        }
+
+
+        //Generate a html list item for each tab based on tabs file basename, set first tab as active
+        $tabListItems = [];
+        foreach ($tabs as $tab) {
+            $tabName = str_replace('servers.tabs.', '', $tab);
+            $tabListItems[] = '<li class="nav-item">
+            <a class="nav-link '.(!$tabListItems == 1 ? 'active' : '').'" data-toggle="pill" href="#'.$tabName.'">
+            '.__(ucfirst($tabName)).'
+            </a></li>';
+        }
+
+        
+        
+
+        //dd($tabs);
+        /*$temp = $tabs[1];
+        $tabs[1] = $tabs[2];
+        $tabs[2] = $temp;*/
+        //$tabs = array('servers.tabs.domains', 'servers.tabs.protection', 'servers.tabs.lobby');
+        /*[$tabs[1], $tabs[2]] = [$tabs[2], $tabs[1]];
+        [$tabListItems[1], $tabListItems[2]] = [$tabListItems[2], $tabListItems[1]];*/
+        //dd($serverAttributes);
+
+
+        /*if(!in_array($serverAttributes['egg'], [3, 22, 58])){
+            unset($tabs[1], $tabs[2], $tabListItems[1], $tabListItems[2]);
+        }*/
+
+        $themes = array_diff(scandir(base_path('themes')), array('..', '.'));
+
+        $domains = Domain::where('server_id', $server->identifier)->get();
+        //dd([$tabs, $tabListItems]);
+        //dd(DomainController::availableSubdomains(true));
+
+        return view('servers.settings', [
+            'tabs' => $tabs,
+            'tabListItems' => $tabListItems,
+            'themes' => $themes,
+            'active_theme' => Theme::active(),
             'server' => $server,
             'products' => $products,
+            'availableSubdomains' => DomainController::availableSubdomains('', true),
+            //přidat target
+            'minecraft_subdomain' => $domains->where('type', "subdomain")->where('target', 'minecraft')->first(),
+            'minecraft_domain' => $domains->where('type', "domain")->where('target', 'minecraft')->first(),
+            'address' => $address,
+            'minecraft_port' => $port,
+            'web_subdomain' => $domains->where('type', "subdomain")->where('target', 'web')->first(),
+            'web_domain' => $domains->where('type', "domain")->where('target', 'web')->first(),
+            'web_ports' => $web_ports,
+            'nest_id' => $serverAttributes['nest'],
+            'egg_id' => $serverAttributes['egg']
         ]);
     }
+    
+    // H
 
     public function upgrade(Server $server, Request $request)
     {

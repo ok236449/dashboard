@@ -9,9 +9,11 @@ use App\Models\Product;
 use App\Models\Server;
 use App\Models\User;
 use Exception;
+use GuzzleHttp\RequestOptions;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Symfony\Component\Yaml\Yaml;
 
 class Pterodactyl
 {
@@ -24,8 +26,9 @@ class Pterodactyl
     {
         return Http::withHeaders([
             'Authorization' => 'Bearer ' . config('SETTINGS::SYSTEM:PTERODACTYL:TOKEN'),
-            'Content-type' => 'application/json',
-            'Accept' => 'Application/vnd.pterodactyl.v1+json',
+            'Content-type' => 'text/plain',
+            //'Accept' => 'Application/vnd.pterodactyl.v1+json',
+            'Accept' => 'application/json',
         ])->baseUrl(config('SETTINGS::SYSTEM:PTERODACTYL:URL') . '/api');
     }
 
@@ -225,6 +228,18 @@ class Pterodactyl
         if ($response->failed()) {
             throw self::getException('Failed to get allocations from pterodactyl - ', $response->status());
         }
+
+        return $response->json();
+    }
+
+    public static function getNetworking($serverId)
+    {
+        try {
+            $response = self::clientAdmin()->get("/client/servers/{$serverId}/network/allocations");
+        } catch (Exception $e) {
+            throw self::getException($e->getMessage());
+        }
+        if ($response->failed()) throw self::getException("Failed to get networking information from pterodactyl - ", $response->status());
 
         return $response->json();
     }
@@ -437,5 +452,52 @@ class Pterodactyl
         }
 
         return true;
+    }
+
+    public static function getFileContent($serverId, $file_path)
+    {
+        $path = '';
+        foreach($file_path as $fp) $path .= '%2F' . $fp;
+
+        try {
+            $response = self::clientAdmin()->get("/client/servers/{$serverId}/files/contents?file=" . $path);
+        } catch (Exception $e) {
+            throw self::getException($e->getMessage());
+        }
+        if ($response->failed()) throw self::getException("Failed to get file content from pterodactyl - ", $response->status());
+
+        return $response->body();
+    }
+
+    public static function writeFileContent($serverId, $file_path, $content)
+    {
+        $path = '';
+        foreach($file_path as $fp) $path .= '%2F' . $fp;
+
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . config('SETTINGS::SYSTEM:PTERODACTYL:ADMIN_USER_TOKEN'),
+                'Content-Type' => 'text/plain',
+                'Accept' => 'application/json'
+            ])->withBody($content, 'text/plain')->post(config('SETTINGS::SYSTEM:PTERODACTYL:URL') . "/api/client/servers/{$serverId}/files/write?file=" . $path);
+        } catch (Exception $e) {
+            throw self::getException($e->getMessage());
+        }
+        if ($response->failed()) throw self::getException("Failed to write file content to pterodactyl - ", $response->status());
+        return $response->status();
+    }
+
+    public static function deleteFileContent($serverId, $file_path, $file_name)
+    {
+        try {
+            $response = self::clientAdmin()->post("/client/servers/" . $serverId . "/files/delete", [
+                'root' => '/' . $file_path,
+                'files' => [$file_name]
+            ]);
+        } catch (Exception $e) {
+            throw self::getException($e->getMessage());
+        }
+        if ($response->failed()) throw self::getException("Failed to delete file on pterodactyl - ", $response->status());
+        return $response->status();
     }
 }

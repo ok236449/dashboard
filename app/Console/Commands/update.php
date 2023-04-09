@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Process\Process;
-
+// H
 class update extends Command
 {
     /**

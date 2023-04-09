@@ -1,6 +1,83 @@
 @extends('layouts.main')
 
 @section('content')
+<style>
+  .switch {
+  position: relative;
+  display: inline-block;
+  width: 80px;
+  height: 40px;
+  margin: 4px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 32px;
+  width: 32px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(40px);
+  -ms-transform: translateX(40px);
+  transform: translateX(40px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.switch_label {
+    margin-top: auto;
+    margin-bottom: auto;
+    min-width: 240px;
+}
+
+.switch_wrapper{
+    display: flex;
+}
+select{
+  padding-right: 12px !important;
+}
+</style>
     <!-- CONTENT HEADER -->
     <section class="content-header">
         <div class="container-fluid">
@@ -309,6 +386,47 @@
 
 
         </div>
+        @if(($nest_id==1&&in_array($egg_id, [2, 3, 22, 58]))|| //minecraft
+            $nest_id==8||//web
+            ($nest_id==12&&in_array($egg_id, [31, 61])) //discord.js, discord.py
+            )
+          <div class="container-fluid">
+            <div class="card">
+
+                <div class="card-header">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="card-title"><i class="fas fa-tools mr-2"></i>{{ __('Domain and protection management') }}</h5>
+                    </div>
+                </div>
+
+                <div class="card-body ">
+
+                    <!-- Nav pills -->
+                    <ul class="nav nav-tabs">
+
+                        @foreach ($tabListItems as $tabListItem)
+                            {!! $tabListItem !!}
+                        @endforeach
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        @foreach ($tabs as $tab)
+                            @include($tab)
+                        @endforeach
+                    </div>
+
+                    </form>
+
+                </div>
+          </div>
+          <script>
+            if(document.getElementById("minecraft-domains")) document.getElementById("minecraft-domains").classList.add('active');
+            else document.getElementById("web-domains").classList.add('active');
+          </script>
+        @endif
+
+      </div>
         <!-- END CUSTOM CONTENT -->
         </div>
     </section>
@@ -320,6 +438,24 @@
           return true;
       })
 
+      document.addEventListener('DOMContentLoaded', () => {
+            $(".custom-file-input").on("change", function() {
+                var fileName = $(this).val().split("\\").pop();
+                $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+            });
+        })
+
+        const tabPaneHash = window.location.hash;
+        if (tabPaneHash) {
+            $('.nav-tabs a[href="' + tabPaneHash + '"]').tab('show');
+        }
+
+        $('.nav-tabs a').click(function(e) {
+            $(this).tab('show');
+            const scrollmem = $('body').scrollTop();
+            window.location.hash = this.hash;
+            //$('html,body').scrollTop(scrollmem);
+        });
      </script>
 
 @endsection

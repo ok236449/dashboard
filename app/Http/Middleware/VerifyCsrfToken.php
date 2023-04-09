@@ -14,12 +14,12 @@ class VerifyCsrfToken extends Middleware
      *
      * @var array
      */
-    protected $except = [];
+    /*protected $except = [];
 
     public function __construct(Application $app, Encrypter $encrypter)
     {
         $this->app = $app;
         $this->encrypter = $encrypter;
         $this->except = ExtensionHelper::getAllCsrfIgnoredRoutes();
-    }
+    }*/
 }

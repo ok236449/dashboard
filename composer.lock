@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d98e4be75e05c71049fe452b69b54901",
+    "content-hash": "eb0f24e8b7d30faba88ca4b50cbab56d",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -1248,6 +1248,66 @@
                 }
             ],
             "time": "2022-02-20T15:07:15+00:00"
+        },
+        {
+            "name": "gopay/payments-sdk-php",
+            "version": "v1.6.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/gopaycommunity/gopay-php-api.git",
+                "reference": "42b2aba83de95669c4a4a09f3d0792ce48248303"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/gopaycommunity/gopay-php-api/zipball/42b2aba83de95669c4a4a09f3d0792ce48248303",
+                "reference": "42b2aba83de95669c4a4a09f3d0792ce48248303",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.2.1|7.*",
+                "php": ">=7.4"
+            },
+            "require-dev": {
+                "hamcrest/hamcrest-php": "*",
+                "phpspec/prophecy": "~1.0",
+                "phpspec/prophecy-phpunit": "^2.0",
+                "phpunit/phpunit": "9.3.7"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "factory.php"
+                ],
+                "psr-4": {
+                    "GoPay\\": "src/"
+                },
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "GoPay",
+                    "homepage": "https://github.com/gopaycommunity/gopay-php-api/contributors"
+                }
+            ],
+            "description": "GoPay's PHP SDK for Payments REST API",
+            "keywords": [
+                "api",
+                "gopay",
+                "payments",
+                "rest",
+                "sdk"
+            ],
+            "support": {
+                "issues": "https://github.com/gopaycommunity/gopay-php-api/issues",
+                "source": "https://github.com/gopaycommunity/gopay-php-api/tree/v1.6.1"
+            },
+            "time": "2023-01-12T14:19:54+00:00"
         },
         {
             "name": "graham-campbell/result-type",
@@ -7563,6 +7623,80 @@
             "time": "2022-12-22T17:55:15+00:00"
         },
         {
+            "name": "symfony/yaml",
+            "version": "v6.2.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/yaml.git",
+                "reference": "e8e6a1d59e050525f27a1f530aa9703423cb7f57"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/e8e6a1d59e050525f27a1f530aa9703423cb7f57",
+                "reference": "e8e6a1d59e050525f27a1f530aa9703423cb7f57",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1",
+                "symfony/polyfill-ctype": "^1.8"
+            },
+            "conflict": {
+                "symfony/console": "<5.4"
+            },
+            "require-dev": {
+                "symfony/console": "^5.4|^6.0"
+            },
+            "suggest": {
+                "symfony/console": "For validating YAML files using the lint command"
+            },
+            "bin": [
+                "Resources/bin/yaml-lint"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Yaml\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Loads and dumps YAML files",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/yaml/tree/v6.2.7"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2023-02-16T09:57:23+00:00"
+        },
+        {
             "name": "tijsverkoyen/css-to-inline-styles",
             "version": "2.2.6",
             "source": {
@@ -10462,5 +10596,5 @@
     "platform-overrides": {
         "php": "8.1"
     },
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }

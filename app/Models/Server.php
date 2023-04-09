@@ -80,6 +80,7 @@ class Server extends Model
                     throw new Exception($response['errors'][0]['code']);
                 }
             }
+            Domain::where('server_id', $server->id)->delete();
         });
     }
 
