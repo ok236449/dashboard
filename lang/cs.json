@@ -645,5 +645,7 @@
     "Automatic SSL certificate (HTTPS)": "Automatický SSL certifikát (HTTPS)",
     "This server does not have any available web ports. Please allocate some on pterodactyl first.": "Pro tento server není dostupný žádný webový port. Prosím, nejdříve si vytvořte nějaký na pterodactylu.",
     "List your server on our lobby": "Zobrazit Váš server na našem lobby",
-    "Could not create the web config file.": "Nepodařilo se vytvořit webový config soubor."
+    "Could not create the web config file.": "Nepodařilo se vytvořit webový config soubor.",
+    "An error occured while generating the certificate.": "Nastala chyba při generaci certifikátu.",
+    "Please make sure your domain records are set correctly. Some domain registrators may need up to 12 hours for the records to take effect.": "Prosím zkontrolujte, že jsou záznamy ve vaší doméně správně nastaveny. Nekterým registrátorům to může trvat až 12 hodin."
 }

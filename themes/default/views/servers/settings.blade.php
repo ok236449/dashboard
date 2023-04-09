@@ -386,6 +386,8 @@ select{
 
 
         </div>
+        @if(in_array(Auth::user()->role, ['moderator', 'admin']))
+
         @if(($nest_id==1&&in_array($egg_id, [2, 3, 22, 58]))|| //minecraft
             $nest_id==8||//web
             ($nest_id==12&&in_array($egg_id, [31, 61])) //discord.js, discord.py
@@ -424,6 +426,8 @@ select{
             if(document.getElementById("minecraft-domains")) document.getElementById("minecraft-domains").classList.add('active');
             else document.getElementById("web-domains").classList.add('active');
           </script>
+        @endif
+
         @endif
 
       </div>
