@@ -414,7 +414,8 @@ class DomainController extends Controller
 
     public function getDomainCertificate($domain)
     {
-        return exec('doas certbot certonly --nginx -d ' . $domain . ' -n --quiet');
+        exec('doas certbot certonly --nginx -d ' . $domain . ' -n --quiet', $output, $result);
+        return $result;
     }
     
     public function writeNginxConfigFile($domain, $node_domain, $port)
