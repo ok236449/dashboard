@@ -26,9 +26,8 @@ class Pterodactyl
     {
         return Http::withHeaders([
             'Authorization' => 'Bearer ' . config('SETTINGS::SYSTEM:PTERODACTYL:TOKEN'),
-            'Content-type' => 'text/plain',
-            //'Accept' => 'Application/vnd.pterodactyl.v1+json',
-            'Accept' => 'application/json',
+            'Content-type' => 'application/json',
+            'Accept' => 'Application/vnd.pterodactyl.v1+json',
         ])->baseUrl(config('SETTINGS::SYSTEM:PTERODACTYL:URL') . '/api');
     }
 
