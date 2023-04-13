@@ -159,11 +159,11 @@ Route::middleware(['auth', 'checkSuspended'])->group(function () {
     //Route::patch('servers/settings/update/domains', [Domain::class, 'updateSettingsDomains'])->name('servers.settings.update.domains');
     Route::patch('servers/settings/update/protection', [DomainController::class, 'updateProtection'])->name('servers.settings.update.protection');
     Route::patch('servers/settings/update/lobby', [DomainController::class, 'updateLobby'])->name('servers.settings.update.lobby');
-    Route::get('test', function(){
+    /*Route::get('test', function(){
         return LogPLayersCommand::handle();
         //DomainController::uploadBungeeGuard('a7eb5624');
         //DomainController::deleteBungeeGuard('a7eb5624');
-    });
+    });*/
 
     //admin
     Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {

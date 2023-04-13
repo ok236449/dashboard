@@ -45,10 +45,9 @@ class LogPLayersCommand extends Command
     public static function handle()
     {
         $timeNow = Carbon::now();
-        //if(!PlayerLog::first()||$timeNow->roundMinute()->format('i')%config('SETTINGS::SYSTEM:PLAYER_LOG_INTERVAL')==0)
-        //{
+        if(!PlayerLog::first()||$timeNow->roundMinute()->format('i')%config('SETTINGS::SYSTEM:PLAYER_LOG_INTERVAL')==0)
+        {
             $lastPlayersRaw = ($lastPlayerLog = PlayerLog::latest()->first())?json_decode($lastPlayerLog->raw_servers, true):null;
-            //dd($lastPlayersRaw);
             $appIDs = [ //NestIDs and Steam AppIDs
                 64 => 304930 //Unturned
             ];
@@ -90,37 +89,6 @@ class LogPLayersCommand extends Command
                     $response = iconv("UTF-16BE", "UTF-8", $response);
 
                     $parts = explode("\x00", $response);
-                    //dd($parts);
-
-                    /*// Send the Server List Ping request to the server
-                    $data = "\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-                    $packet = "\x00" . chr(strlen($data)) . $data;
-                    fwrite($socket, $packet);
-                    stream_set_timeout($socket, 0.5);
-
-                    // Wait for the response
-                    $response = fread($socket, 2048);
-
-                    // Close the socket connection
-                    fclose($socket);
-                    if(!$response) continue;
-
-                    // Parse the response data
-                    $response = substr($response, 5);
-                    $response = json_decode($response, true);
-
-                    $onlinePlayers = $response['players']['online'];
-                    $maxPlayers = $response['players']['max'];
-                    $motd = implode("\n", $response['description']);*/
-
-                    /*fwrite($socket, "\xFE\x01"); // Send the ping packet to the server
-                    $response = fread($socket, 1024); // Read the response from the server
-                    fclose($socket); // Close the socket connection
-
-                    // Parse the response to get the server details
-                    $response = substr($response, 5);
-                    $response = iconv('UTF-16BE', 'UTF-8', $response);
-                    $response = explode("\x00", $response);*/
                     
                     $status[$server['attributes']['identifier']] = collect();
                     $status[$server['attributes']['identifier']]['server_name'] = "kokot";
@@ -173,10 +141,7 @@ class LogPLayersCommand extends Command
                     $status[$server['attributes']['identifier']]['slots'] = intval($response2->json()['vars']['sv_maxClients']);
                 }
             }
-            /*$test = array();
-            foreach($status as $key => $s) $test[$key] = $status[$key]['players'];
-            dd($test);*/
-            //dd($status);
+            
             $playerLog = new PlayerLog();
             foreach($status as $stat)
             {
@@ -189,7 +154,7 @@ class LogPLayersCommand extends Command
             $playerLog->raw_servers = json_encode($status);
             PlayerLog::where('created_at', '<', $timeNow->subDay()->subDay()->subMinutes(Round(config('SETTINGS::SYSTEM:PLAYER_LOG_INTERVAL')*0.5)))->delete();
             $playerLog ->save();
-        //}
-        return 0;
+        }
+        return "ok";
     }
 }
