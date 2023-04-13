@@ -20,6 +20,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('cp:versioncheck:get')->daily();
         $schedule->command('payments:open:clear')->daily();
 
+        $schedule->command('playerLogger:log')->everyMinute();
+
         //log cronjob activity
         $schedule->call(function () {
             Storage::disk('logs')->put('cron.log', 'Last activity from cronjobs - ' . now());
