@@ -75,13 +75,20 @@ class PaymentController extends Controller
         else if($amount<1000) return 85;
         else return 80;*/
 
-        if($amount<50) return 100;
+        /*if($amount<50) return 100;
         else if($amount<100) return (100-($amount-50)*3/50);
         else if($amount<200) return (100-($amount-100)*3/100)-3;
         else if($amount<300) return (100-($amount-200)*2/100)-6;
         else if($amount<500) return (100-($amount-300)*2/200)-8;
         else if($amount<1000) return (100-($amount-500)*4/500)-10;
-        else return (100-($amount-1000)*6/1000)-14;
+        else return (100-($amount-1000)*6/1000)-14;*/
+
+        if($amount<100) return 100;
+        else if($amount<200) return (100-($amount-100)*3/100);
+        else if($amount<300) return (100-($amount-200)*1.5/100)-3;
+        else if($amount<500) return (100-($amount-300)*1.5/200)-4.5;
+        else if($amount<1000) return (100-($amount-500)*2/500)-6;
+        else return (100-($amount-1000)*2/1000)-8;
     }
 
     public function getTaxesArray(){
