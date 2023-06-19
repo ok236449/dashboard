@@ -6,6 +6,7 @@ use App\Classes\Settings\Language;
 use App\Classes\Settings\Misc;
 use App\Classes\Settings\Payments;
 use App\Classes\Settings\System;
+use App\Console\Commands\ChargeForVPS;
 use App\Console\Commands\LogPLayersCommand;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\ApplicationApiController;
@@ -38,6 +39,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Pricing;
+use App\Http\Controllers\Admin\VirtualPrivateServerController;
 use App\Models\PlayerLog;
 
 /*
@@ -160,7 +162,7 @@ Route::middleware(['auth', 'checkSuspended'])->group(function () {
     Route::patch('servers/settings/update/protection', [DomainController::class, 'updateProtection'])->name('servers.settings.update.protection');
     Route::patch('servers/settings/update/lobby', [DomainController::class, 'updateLobby'])->name('servers.settings.update.lobby');
     /*Route::get('test', function(){
-        return LogPLayersCommand::handle();
+        return ChargeForVPS::handle();
         //DomainController::uploadBungeeGuard('a7eb5624');
         //DomainController::deleteBungeeGuard('a7eb5624');
     });*/
@@ -245,6 +247,12 @@ Route::middleware(['auth', 'checkSuspended'])->group(function () {
         Route::get('partners/datatable', [PartnerController::class, 'datatable'])->name('partners.datatable');
         Route::get('partners/{voucher}/users', [PartnerController::class, 'users'])->name('partners.users');
         Route::resource('partners', PartnerController::class);
+
+        //vps
+        Route::get('vps/datatable', [VirtualPrivateServerController::class, 'datatable'])->name('vps.datatable');
+        //Route::get('vps/{vp}/edit', [VpsController::class, 'edit'])->name('vps.edit');
+        //Route::get('vps/{vps}/users', [VpsController::class, 'users'])->name('vps.users');
+        Route::resource('vps', VirtualPrivateServerController::class);
 
         //api-keys
         Route::get('api/datatable', [ApplicationApiController::class, 'datatable'])->name('api.datatable');

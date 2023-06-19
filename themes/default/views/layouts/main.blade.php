@@ -8,10 +8,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta content="{{ config('SETTINGS::SYSTEM:SEO_TITLE') }}" property="og:title">
     <meta content="{{ config('SETTINGS::SYSTEM:SEO_DESCRIPTION') }}" property="og:description">
-    <meta content='{{ \Illuminate\Support\Facades\Storage::disk('public')->exists('logo.png') ? asset('storage/logo.png') : asset('images/controlpanel_logo.png') }}' property="og:image">
+    <meta content="https://home.vagonbrei.eu/static/images/logo.png" property="og:image">
     <title>{{ config('app.name', 'Laravel') }}</title>
     <link rel="icon"
-        href="{{ \Illuminate\Support\Facades\Storage::disk('public')->exists('favicon.ico') ? asset('storage/favicon.ico') : asset('favicon.ico') }}"
+        href="https://home.vagonbrei.eu/static/images/logo.ico"
         type="image/x-icon">
 
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -196,7 +196,7 @@
             <!-- Brand Logo -->
             <a href="{{ route('home') }}" class="brand-link">
                 <img width="64" height="64"
-                    src="{{ \Illuminate\Support\Facades\Storage::disk('public')->exists('icon.png') ? asset('storage/icon.png') : asset('images/controlpanel_logo.png') }}"
+                    src="https://home.vagonbrei.eu/static/images/logo.png"
                     alt="{{ config('app.name', 'Laravel') }} Logo" class="brand-image img-circle"
                     style="opacity: .8">
                 <span class="brand-text font-weight-light">{{ config('app.name', 'Controlpanel.gg') }}</span>
@@ -347,6 +347,14 @@
                                     class="nav-link @if (Request::routeIs('admin.partners.*')) active @endif">
                                     <i class="nav-icon fas fa-handshake"></i>
                                     <p>{{ __('Partners') }}</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('admin.vps.index') }}"
+                                    class="nav-link @if (Request::routeIs('admin.vps.*')) active @endif">
+                                    <i class="nav-icon fas fa-server"></i>
+                                    <p>{{ __('VPS') }}</p>
                                 </a>
                             </li>
 

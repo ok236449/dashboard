@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\Convoy;
 use App\Classes\Pterodactyl;
 use App\Models\Domain;
 use App\Models\Egg;
@@ -10,7 +11,9 @@ use App\Models\Nest;
 use App\Models\Node;
 use App\Models\Product;
 use App\Models\Server;
+use App\Models\VirtualPrivateServer;
 use App\Notifications\ServerCreationError;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Client\Response;
@@ -61,8 +64,28 @@ class ServerController extends Controller
             $server->product = $product;
         }
 
+        $vpses = VirtualPrivateServer::where('user_id', Auth::user()->id)->get();
+        
+        foreach($vpses as $vps_key => $vps){
+            $details = Convoy::fetchServer($vps->uuid);
+            if(isset($details['data'])) {
+                $addresses = array();
+                foreach ($details['data']['limits']['addresses']['ipv4'] as $key => $address){
+                    array_push($addresses, $address['address']);
+                }
+                $details['data']['limits']['addresses']['ipv4'] = $addresses;
+                $vps->details = $details['data'];
+            }
+            //$convoy_node = Convoy::fetchNode($vps->details['node_id']);
+            //if(isset($convoy_node['data'])) $vps->node = $convoy_node['data'];
+            $vps->next_payment = $vps->last_payment?Carbon::createFromTimeString($vps->last_payment)->addDays(30):__("never");
+        }
+
+        //dd($vpses);
+
         return view('servers.index')->with([
             'servers' => $servers,
+            'vpses' => $vpses
         ]);
     }
 
@@ -337,6 +360,7 @@ class ServerController extends Controller
             
             case 21://web eggs
             case 81:
+            case 98:
             case 31://discord.js
             case 61://discord.py
                 //show only web tabs

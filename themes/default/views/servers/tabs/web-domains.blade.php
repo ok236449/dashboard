@@ -74,7 +74,7 @@
             <div class="form-group mb-3">
                 <label for="web_domain">{{ __('Link a new domain') }}:</label>
                 <div class="custom-control p-0" style="display:flex; flex-direction:row;">
-                    <input x-model="web_domain" id="web_domain" name="web_domain" type="text" required placeholder="{{__('play.example.com')}}" onchange="web_checkAvailability('domain');" oninput="document.getElementById('web_your_domain').innerText = this.value; document.getElementById('web_your_domain2').innerText = this.value; document.getElementById('web_your_domain3').innerText = this.value;"
+                    <input x-model="web_domain" id="web_domain" name="web_domain" type="text" required placeholder="{{__('example.com')}}" onchange="web_checkAvailability('domain');" oninput="document.getElementById('web_your_domain').innerText = this.value; document.getElementById('web_your_domain2').innerText = this.value; document.getElementById('web_your_domain3').innerText = this.value;"
                         class="form-control @error('web_domain') is-invalid @enderror">
                     <select id="domain_web_port" style="width:auto" class="custom-select ml-2" name="web_port" required autocomplete="off">
                         <option value="" selected disabled style="color: #999;">{{__('Pick port')}}</option>
@@ -91,7 +91,7 @@
             <div style="border: 1px; border-style: solid; border-color:dimgrey; border-radius: 5px; min-height:100px; font-size:14px" class="p-2 mt-2">
                 {{__('Here you can link your own domain (if you have one). You will need to set these records at your domain registrar')}}:<br>
                 <hr style="margin: 1px; padding: 0px; background-color:#696969">
-                CNAME <span id="web_your_domain3">{{__('play.example.com')}}</span> {{($web_domain&&$web_domain->bungee_active)?env('BUNGEECORD_ADDRESS'):$address}}
+                CNAME <span id="web_your_domain3">{{__('example.com')}}</span> {{($web_domain&&$web_domain->bungee_active)?env('BUNGEECORD_ADDRESS'):$address}}
 
             </div>
             <span>
@@ -147,6 +147,7 @@
             if(!'{{$web_domain?1:0}}') document.getElementById('web_domain_availability').innerHTML = "";
             if(show_info==true){
                 showStatus(res.status);
+                if(res.status==200) location.reload();
                 /*if(document.getElementById('web_subdomain_prefix_error')&&json.errors&&json.errors.subdomain_prefix){
                     document.getElementById('web_subdomain_prefix_error').innerText = json.errors.subdomain_prefix;
                     document.getElementById('web_subdomain_prefix').classList.add('is-invalid');

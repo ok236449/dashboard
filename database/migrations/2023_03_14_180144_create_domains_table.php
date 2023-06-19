@@ -18,6 +18,7 @@ return new class extends Migration
             $table->id();
             $table->uuid('server_id');
             $table->string('cf_id')->nullable();
+            $table->string('status')->nullable();
             $table->string('subdomain_prefix')->nullable();
             $table->string('subdomain_suffix')->nullable();
             $table->string('domain')->nullable();

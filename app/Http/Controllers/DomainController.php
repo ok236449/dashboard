@@ -301,7 +301,7 @@ class DomainController extends Controller
         //cloudflare success
         $domain -> cf_id = $cf['result']['id'];
 
-        //generate certificate
+        /*//generate certificate
         if($this->getDomainCertificate($request->subdomain_prefix . $request->subdomain_suffix)!=1) return response()->json(['errors' => ['web_subdomain' => __('An error occured while generating the certificate.')]], 422);;
 
         //create nginx config file
@@ -309,11 +309,12 @@ class DomainController extends Controller
             $cf2 = Cloudflare::deleteRecord(DomainController::$availableSubdomains[ltrim($domain->subdomain_suffix, '.')]['cf_token'], $domain->cf_id);
             if(!$cf||!isset($cf['success'])||$cf['success']!=true) return response()->json(['errors' => ['web_subdomain' => __('Could not create web config file and failed during removal of the subdomain. Please contact support as soon as possible.'), 'cloudflare_errors' => $cf]], 422);
             return response()->json(['errors' => ['web_subdomain' => __('Could not create the web config file. The changes have been successfully reverted.')]], 422);
-        };
+        };*/
 
-        //success
+        //success, the daemon will generate the certificate automatically.
+        $domain->status = "certificate generation pending";
         $domain -> save();
-        $output = exec('nginx -s reload');
+        //$output = exec('nginx -s reload');
         return response()->json('ok');
     }
 
@@ -331,11 +332,12 @@ class DomainController extends Controller
         //check cloudflare response
         if(!$cf||!isset($cf['success'])||$cf['success']!=true) return response()->json(['errors' => ['web_subdomain' => __('Could not delete the cloudflare record.'), 'cloudflare_errors' => $cf]], 422);
 
-        //delete config file without checking
-        $this->deleteNginxConfig($domain->subdomain_prefix . $domain->subdomain_suffix);
+        /*//delete config file without checking
+        $this->deleteNginxConfig($domain->subdomain_prefix . $domain->subdomain_suffix);*/
 
         //success
-        $domain->delete();
+        $domain->status = "deletion pending";
+        $domain->save();
         return response()->json('ok');
     }
 
@@ -382,16 +384,17 @@ class DomainController extends Controller
         if(!in_array($request->web_port, $web_ports)) return response()->json(['errors' => ['web_domain' => __('Wrong data.')]], 422);
         $domain->port = $request->web_port;
 
-        //generate certificate
+        /*//generate certificate
         if($this->getDomainCertificate($request->subdomain_prefix . $request->subdomain_suffix)!=1) return response()->json(['errors' => ['web_subdomain' => __('An error occured while generating the certificate.') . ' ' . __('Please make sure your domain records are set correctly. Some domain registrators may need up to 12 hours for the records to take effect.')]], 422);
 
         //create nginx config file
         if(!$this->writeNginxConfigFile($request->domain, $domain->node_domain, $domain->port))
-            return response()->json(['errors' => ['web_domain' => __('Could not create the web config file.')]], 422);
+            return response()->json(['errors' => ['web_domain' => __('Could not create the web config file.')]], 422);*/
 
         //success
+        $domain->status = "certificate generation pending";
         $domain -> save();
-        $output = exec('nginx -s reload');
+        //$output = exec('nginx -s reload');
         return response()->json('ok');
     }
 
@@ -404,11 +407,12 @@ class DomainController extends Controller
         $domain = Domain::where('server_id', $request->server_id)->where('type', 'domain')->where('target', 'web')->first();
         if(!$domain) return response()->json(['errors' => ['web_domain' => __('Missing data in the database.')]], 422);
 
-        //delete config file without checking
-        $this->deleteNginxConfig($domain->domain);
+        /*//delete config file without checking
+        $this->deleteNginxConfig($domain->domain);*/
 
         //success
-        $domain->delete();
+        $domain->status = "deletion pending";
+        $domain->save();
         return response()->json('ok');
     }
 

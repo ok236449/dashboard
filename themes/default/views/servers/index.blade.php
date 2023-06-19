@@ -152,6 +152,78 @@
                     @endif
                 @endforeach
             </div>
+
+            @if($vpses->count())
+                <div class="col-sm-6">
+                    <h3>{{ __('Your VPS') }}</h3>
+                </div>
+                <p class="ml-2 mb-2" style="color: yellow">{{__("If you want to modify your VPS specifications, create a new one or cancel it, please contact an admin.")}}</p>
+                <div class="row d-flex flex-row justify-content-center justify-content-md-start">
+                    @foreach ($vpses as $vps)
+                            <div class="col-xl-3 col-lg-5 col-md-6 col-sm-6 col-xs-12 card pr-0 pl-0 ml-sm-2 mr-sm-3"
+                                style="max-width: 350px">
+                                <div class="card-header">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="card-title mt-1">{{ $vps->details ? $vps->details['name'] . " (" . $vps->details['hostname'] . ")" : __('Unknown VPS')}}
+                                        </h5>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="container">
+                                        <div class="row mb-2">
+                                            <div class="col my-auto">{{ __('Description') }}:</div>
+                                            <div class="col-7 my-auto">
+                                                {{ $vps->description ? $vps->description : __('none') }}
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-5 ">
+                                                {{ __('Resources') }}:
+                                            </div>
+                                            @if($vps->details)
+                                                <div class="col-7 text-wrap d-flex justify-content-between align-items-center">
+                                                    <span>{{ $vps->details['limits']['memory']/1024/1024/1024 }} GB RAM
+                                                    </span>
+                                                    <i data-toggle="popover" data-trigger="hover" data-html="true"
+                                                        data-content="{{ __('CPU') }}: {{ $vps->details['limits']['cpu'] }} {{ __('vCores') }} <br/>{{ __('RAM') }}: {{ $vps->details['limits']['memory']/1024/1024 }} MB <br/>{{ __('Disk') }}: {{ $vps->details['limits']['disk']/1024/1024/1024 }} GB <br/>{{ __('Backups') }}: {{ $vps->details['limits']['backups'] }} <br/> {{ __('Address') }}: {{ $vps->details['limits']['addresses']['ipv4']?implode(', ', $vps->details['limits']['addresses']['ipv4']):__('none') }} <br/>"
+                                                        class="fas fa-info-circle"></i>
+                                                </div>
+                                            @else
+                                                <div class="col-7 text-wrap d-flex justify-content-between align-items-center">
+                                                    <span>{{ __('Unknown') }}</span>
+                                                </div>
+                                            @endif
+
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-5">
+                                                {{ __('Price') }}:
+                                            </div>
+                                            <div class="col-7">
+                                                <span>{{ $vps->price/100 }} <span class="text-muted">{{ CREDITS_DISPLAY_NAME }} {{ __('per Month') }}</span></span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col my-auto">{{ __('Next payment') }}:</div>
+                                            <div class="col-7 my-auto">
+                                                {{ $vps->next_payment }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card-footer d-flex align-items-center justify-content-between">
+                                    <a href="{{ env('CONVOY_URL') }}/servers/{{ $vps->uuid }}"
+                                        target="__blank"
+                                        class="btn btn-info mx-3 w-100 align-items-center justify-content-center d-flex">
+                                        <i class="fas fa-tools mr-2"></i>
+                                        <span>{{ __('VPS') }}</span>
+                                    </a>
+                                </div>
+                            </div>
+                    @endforeach
+                </div>
+            @endif
             <!-- END CUSTOM CONTENT -->
         </div>
     </section>

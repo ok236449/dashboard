@@ -19,6 +19,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('credits:charge')->hourly();
         $schedule->command('cp:versioncheck:get')->daily();
         $schedule->command('payments:open:clear')->daily();
+        $schedule->command('VPS:charge')->hourly();
 
         $schedule->command('playerLogger:log')->everyMinute();
 

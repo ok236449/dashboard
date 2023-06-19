@@ -152,7 +152,8 @@
                                 <button @click="fetchProducts();" type="button" id="fetchProductsButton" hidden></button>
                                 <input type="hidden" value="{{$preNode}}" id="presetNode">
                             </div>
-                            <i class="fas fa-info-circle"></i> {{__('There may not be all nodes available. That means the node might be full or it is not available for the selected game.')}}
+                            <i class="fas fa-info-circle"></i> {{__('There may not be all nodes available. That means the node might be full or it is not available for the selected game.')}}<br>
+                            <i class="fas fa-folder-open" style="color: green"></i> {{__('Do you want to host game servers yourself? How about trying your very own VPS? In that case please contact an admin.')}}
                         </div>
                     </div>
                 </div>
