@@ -65,7 +65,7 @@ class OverViewController extends Controller
                 $counters['payments']['thisMonth'][$paymentCurrency]->total = 0;
                 $counters['payments']['thisMonth'][$paymentCurrency]->count = 0;
             }
-            $counters['payments']['thisMonth'][$paymentCurrency]->total += $payment->total_price;
+            $counters['payments']['thisMonth'][$paymentCurrency]->total += $payment->price;
             $counters['payments']['thisMonth'][$paymentCurrency]->count++;
         }
         foreach ($payments->where('created_at', '<', Carbon::today()->startOfMonth()) as $payment) {
@@ -75,7 +75,7 @@ class OverViewController extends Controller
                 $counters['payments']['lastMonth'][$paymentCurrency]->total = 0;
                 $counters['payments']['lastMonth'][$paymentCurrency]->count = 0;
             }
-            $counters['payments']['lastMonth'][$paymentCurrency]->total += $payment->total_price;
+            $counters['payments']['lastMonth'][$paymentCurrency]->total += $payment->price;
             $counters['payments']['lastMonth'][$paymentCurrency]->count++;
         }
 
@@ -99,7 +99,7 @@ class OverViewController extends Controller
                 $counters['taxPayments']['thisYear'][$paymentCurrency]->price = 0;
                 $counters['taxPayments']['thisYear'][$paymentCurrency]->taxes = 0;
             }
-            $counters['taxPayments']['thisYear'][$paymentCurrency]->total += $taxPayment->total_price;
+            $counters['taxPayments']['thisYear'][$paymentCurrency]->total += $taxPayment->price;
             $counters['taxPayments']['thisYear'][$paymentCurrency]->count++;
             $counters['taxPayments']['thisYear'][$paymentCurrency]->price += $taxPayment->price;
             $counters['taxPayments']['thisYear'][$paymentCurrency]->taxes += $taxPayment->tax_value;
@@ -115,7 +115,7 @@ class OverViewController extends Controller
                 $counters['taxPayments']['lastYear'][$paymentCurrency]->price = 0;
                 $counters['taxPayments']['lastYear'][$paymentCurrency]->taxes = 0;
             }
-            $counters['taxPayments']['lastYear'][$paymentCurrency]->total += $taxPayment->total_price;
+            $counters['taxPayments']['lastYear'][$paymentCurrency]->total += $taxPayment->price;
             $counters['taxPayments']['lastYear'][$paymentCurrency]->count++;
             $counters['taxPayments']['lastYear'][$paymentCurrency]->price += $taxPayment->price;
             $counters['taxPayments']['lastYear'][$paymentCurrency]->taxes += $taxPayment->tax_value;
