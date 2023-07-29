@@ -50,7 +50,7 @@ class ChargeForVPS extends Command
         foreach(VirtualPrivateServer::where('last_payment', '<=', Carbon::now()->subDays(30))->orwhere('last_payment', null)->get() as $vps){
             //dd($vps);
             $user = User::where('id', $vps->user_id)->first();
-            if($user->credits>$vps->price/100){
+            if($user->credits>=$vps->price/100){
                 $user->decrement('credits', $vps->price/100);
                 Convoy::unsuspendServer($vps->uuid);
                 $vps->last_payment = $timeNow;
