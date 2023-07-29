@@ -99,7 +99,7 @@ class OverViewController extends Controller
                 $counters['taxPayments']['thisYear'][$paymentCurrency]->price = 0;
                 $counters['taxPayments']['thisYear'][$paymentCurrency]->taxes = 0;
             }
-            $counters['taxPayments']['thisYear'][$paymentCurrency]->total += $taxPayment->price;
+            $counters['taxPayments']['thisYear'][$paymentCurrency]->total += $taxPayment->total_price;
             $counters['taxPayments']['thisYear'][$paymentCurrency]->count++;
             $counters['taxPayments']['thisYear'][$paymentCurrency]->price += $taxPayment->price;
             $counters['taxPayments']['thisYear'][$paymentCurrency]->taxes += $taxPayment->tax_value;
@@ -115,7 +115,7 @@ class OverViewController extends Controller
                 $counters['taxPayments']['lastYear'][$paymentCurrency]->price = 0;
                 $counters['taxPayments']['lastYear'][$paymentCurrency]->taxes = 0;
             }
-            $counters['taxPayments']['lastYear'][$paymentCurrency]->total += $taxPayment->price;
+            $counters['taxPayments']['lastYear'][$paymentCurrency]->total += $taxPayment->total_price;
             $counters['taxPayments']['lastYear'][$paymentCurrency]->count++;
             $counters['taxPayments']['lastYear'][$paymentCurrency]->price += $taxPayment->price;
             $counters['taxPayments']['lastYear'][$paymentCurrency]->taxes += $taxPayment->tax_value;
