@@ -151,11 +151,5 @@ class AppServiceProvider extends ServiceProvider
             Log::error('Settings Error: Could not load settings from database. The Installation probably is not done yet.');
             Log::error($e);
         }
-
-        // This line set the Cloudflare's IP as a trusted proxy 
-        Request::setTrustedProxies(
-            ['REMOTE_ADDR'], 
-            Request::HEADER_X_FORWARDED_FOR
-        );
     }
 }
