@@ -24,6 +24,15 @@ class Convoy{
         return isset($response)?$response->json():null;
     }
 
+    public static function fetchNodes(){
+        try {
+            $response = self::client()->get('nodes');
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+        return $response->json();
+    }
+
     public static function fetchNode($id){
         try {
             $response = self::client()->get('nodes/' . $id);

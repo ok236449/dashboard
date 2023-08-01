@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Classes\Convoy;
 use App\Classes\Pterodactyl;
 use App\Http\Controllers\Controller;
 use App\Models\Egg;
@@ -13,6 +14,7 @@ use App\Models\Product;
 use App\Models\Server;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Models\VirtualPrivateServer;
 use Carbon\Carbon;
 
 class OverViewController extends Controller
@@ -21,6 +23,7 @@ class OverViewController extends Controller
 
     public function index()
     {
+
         //Get counters
         $counters = collect();
         //Set basic variables in the collection
@@ -38,6 +41,11 @@ class OverViewController extends Controller
         $counters->put('earnings', collect());
         $counters['earnings']->active = 0;
         $counters['earnings']->total = 0;
+        $counters->put('vps', collect());
+        $counters['vps']->active = 0;
+        $counters['vps']->total = 0;
+        $counters['vps']->activeearnings = 0;
+        $counters['vps']->totalearnings = 0;
         $counters->put('totalUsagePercent', 0);
 
         //Prepare subCollection 'payments'
@@ -174,6 +182,27 @@ class OverViewController extends Controller
             }
         }
 
+        //Get VPS details and VPS node usages
+        $convoyNodes = Convoy::fetchNodes()['data'] ?? ['data'=>[]];
+        $convoyUsage = array();
+        $convoyUsage['memory'] = 0;
+        $convoyUsage['memory_allocated'] = 0;
+        foreach($convoyNodes as $convoyNode){
+            $convoyUsage['memory'] += ($convoyNode['memory']??0)*(100+($convoyNode['memory_overallocate']??0))/100;
+            $convoyUsage['memory_allocated'] += $convoyNode['memory_allocated'];
+        }
+        $convoyUsage = ($convoyUsage['memory']?round($convoyUsage['memory_allocated']/$convoyUsage['memory']*100, 2):0);
+
+        foreach(VirtualPrivateServer::get() as $vps){
+            if(Carbon::createFromTimeString($vps->last_payment)->addDays(30)->unix()>=Carbon::now()->unix())
+            {
+                $counters['vps']->active++;
+                $counters['vps']->activeearnings += $vps->price/100;
+            }
+            $counters['vps']->total++;
+            $counters['vps']->totalearnings += $vps->price/100;
+        }
+
         //Get latest tickets
         $tickets = collect();
         foreach (Ticket::query()->latest()->take(5)->get() as $ticket) {
@@ -202,6 +231,7 @@ class OverViewController extends Controller
 
         return view('admin.overview.index', [
             'counters' => $counters,
+            'convoyUsage' => $convoyUsage,
             'nodes' => $nodes,
             'syncLastUpdate' => $syncLastUpdate,
             'deletedNodesPresent' => ($DBnodes->count() != count($pteroNodeIds)) ? true : false,

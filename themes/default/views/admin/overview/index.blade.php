@@ -256,12 +256,21 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
+                                        <td colspan="2"><span style="float: right">{{__('VPS')}} ({{__('active')}}/{{__('total')}}):</span></td>
+                                        <td>{{$counters['vps']->active}}/{{$counters['vps']->total}}</td>
+                                        <td>{{$convoyUsage}}%</td>
+                                        <td>{{$counters['vps']->activeearnings}}/{{$counters['vps']->totalearnings}}</td>
+                                    </tr>
+                                </tfoot>
+                                <tfoot>
+                                    <tr>
                                         <td colspan="2"><span style="float: right; font-weight: 700">{{__('Total')}} ({{__('active')}}/{{__('total')}}):</span></td>
                                         <td>{{$counters['servers']->active}}/{{$counters['servers']->total}}</td>
                                         <td>{{$counters['totalUsagePercent']}}%</td>
                                         <td>{{$counters['earnings']->active}}/{{$counters['earnings']->total}}</td>
                                     </tr>
                                 </tfoot>
+                                
                             </table>
                             <hr style="width: 100%; height:2px; border-width:0; background-color:#6c757d; margin-top: 0px;">
                         </div>
