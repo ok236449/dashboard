@@ -27,7 +27,7 @@ class Cloudflare{
             if($type=="A"||$type=="CNAME") $response = self::client()->post('/zones/' . $zone_id . '/dns_records', [
                 'content' => $content,
                 'name' => $name,
-                'proxied' => true,
+                'proxied' => false,
                 'type' => $type,
                 'comment' => 'Created with API'
             ]);

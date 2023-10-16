@@ -2,25 +2,30 @@
     <div class="row">
         <div class="col-md-6 p-3">
             <h6 class="card-title"><i class="fas fa-map-signs mr-2"></i>{{ __('Your Minecraft Vagonbrei.eu subdomain') }}:</h6><br>
-            @if($minecraft_subdomain)
-            <div class="form-group mb-3">
-                @if($minecraft_subdomain->port!=$minecraft_port)<p class="mb-0" style="color: yellow">{{__("The primary port of your server changed since you linked your subdomain. Please click the refresh button below.")}}</p>@endif
-                <div class="custom-control p-0">
-                    <span class="btn badge badge-success mt-2 mr-1" style="font-size: 20px"><i class="fa fa-link mr-2"></i>
-                        <span onclick="onClickCopy('minecraft_connected_subdomain')" style="cursor: pointer;"><span id="minecraft_connected_subdomain_prefix">{{$minecraft_subdomain->subdomain_prefix}}</span><span id="minecraft_connected_subdomain_suffix">{{$minecraft_subdomain->subdomain_suffix}}</span></span>
-                    </span>
-                    <button type="button" class="btn btn-primary badge mt-2 mr-1" style="font-size: 20px" onclick="minecraft_refreshSubdomain()"><i class="fa fa-sync-alt mr-2"></i>{{__('Refresh')}}</button>
-                    <button type="button" class="btn btn-danger badge mt-2" style="font-size: 20px" onclick="minecraft_unlinkSubdomain()"><i class="fa fa-trash mr-2"></i>{{__('Unlink')}}</button>
-                </div>
-                <span>
-                    <small><strong id="minecraft_subdomain_error" style="color: red" class="pt-3"></strong></small>
-                </span>
+            <div class="p-0">
+                @foreach($minecraft_subdomains as $minecraft_subdomain)
+                    <div class="form-group mb-1">
+                        <div class="custom-control p-0">
+                            <span class="btn badge @if($minecraft_subdomain->port == $main_port)badge-success @else badge-secondary @endif mt-2" style="font-size: 20px"><i class="fa fa-link mr-2"></i>
+                                <span onclick="minecraft_onClickCopy('{{$minecraft_subdomain->subdomain_prefix . $minecraft_subdomain->subdomain_suffix}}')" style="cursor: pointer;" id="web_connected_domain">{{$minecraft_subdomain->subdomain_prefix . $minecraft_subdomain->subdomain_suffix}}</span>
+                            </span>
+                            <i class="fas fa-arrow-right mt-2" style="font-size: 20px"></i>
+                            <span class="btn badge @if($minecraft_subdomain->port == $main_port)badge-success @else badge-secondary @endif mt-2 mr-2" style="font-size: 21px">
+                                <span onclick="minecraft_onClickCopy('{{$minecraft_subdomain->node_domain . ':' . $minecraft_subdomain->port}}')" style="cursor: pointer;" >{{explode('.', $minecraft_subdomain->node_domain)[0] . ':' . $minecraft_subdomain->port}}</span>
+                            </span>
+                            <button type="button" class="btn btn-primary badge mt-2 mr-1" style="font-size: 20px" onclick="minecraft_refreshSubdomain('{{$minecraft_subdomain->subdomain_prefix}}', '{{$minecraft_subdomain->subdomain_suffix}}')"><i class="fa fa-sync-alt"></i></button>
+                            <button type="button" class="btn btn-danger badge mt-2" style="font-size: 20px" onclick="minecraft_unlinkSubdomain('{{$minecraft_subdomain->subdomain_prefix}}', '{{$minecraft_subdomain->subdomain_suffix}}')"><i class="fa fa-trash"></i></button>
+                            <i data-toggle="popover" data-trigger="hover" data-html="true"
+                                data-content="
+                                {{__('This is your subdomain you have linked. It will be setup automatically.')}}<br><br>{{__('Status')}}: {{__($minecraft_subdomain->status) . ($minecraft_subdomain->status=='certificate generation failed'?'<br>' . __('next attempt') . ': ' . $minecraft_subdomain->next_gen . '<br>' . __('deletion at') . ': ' . $minecraft_subdomain->last_attempt :'')}}"
+                                style="font-size: 20px" class="fas fa-info-circle m-1">
+                            </i>
+                        </div>
+                        @if($minecraft_subdomain->port != $main_port)<p class="mb-0" style="color: yellow">{{__("The primary port of your server changed since you linked your subdomain. Please click the refresh button below to update the DNS record.")}}</p>@endif
+                    </div>
+                @endforeach
             </div>
-            <div style="border: 1px; border-style: solid; border-color:dimgrey; border-radius: 5px; min-height:100px; font-size:14px" class="p-2">
-                {{__('This is your subdomain you have linked. In case you changed your server port or migrated your server to another node, please press the refresh button.')}}
-            </div>
-            @else
-            <p class="mb-0" style="color: yellow">{{__("You haven't linked any subdomain")}}.</p>
+            @if(!$minecraft_subdomains->count()) <p class="mb-2" style="color: yellow">{{__("You haven't linked any subdomain")}}.</p> @endif
             <div class="form-group mb-3">
                 <label for="minecraft_subdomain_prefix">{{ __('Link a new subdomain') }}:</label>
                 <div class="custom-control p-0" style="display:flex; flex-direction:row;">
@@ -34,10 +39,12 @@
                             @php $i++; @endphp
                         @endforeach
                     </select>
-                        <!---<p class="m-0 mt-2 ml-1" style="font-size: 16px">.mc.vagonbrei.eu</p>-->
+                    <select id="subdomain_minecraft_port" style="width:auto" class="custom-select ml-2" name="web_port" required disabled autocomplete="off">
+                        <option selected value="{{$main_port}}">{{$main_port}}</option>
+                    </select>
                 </div>
                 <div style="margin-top: 4px; margin-bottom: -8px">
-                    <small><strong id="minecraft_subdomain_prefix_error" style="color: red"></strong></small>
+                    <small><strong id="minecraft_subdomain_error" style="color: red"></strong></small>
                     <small><strong id="minecraft_subdomain_availability"></strong></small>
                 </div>
             </div>
@@ -45,56 +52,19 @@
                 {{__('Here you can create your own subdomain for free. The subdomain will automatically setup itself and will be ready to use within 10 minutes.')}}
             </div>
             <button type="button" class="btn btn-primary mt-3" style="margin-bottom: -20px; float: right" onclick="minecraft_linkSubdomain()"><i class="fa fa-link mr-2"></i>{{__('Link subdomain')}}</button>
-            @endif
+            
         </div>
 
         <div class="col-md-6 p-3">
-            <h6 class="card-title"><i class="fas fa-map-signs mr-2"></i>{{ __('Your own Minecraft domain') }}:</h6><br>
-            @if($minecraft_domain)
-            <div class="form-group mb-3">
-                @if($minecraft_domain->port!=$minecraft_port)<p class="mb-0" style="color: yellow">{{__("The primary port of your server changed since you linked your domain. Please click the refresh button below and update your DNS records.")}}</p>@endif
-                <div class="custom-control p-0">
-                    <span class="btn badge badge-success mt-2 mr-1" style="font-size: 20px"><i class="fa fa-link mr-2"></i>
-                        <span onclick="minecraft_onClickCopy('minecraft_connected_domain')" style="cursor: pointer;" id="minecraft_connected_domain">{{$minecraft_domain->domain}}</span>
-                    </span>
-                    <button type="button" class="btn btn-primary badge mt-2 mr-1" style="font-size: 20px" onclick="minecraft_refreshDomain()"><i class="fa fa-sync-alt mr-2"></i>{{__('Refresh')}}</button>
-                    <button type="button" class="btn btn-danger badge mt-2" style="font-size: 20px" onclick="minecraft_unlinkDomain()"><i class="fa fa-trash mr-2"></i>{{__('Unlink')}}</button>
-                </div>
-            </div>
-            <div style="border: 1px; border-style: solid; border-color:dimgrey; border-radius: 5px; min-height:100px; font-size:14px" class="p-2 mt-3">
-                {{__('This is your domain you have linked. You will need to set these records at your domain registrar')}}:<br>
+            <h6 class="card-title"><i class="fas fa-map-signs mr-2"></i>{{ __('Linking your own Minecraft domain') }}:</h6><br>
+            
+            <div style="border: 1px; border-style: solid; border-color:dimgrey; border-radius: 5px; font-size:14px" class="p-2 mt-2">
+                {{__('If you happen to have your own domain, you can link it to your minecraft server. All you need to do is set a domain record like this at your domain registrar')}}:<br>
                 <hr style="margin: 1px; padding: 0px; background-color:#696969">
-                SRV {{$minecraft_domain->domain}} _minecraft _tcp 1 1 1 {{$minecraft_port}} {{$minecraft_domain->domain}}<br>
+                <span style="margin-bottom: 0px">{{__('Type')}}: <b>SRV</b><br>{{__('Name')}}: <b>(mc.){{__('example.com')}}</b><br>{{__('Service')}}: <b>_minecraft</b><br>{{__('Protocol')}}: <b>TCP</b><br>{{__('Priority')}}: <b>5</b><br>{{__('Weight')}}: <b>5</b><br>{{__('Port')}}: <b>{{$main_port}}</b><br>{{__('Target')}}: <b>{{$address}}</b></span>
                 <hr style="margin: 1px; padding: 0px; background-color:#696969">
-                CNAME {{$minecraft_domain->domain}} {{$address}}
-
+                <span style="margin-bottom: 0px">{{__('Depending on your domain registrar, the newly created record may take effect instantly (cloudflare) or it might take up to 24 hours (others). Please be patient.')}}</span>
             </div>
-            @else
-            <p class="mb-0" style="color: yellow">{{__("You haven't linked any domain")}}.</p>
-            <div class="form-group mb-3">
-                <label for="minecraft_domain">{{ __('Link a new domain') }}:</label>
-                <div class="custom-control p-0" style="display:flex; flex-direction:row;">
-                    <input x-model="minecraft_domain" id="minecraft_domain" name="minecraft_domain" type="text" required placeholder="{{__('play.example.com')}}" onchange="minecraft_checkAvailability('domain');" oninput="document.getElementById('minecraft_your_domain').innerText = this.value; document.getElementById('minecraft_your_domain2').innerText = this.value; document.getElementById('minecraft_your_domain3').innerText = this.value;"
-                        class="form-control @error('minecraft_domain') is-invalid @enderror">
-                </div>
-                <div style="margin-top: 4px; margin-bottom: -8px">
-                    <small><strong id="minecraft_domain_field_error" style="color: red"></strong></small>
-                    <small><strong id="minecraft_domain_availability"></strong></small>
-                </div>
-            </div>
-            <div style="border: 1px; border-style: solid; border-color:dimgrey; border-radius: 5px; min-height:100px; font-size:14px" class="p-2 mt-2">
-                {{__('Here you can link your own domain (if you have one). You will need to set these records at your domain registrar')}}:<br>
-                <hr style="margin: 1px; padding: 0px; background-color:#696969">
-                SRV <span id="minecraft_your_domain">{{__('play.example.com')}}</span> _minecraft _tcp 1 1 1 {{($minecraft_domain&&$domain->bungee_active)?env('BUNGEECORD_PORT'):$minecraft_port}} <span id="minecraft_your_domain2">{{__('play.example.com')}}</span><br>
-                <hr style="margin: 1px; padding: 0px; background-color:#696969">
-                CNAME <span id="minecraft_your_domain3">{{__('play.example.com')}}</span> {{($minecraft_domain&&$minecraft_domain->bungee_active)?env('BUNGEECORD_ADDRESS'):$address}}
-
-            </div>
-            <span>
-                <small><strong id="minecraft_domain_error" style="color: red"></strong></small>
-            </span>
-            <button type="button" class="btn btn-primary mt-3" style="margin-bottom: -20px; float: right" onclick="minecraft_linkDomain()"><i class="fa fa-link mr-2"></i>{{__('Link domain')}}</button>
-            @endif
         </div>
     </div>
     <script>
@@ -107,20 +77,11 @@
         function minecraft_linkSubdomain(){
             minecraft_sendPost(`{{route('subdomain.minecraft.link')}}`, {subdomain_prefix: document.getElementById('minecraft_subdomain_prefix').value, subdomain_suffix: document.getElementById('minecraft_subdomain_suffix').value, server_id: `{{$server->identifier}}`});
         }
-        function minecraft_unlinkSubdomain(){
-            minecraft_sendPost(`{{route('subdomain.minecraft.unlink')}}`, {server_id: `{{$server->identifier}}`});
+        function minecraft_unlinkSubdomain(subdomain_prefix, subdomain_suffix){
+            minecraft_sendPost(`{{route('subdomain.minecraft.unlink')}}`, {subdomain_prefix: subdomain_prefix, subdomain_suffix: subdomain_suffix, server_id: `{{$server->identifier}}`});
         }
-        function minecraft_refreshSubdomain(){
-            minecraft_sendPost(`{{route('subdomain.minecraft.refresh')}}`, {server_id: `{{$server->identifier}}`});
-        }
-        function minecraft_linkDomain(){
-            minecraft_sendPost(`{{route('domain.minecraft.link')}}`, {domain: document.getElementById('minecraft_domain').value, server_id: `{{$server->identifier}}`});
-        }
-        function minecraft_unlinkDomain(){
-            minecraft_sendPost(`{{route('domain.minecraft.unlink')}}`, {server_id: `{{$server->identifier}}`});
-        }
-        function minecraft_refreshDomain(){
-            minecraft_sendPost(`{{route('domain.minecraft.refresh')}}`, {server_id: `{{$server->identifier}}`});
+        function minecraft_refreshSubdomain(subdomain_prefix, subdomain_suffix){
+            minecraft_sendPost(`{{route('subdomain.minecraft.refresh')}}`, {subdomain_prefix: subdomain_prefix, subdomain_suffix: subdomain_suffix, server_id: `{{$server->identifier}}`});
         }
         
         async function minecraft_sendPost(url, body, show_info=true){
@@ -135,23 +96,16 @@
                 }
             });
             let json = await res.json();
-            if(!'{{$minecraft_subdomain?1:0}}')document.getElementById('minecraft_subdomain_availability').innerHTML = "";
-            if(!'{{$minecraft_domain?1:0}}') document.getElementById('minecraft_domain_availability').innerHTML = "";
+            
             if(show_info==true){
                 showStatus(res.status);
                 if(res.status==200/*&&!url.includes('refresh')*/) location.reload();
-                if(document.getElementById('minecraft_subdomain_prefix_error')&&json.errors&&json.errors.minecraft_subdomain){
-                    document.getElementById('minecraft_subdomain_prefix_error').innerText = json.errors.minecraft_subdomain;
+                if(document.getElementById('minecraft_subdomain_error')&&json.errors&&json.errors.minecraft_subdomain){
+                    document.getElementById('minecraft_subdomain_error').innerText = json.errors.minecraft_subdomain;
                     document.getElementById('minecraft_subdomain_prefix').classList.add('is-invalid');
                     setTimeout(() => {
                         document.getElementById('minecraft_subdomain_prefix').classList.remove('is-invalid');
-                        document.getElementById('minecraft_subdomain_prefix_error').innerText = "";
-                    }, 3000);
-                }
-                else if(document.getElementById('minecraft_domain_field_error')&&json.errors&&json.errors.minecraft_domain){
-                    document.getElementById('minecraft_domain_field_error').innerText = json.errors.minecraft_domain;
-                    setTimeout(() => {
-                        document.getElementById('minecraft_domain_field_error').innerText = "";
+                        document.getElementById('minecraft_subdomain_error').innerText = "";
                     }, 3000);
                 }
             }
@@ -164,10 +118,6 @@
                         document.getElementById('subdomain_prefix').classList.remove('is-invalid');
                         document.getElementById('subdomain_prefix_error').innerText = "";
                     }, 2000);*/
-                }
-                else if(body.type=='domain'){
-                    document.getElementById('minecraft_domain_availability').innerHTML = ((json.available==true)?('<i class="fas fa-check-circle mr-2"></i>' + `{{__('Domain is available')}}`):('<i class="fas fa-exclamation-triangle mr-2"></i>' + `{{__('Domain is already taken')}}`));
-                    document.getElementById('minecraft_domain_availability').style.color = ((json.available==true)?'green':'red');
                 }
             }
         }

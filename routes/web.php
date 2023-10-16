@@ -1,6 +1,7 @@
 <?php
 
 use App\Classes\Cloudflare;
+use App\Classes\Pterodactyl;
 use App\Classes\Settings\Invoices;
 use App\Classes\Settings\Language;
 use App\Classes\Settings\Misc;
@@ -41,6 +42,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Pricing;
 use App\Http\Controllers\Admin\VirtualPrivateServerController;
 use App\Models\PlayerLog;
+use App\Models\Product;
+use App\Models\Server;
+use App\Models\User;
+use Carbon\Carbon;
 
 /*
 |--------------------------------------------------------------------------
@@ -295,3 +300,33 @@ Route::prefix('api')->name('api.')->group(function(){
 });
 
 //require __DIR__ . '/extensions_web.php';
+
+/*Route::get('giveCredits', function(){
+    $cpServers = Server::get();
+    $products = Product::get();
+    $users = User::get();
+    //dd($cpServers[0]);
+    $counter = ["servers" => 0, "credits" => 0];
+    foreach(Pterodactyl::getServers() as $server){
+        if($server["attributes"]["node"]!=12) continue;
+        //if($server["attributes"]["pterodactyl_id"]<=500) continue;
+        //dd($server["attributes"]["identifier"]);
+        $cpServer = $cpServers->where("identifier", $server["attributes"]["identifier"])->first();
+        if(!isset($cpServer->product_id)) continue;
+        //if(!$cpServer->suspended) continue;
+        //dd(Carbon::createFromTimeString($cpServer->suspended));
+        //dd(Carbon::createFromTimeString("2023-09-02 5:00:00"));
+        if($cpServer->suspended&&Carbon::createFromTimeString($cpServer->suspended)->unix()<Carbon::createFromTimeString("2023-09-02 5:00:00")->unix()) continue;
+        //dd($cpServer);
+        $counter["servers"]++;
+        $product = $products->where("id", $cpServer->product_id)->first();
+        $user = $users->where("id", $cpServer->user_id)->first();
+        //dd($product);
+        //dd($user);
+        $user->credits = $user->credits + $product->price/30*3.45*3;
+        $counter["credits"] += $product->price/30*3.45*3;
+        $user->save();
+        //dd($server);
+    }
+    dd($counter);
+});*/

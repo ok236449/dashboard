@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Classes\Cloudflare;
 use App\Classes\Pterodactyl;
+use App\Http\Controllers\DomainController;
 use Exception;
 use GuzzleHttp\Promise\PromiseInterface;
 use Hidehalo\Nanoid\Client;
@@ -73,6 +75,23 @@ class Server extends Model
         });
 
         static::deleting(function (Server $server) {
+            foreach(Domain::where('server_id', $server->identifier)->get() as $domain)
+            {
+                
+                if($domain->type=='subdomain')
+                {
+                    $cf = Cloudflare::deleteRecord(DomainController::$availableSubdomains[ltrim($domain->subdomain_suffix, '.')]['cf_token'], $domain->cf_id);
+        
+                    //check cloudflare response
+                    if(!$cf||!isset($cf['success'])||$cf['success']!=true) throw new Exception($cf);
+                }
+                //success
+                if($domain->target=='web'){
+                    $domain->status = 'deletion pending';
+                    $domain->save();
+                }
+                else $domain->delete();
+            }
             $response = Pterodactyl::client()->delete("/application/servers/{$server->pterodactyl_id}");
             if ($response->failed() && ! is_null($server->pterodactyl_id)) {
                 //only return error when it's not a 404 error
@@ -80,7 +99,6 @@ class Server extends Model
                     throw new Exception($response['errors'][0]['code']);
                 }
             }
-            Domain::where('server_id', $server->id)->delete();
         });
     }
 

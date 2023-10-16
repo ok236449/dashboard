@@ -26,10 +26,11 @@ return new class extends Migration
             $table->string('target');
             $table->string('node_domain')->nullable();
             $table->integer('port');
-            $table->boolean('bungee_active')->default(0);
+            $table->timestamp('next_gen')->nullable();
+            //$table->boolean('bungee_active')->default(0);
             //$table->boolean('allow_direct_connection')->default(1);
-            $table->boolean('show_on_lobby')->default(0);
-            $table->string('bungee_token', 64)->unique()->default(DB::raw("SUBSTR(REPLACE(CONCAT(UUID(), UUID(), UUID()),'-',''),1,64)"));
+            //$table->boolean('show_on_lobby')->default(0);
+            //$table->string('bungee_token', 64)->unique()->default(DB::raw("SUBSTR(REPLACE(CONCAT(UUID(), UUID(), UUID()),'-',''),1,64)"));
             $table->timestamps();
         });
     }

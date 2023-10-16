@@ -26,10 +26,10 @@ class DomainController extends Controller
             'cf_token' => '319696931950f2accdb2adf30c22a93e',
             'available_for' => ['minecraft', 'web']
         ],
-        'czmc.online' => [
+        /*'czmc.online' => [
             'cf_token' => '828f41e1760de9e481c9594cd8cdde28',
             'available_for' => ['minecraft', 'web']
-        ],
+        ],*/
         'hraj.xyz' => [
             'cf_token' => '5c0b482aab8b76c58ece61515bf39d90',
             'available_for' => ['minecraft', 'web']
@@ -88,7 +88,7 @@ class DomainController extends Controller
 
         if(!$request->subdomain_prefix||!$request->subdomain_suffix||strlen($request->subdomain_prefix)<3||strlen($request->subdomain_prefix)>30) return response()->json(['errors' => ['minecraft_subdomain' => __('Subdomain must be 3-30 characters long.')]], 422);
         if(Domain::where('subdomain_prefix', $request->subdomain_prefix)->where('subdomain_suffix', $request->subdomain_suffix)->where('target', 'minecraft')->first()) return response()->json(['errors' => ['minecraft_subdomain' => __('Domain is already taken') . '.']], 422);
-        if(Domain::where('server_id', $server->identifier)->where('type', 'subdomain')->where('target', 'minecraft')->first()) return response()->json(['errors' => ['minecraft_subdomain' => __('The server has already a linked subdomain.')]], 422);
+        if(Domain::where('server_id', $server->identifier)->where('type', 'subdomain')->where('target', 'minecraft')->count()>=5) return response()->json(['errors' => ['minecraft_subdomain' => __('The server has reached the limit of linked domains.')]], 422);
 
         //create the database record for the subdomain
         $domain = new Domain();
@@ -110,7 +110,7 @@ class DomainController extends Controller
         }
 
         //create the DNS record on cloudflare
-        $cf = Cloudflare::createRecord(DomainController::$availableSubdomains[ltrim($request->subdomain_suffix, '.')]['cf_token'], "SRV", $request->subdomain_prefix . $request->subdomain_suffix, $request->subdomain_prefix . "." . $domain -> node_domain, $domain -> port);
+        $cf = Cloudflare::createRecord(DomainController::$availableSubdomains[ltrim($request->subdomain_suffix, '.')]['cf_token'], "SRV", $request->subdomain_prefix . $request->subdomain_suffix, $domain -> node_domain, $domain -> port);
         
         //check cloudflare response
         if(!$cf||!isset($cf['success'])||$cf['success']!=true) return response()->json(['errors' => ['minecraft_subdomain' => __('Could not create the cloudflare record.'), 'cloudflare_errors' => $cf]], 422);
@@ -127,7 +127,7 @@ class DomainController extends Controller
         //perform the nescesarry checks
         //server does not exist or user is not the owner
         if(!$server||$server->user_id!=Auth::user()->id) return response()->json(['errors' => ['minecraft_subdomain' => __('Wrong data.')]], 422);
-        $domain = Domain::where('server_id', $request->server_id)->where('type', 'subdomain')->where('target', 'minecraft')->first();
+        $domain = Domain::where('server_id', $request->server_id)->where('type', 'subdomain')->where('target', 'minecraft')->where('subdomain_prefix', $request->subdomain_prefix)->where('subdomain_suffix', $request->subdomain_suffix)->first();
         if(!$domain) return response()->json(['errors' => ['minecraft_subdomain' => __('Missing data in the database.')]], 422);
 
         //Get server networking - only the main port and store it in the record
@@ -142,7 +142,7 @@ class DomainController extends Controller
         }
 
         //create the DNS record on cloudflare
-        $cf = Cloudflare::patchRecord(DomainController::$availableSubdomains[ltrim($domain->subdomain_suffix, '.')]['cf_token'], $domain->cf_id, "SRV", $domain->subdomain_prefix . $domain->subdomain_suffix, $domain->subdomain_prefix . "." . $domain->node_domain, $domain->port);
+        $cf = Cloudflare::patchRecord(DomainController::$availableSubdomains[ltrim($domain->subdomain_suffix, '.')]['cf_token'], $domain->cf_id, "SRV", $domain->subdomain_prefix . $domain->subdomain_suffix, $domain->node_domain, $domain->port);
         
         //check cloudflare response
         if(!$cf||!isset($cf['success'])||$cf['success']!=true) return response()->json(['errors' => ['minecraft_subdomain' => __('Could not update the cloudflare record.'), 'cloudflare_errors' => $cf]], 422);
@@ -158,7 +158,7 @@ class DomainController extends Controller
         //perform the nescesarry checks
         //server does not exist or user is not the owner
         if(!$server||$server->user_id!=Auth::user()->id) return response()->json(['errors' => ['minecraft_subdomain' => __('Wrong data.')]], 422);
-        $domain = Domain::where('server_id', $request->server_id)->where('type', 'subdomain')->where('target', 'minecraft')->first();
+        $domain = Domain::where('server_id', $request->server_id)->where('type', 'subdomain')->where('target', 'minecraft')->where('subdomain_prefix', $request->subdomain_prefix)->where('subdomain_suffix', $request->subdomain_suffix)->first();
         if(!$domain) return response()->json(['errors' => ['minecraft_subdomain' => __('Missing data in the database.')]], 422);
 
         //delete the DNS record on cloudflare
@@ -172,89 +172,10 @@ class DomainController extends Controller
         return response()->json('ok');
     }
 
-    public function linkMinecraftDomain(Request $request){
-        $server = Server::where('identifier', $request->server_id)->first();
-        
-        //perform the nescesarry checks
-        if(!preg_match("/^[a-zA-Z0-9.]+$/", $request->domain)) return response()->json(['errors' => ['minecraft_domain' => __('Special characters are not allowed. Please use only letters and numbers.')]], 422);
-        //server does not exist or user is not the owner
-        if(!$server||$server->user_id!=Auth::user()->id) return response()->json(['errors' => ['minecraft_domain' => __('Wrong data.')]], 422);
-
-        if(!$request->domain||strlen($request->domain)<6||strlen($request->domain)>40) return response()->json(['errors' => ['minecraft_domain' => __('Domain must be 6-40 characters long.')]], 422);
-        if(Domain::where('server_id', $server->identifier)->where('type', 'domain')->where('target', 'minecraft')->first()) return response()->json(['errors' => ['minecraft_domain' => __('The server has already a linked domain.')]], 422);
-        if(Domain::where('domain', $request->domain)->where('target', 'minecraft')->first()) return response()->json(['errors' => ['minecraft_domain' => __('Domain is already taken') . '.']], 422);
-
-        //check for blacklisted domains
-        foreach(DomainController::availableSubdomains() as $blacklisted_domain => $details){
-            if(str_ends_with($request->domain, $this->toBaseDomain($blacklisted_domain))) return response()->json(['errors' => ['minecraft_domain' => __('Blacklisted domain.')]], 422);
-        }
-
-        //create the database record for the subdomain
-        $domain = new Domain();
-        $domain -> domain = $request->domain;
-        $domain -> type = 'domain';
-        $domain -> target = 'minecraft';
-        $domain -> server_id = $server->identifier;
-
-        //Get server networking - only the main port and store it in the record
-        foreach(Pterodactyl::getNetworking($server->identifier)['data'] as $network)
-        {
-            if($network['attributes']['is_default'])
-            {
-                $domain -> node_domain = $network['attributes']['ip_alias'];
-                $domain -> port = $network['attributes']['port'];
-                break;
-            }
-        }
-
-        //success
-        $domain -> save();
-        return response()->json('ok');
-    }
-
-    public function refreshMinecraftDomain(Request $request){
-        $server = Server::where('identifier', $request->server_id)->first();
-        
-        //server does not exist or user is not the owner
-        if(!$server||$server->user_id!=Auth::user()->id) return response()->json(['errors' => ['minecraft_domain' => __('Wrong data.')]], 422);
-
-        $domain = Domain::where('server_id', $request->server_id)->where('type', 'domain')->where('target', 'minecraft')->first();
-        if(!$domain) return response()->json(['errors' => ['minecraft_domain' => __('Missing data in the database.')]], 422);
-
-        //Get server networking - only the main port and store it in the record
-        foreach(Pterodactyl::getNetworking($server->identifier)['data'] as $network)
-        {
-            if($network['attributes']['is_default'])
-            {
-                $domain -> node_domain = $network['attributes']['ip_alias'];
-                $domain -> port = $network['attributes']['port'];
-                break;
-            }
-        }
-
-        //success
-        $domain -> save();
-        return response()->json('ok');
-    }
-
-    public function unlinkMinecraftDomain(Request $request){
-        $server = Server::where('identifier', $request->server_id)->first();
-        
-        //perform the nescesarry checks
-        //server does not exist or user is not the owner
-        if(!$server||$server->user_id!=Auth::user()->id) return response()->json(['errors' => ['minecraft_domain' => __('Wrong data.')]], 422);
-        $domain = Domain::where('server_id', $request->server_id)->where('type', 'domain')->where('target', 'minecraft')->first();
-        if(!$domain) return response()->json(['errors' => ['minecraft_domain' => __('Missing data in the database.')]], 422);
-
-        //success
-        $domain->delete();
-        return response()->json('ok');
-    }
-
     public function linkWebSubdomain(Request $request){
         $server = Server::where('identifier', $request->server_id)->first();
-        
         //perform the nescesarry checks
+        if(!$request->web_port) return response()->json(['errors' => ['web_subdomain' => __('No port specified.')]], 422);
         if(!preg_match("/^[a-zA-Z0-9]+$/", $request->subdomain_prefix)) return response()->json(['errors' => ['web_subdomain' => __('Special characters are not allowed. Please use only letters and numbers.')]], 422);
         if(!$server||$server->user_id!=Auth::user()->id|| //server does not exist or user is not the owner
             !in_array($request->subdomain_suffix, $this->availableSubdomains('web', true))|| //unknown base for subdomain
@@ -262,8 +183,8 @@ class DomainController extends Controller
         ) return response()->json(['errors' => ['web_subdomain' => __('Wrong data.')]], 422);
 
         if(!$request->subdomain_prefix||!$request->subdomain_suffix||strlen($request->subdomain_prefix)<3||strlen($request->subdomain_prefix)>30) return response()->json(['errors' => ['web_subdomain' => __('Subdomain must be 3-30 characters long.')]], 422);
+        if(Domain::where('server_id', $server->identifier)->where('type', 'subdomain')->where('target', 'web')->count()>=5) return response()->json(['errors' => ['web_subdomain' => __('The server has reached the limit of linked domains.')]], 422);
         if(Domain::where('subdomain_prefix', $request->subdomain_prefix)->where('subdomain_suffix', $request->subdomain_suffix)->where('target', 'web')->first()) return response()->json(['errors' => ['web_subdomain' => __('Domain is already taken') . '.']], 422);
-        if(Domain::where('server_id', $server->identifier)->where('type', 'subdomain')->where('target', 'web')->first()) return response()->json(['errors' => ['web_subdomain' => __('The server has already a linked subdomain.')]], 422);
 
         //create the database record for the subdomain
         $domain = new Domain();
@@ -293,7 +214,7 @@ class DomainController extends Controller
         $domain->port = $request->web_port;
         
         //create the DNS record on cloudflare
-        $cf = Cloudflare::createRecord(DomainController::$availableSubdomains[ltrim($request->subdomain_suffix, '.')]['cf_token'], "CNAME", $request->subdomain_prefix . $request->subdomain_suffix, $domain -> node_domain);
+        $cf = Cloudflare::createRecord(DomainController::$availableSubdomains[ltrim($request->subdomain_suffix, '.')]['cf_token'], "CNAME", $request->subdomain_prefix . $request->subdomain_suffix, 'web.vagonbrei.eu');
         
         //check cloudflare response
         if(!$cf||!isset($cf['success'])||$cf['success']!=true) return response()->json(['errors' => ['web_subdomain' => __('Could not create the cloudflare record.'), 'cloudflare_errors' => $cf]], 422);
@@ -324,8 +245,8 @@ class DomainController extends Controller
         //perform the nescesarry checks
         //server does not exist or user is not the owner
         if(!$server||$server->user_id!=Auth::user()->id) return response()->json(['errors' => ['web_subdomain' => __('Wrong data.')]], 422);
-        $domain = Domain::where('server_id', $request->server_id)->where('type', 'subdomain')->where('target', 'web')->first();
-        if(!$domain) return response()->json(['errors' => ['minecraft_domain' => __('Missing data in the database.')]], 422);
+        $domain = Domain::where('server_id', $request->server_id)->where('type', 'subdomain')->where('target', 'web')->where('subdomain_prefix', $request->subdomain_prefix)->where('subdomain_suffix', $request->subdomain_suffix)->first();
+        if(!$domain) return response()->json(['errors' => ['web_subdomain' => __('Missing data in the database.')]], 422);
 
         $cf = Cloudflare::deleteRecord(DomainController::$availableSubdomains[ltrim($domain->subdomain_suffix, '.')]['cf_token'], $domain->cf_id);
         
@@ -345,13 +266,15 @@ class DomainController extends Controller
         $server = Server::where('identifier', $request->server_id)->first();
         
         //perform the nescesarry checks
+        if(!$request->web_port) return response()->json(['errors' => ['web_domain' => __('No port specified.')]], 422);
         if(!preg_match("/^[a-zA-Z0-9.]+$/", $request->domain)) return response()->json(['errors' => ['web_domain' => __('Special characters are not allowed. Please use only letters and numbers.')]], 422);
+        if(substr_count($request->domain, '.')<1) return response()->json(['errors' => ['web_domain' => __('Invalid domain.')]], 422);
         //server does not exist or user is not the owner
         if(!$server||$server->user_id!=Auth::user()->id) return response()->json(['errors' => ['web_domain' => __('Wrong data.')]], 422);
 
         if(!$request->domain||strlen($request->domain)<6||strlen($request->domain)>40) return response()->json(['errors' => ['web_domain' => __('Domain must be 6-40 characters long.')]], 422);
-        if(Domain::where('server_id', $server->identifier)->where('type', 'domain')->where('target', 'web')->first()) return response()->json(['errors' => ['web_domain' => __('The server has already a linked domain.')]], 422);
-        if(Domain::where('domain', $request->domain)->where('target', 'web')->first()) return response()->json(['errors' => ['web_domain' => __('Domain is already taken') . '.']], 422);
+        if(Domain::where('server_id', $server->identifier)->where('type', 'domain')->where('target', 'web')->count()>=5) return response()->json(['errors' => ['web_domain' => __('The server has reached the limit of linked domains.')]], 422);
+        if(Domain::where('domain', $request->domain)->where('target', 'web')->first()) return response()->json(['errors' => ['web_domain' => __('Domain is already taken.') . '.']], 422);
 
         //check for blacklisted domains
         foreach(DomainController::availableSubdomains() as $blacklisted_domain => $details){
@@ -404,8 +327,10 @@ class DomainController extends Controller
         //perform the nescesarry checks
         //server does not exist or user is not the owner
         if(!$server||$server->user_id!=Auth::user()->id) return response()->json(['errors' => ['web_domain' => __('Wrong data.')]], 422);
-        $domain = Domain::where('server_id', $request->server_id)->where('type', 'domain')->where('target', 'web')->first();
+        $domain = Domain::where('server_id', $request->server_id)->where('type', 'domain')->where('target', 'web')->where('domain', $request->domain)->first();
+        //dd($domain);
         if(!$domain) return response()->json(['errors' => ['web_domain' => __('Missing data in the database.')]], 422);
+        if($domain->server_id!=$server->identifier) return response()->json(['errors' => ['web_domain' => __('This domain does not belong to this server!')]], 422);
 
         /*//delete config file without checking
         $this->deleteNginxConfig($domain->domain);*/
@@ -464,7 +389,7 @@ server {
         return true; // file does not exist, so it "deleted" succesfully
     }
     
-    public function updateProtection(Request $request)
+    /*public function updateProtection(Request $request)
     {
         //dd($request);
         if(!$request->server_id) return redirect()->back()->with(['error' => __('Missing data.')])->withFragment('protection');
@@ -604,13 +529,13 @@ server {
         foreach ($config as $key => $value) {
             $modifiedConfig .= $key . '=' . $value . PHP_EOL;
         }
-        /*if (isset($config['settings']['bungeecord'])) {
-            $config['settings']['bungeecord'] = 'vemeno obecné';
-        }*/
+        //if (isset($config['settings']['bungeecord'])) {
+        //    $config['settings']['bungeecord'] = 'vemeno obecné';
+        //}
         //add comments, that were in the config
         $comment_end_pos = strpos($configFile, array_key_first($config));
         $modifiedConfig = substr($configFile, 0, $comment_end_pos) . $modifiedConfig;
 
         return Pterodactyl::writeFileContent($serverId, ['server.properties'], $modifiedConfig)==204;
-    }
+    }*/
 }

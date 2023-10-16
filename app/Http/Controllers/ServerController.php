@@ -28,7 +28,7 @@ class ServerController extends Controller
     /** Display a listing of the resource. */
     public function index()
     {
-        $servers = Auth::user()->servers;
+        $servers = Auth::user()->servers->sortBy('created_at');
 
         //Get and set server infos each server
         foreach ($servers as $server) {
@@ -291,17 +291,19 @@ class ServerController extends Controller
 
         //Get server networking
         $address = "";
-        $port = "";
-        $web_ports = array();
+        $ports = array();
+        $main_port = "";
+        //$web_ports = array();
         foreach(Pterodactyl::getNetworking($server->identifier)['data'] as $network)
         {
+            $ports[] = $network['attributes']['port'];
             if($network['attributes']['is_default'])
             {
                 $address = $network['attributes']['ip_alias'];
-                $port = $network['attributes']['port'];
-                if(in_array($serverAttributes['nest'], [8, 12])) $web_ports[] = $network['attributes']['port'];
+                $main_port = $network['attributes']['port'];
+            //    if(in_array($serverAttributes['nest'], [8, 12])) $web_ports[] = $network['attributes']['port'];
             }
-            else $web_ports[] = $network['attributes']['port'];
+            //else $web_ports[] = $network['attributes']['port'];
         }
 
         //Get current product
@@ -352,8 +354,8 @@ class ServerController extends Controller
             case 22:
             case 58:
                 //show all tabs
-                [$tabs[0], $tabs[3]] = [$tabs[3], $tabs[0]];
-                [$tabs[0], $tabs[1]] = [$tabs[1], $tabs[0]];
+            //    [$tabs[0], $tabs[3]] = [$tabs[3], $tabs[0]];
+            //    [$tabs[0], $tabs[1]] = [$tabs[1], $tabs[0]];
                 //[$tabListItems[0], $tabListItems[3]] = [$tabListItems[3], $tabListItems[0]];
                 //[$tabListItems[0], $tabListItems[1]] = [$tabListItems[1], $tabListItems[0]];
                 break;
@@ -364,10 +366,11 @@ class ServerController extends Controller
             case 31://discord.js
             case 61://discord.py
                 //show only web tabs
-                foreach([0, 1, 2] as $i){
+                /*foreach([0, 1, 2] as $i){
                     unset($tabs[$i]);
                 //    unset($tabListItems[$i]);
-                }
+                }*/
+                unset($tabs[0]);//hide minecraft domains
                 break;
         }
 
@@ -401,9 +404,13 @@ class ServerController extends Controller
 
         $themes = array_diff(scandir(base_path('themes')), array('..', '.'));
 
-        $domains = Domain::where('server_id', $server->identifier)->get();
+        $domains = Domain::where('server_id', $server->identifier)/*->where('status', '!=', 'deletion pending')*/->get();
         //dd([$tabs, $tabListItems]);
         //dd(DomainController::availableSubdomains(true));
+        foreach($domains->where('target', 'web')->where('status', 'certificate generation failed') as $domain)
+        {
+            $domain->last_attempt = Carbon::createFromTimeString($domain->created_at)->addDay();
+        }
 
         return view('servers.settings', [
             'tabs' => $tabs,
@@ -414,13 +421,14 @@ class ServerController extends Controller
             'products' => $products,
             'availableSubdomains' => DomainController::availableSubdomains('', true),
             //přidat target
-            'minecraft_subdomain' => $domains->where('type', "subdomain")->where('target', 'minecraft')->first(),
-            'minecraft_domain' => $domains->where('type', "domain")->where('target', 'minecraft')->first(),
+            'minecraft_subdomains' => $domains->where('type', "subdomain")->where('target', 'minecraft'),
+            'minecraft_domains' => $domains->where('type', "domain")->where('target', 'minecraft'),
             'address' => $address,
-            'minecraft_port' => $port,
-            'web_subdomain' => $domains->where('type', "subdomain")->where('target', 'web')->first(),
-            'web_domain' => $domains->where('type', "domain")->where('target', 'web')->first(),
-            'web_ports' => $web_ports,
+            'web_router_address' => 'web.vagonbrei.eu',
+            'ports' => $ports,
+            'web_subdomains' => $domains->where('type', "subdomain")->where('target', 'web'),
+            'web_domains' => $domains->where('type', "domain")->where('target', 'web'),
+            'main_port' => $main_port,
             'nest_id' => $serverAttributes['nest'],
             'egg_id' => $serverAttributes['egg']
         ]);

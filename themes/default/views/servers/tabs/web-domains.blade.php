@@ -1,25 +1,30 @@
 <div class="tab-pane mt-3" id="web-domains">
-    @if(!count($web_ports))<p class="mb-0" style="color: red; text-align: center">{{__("This server does not have any available web ports. Please allocate some on pterodactyl first.")}}</p>@endif
+    @if(count($ports)==1&&$nest_id==1)<p class="mb-0" style="color: red; text-align: center">{{__("This server does not have any available web ports. Please allocate some on pterodactyl first.")}}</p>@endif
     <div class="row">
         <div class="col-md-6 col-12 p-3">
             <h6 class="card-title"><i class="fas fa-map-signs mr-2"></i>{{ __('Your Vagonbrei.eu web subdomain') }}:</h6><br>
-            @if($web_subdomain)
-            <div class="form-group mb-3">
-                <div class="custom-control p-0">
-                    <span class="btn badge badge-success mt-2 mr-1" style="font-size: 20px"><i class="fa fa-link mr-2"></i>
-                        <span onclick="onClickCopy('web_connected_subdomain')" style="cursor: pointer;"><span id="web_connected_subdomain_prefix">{{$web_subdomain->subdomain_prefix}}</span><span id="web_connected_subdomain_suffix">{{$web_subdomain->subdomain_suffix}}</span></span>
-                    </span>
-                    <button type="button" class="btn btn-danger badge mt-2" style="font-size: 20px" onclick="web_unlinkSubdomain()"><i class="fa fa-trash mr-2"></i>{{__('Unlink')}}</button>
-                </div>
-                <span>
-                    <small><strong id="web_subdomain_error" style="color: red" class="pt-3"></strong></small>
-                </span>
+            <div class="p-0">
+                @foreach($web_subdomains as $web_subdomain)
+                    <div class="form-group mb-1">
+                        <div class="custom-control p-0">
+                            <span class="btn badge {{['active'=>'badge-success', 'certificate generation pending' => 'badge-info', 'certificate generation failed' => 'badge-danger', 'deletion pending' => 'badge-secondary'][$web_subdomain->status]}} mt-2" style="font-size: 20px"><i class="fa fa-link mr-2"></i>
+                                <span onclick="web_onClickCopy('{{$web_subdomain->subdomain_prefix . $web_subdomain->subdomain_suffix}}')" style="cursor: pointer;" id="web_connected_domain">{{$web_subdomain->subdomain_prefix . $web_subdomain->subdomain_suffix}}</span>
+                            </span>
+                            <i class="fas fa-arrow-right mt-2" style="font-size: 20px"></i>
+                            <span class="btn badge {{['active'=>'badge-success', 'certificate generation pending' => 'badge-info', 'certificate generation failed' => 'badge-danger', 'deletion pending' => 'badge-secondary'][$web_subdomain->status]}} mt-2 mr-2" style="font-size: 21px">
+                                <span onclick="web_onClickCopy('{{$web_subdomain->node_domain . ':' . $web_subdomain->port}}')" style="cursor: pointer;" >{{explode('.', $web_subdomain->node_domain)[0] . ':' . $web_subdomain->port}}</span>
+                            </span>
+                            @if($web_subdomain->status!='deletion pending')<button type="button" class="btn btn-danger badge mt-2" style="font-size: 20px" onclick="web_unlinkSubdomain('{{$web_subdomain->subdomain_prefix}}', '{{$web_subdomain->subdomain_suffix}}')"><i class="fa fa-trash"></i></button>@endif
+                            <i data-toggle="popover" data-trigger="hover" data-html="true"
+                                data-content="
+                                {{__('This is your subdomain you have linked. It will be setup automatically.')}}<br><br>{{__('Status')}}: {{__($web_subdomain->status) . ($web_subdomain->status=='certificate generation failed'?'<br>' . __('next attempt') . ': ' . $web_subdomain->next_gen . '<br>' . __('deletion at') . ': ' . $web_subdomain->last_attempt :($web_subdomain->status=='certificate generation pending'?' - '. __('The certificate will be generated 2 minutes after creation.'):''))}}"
+                                style="font-size: 20px" class="fas fa-info-circle m-1">
+                            </i>
+                        </div>
+                    </div>
+                @endforeach
             </div>
-            <div style="border: 1px; border-style: solid; border-color:dimgrey; border-radius: 5px; min-height:100px; font-size:14px" class="p-2">
-                {{__('This is your subdomain you have linked. In case you changed your server port or migrated your server to another node, please press the refresh button.')}}
-            </div>
-            @else
-            <p class="mb-2" style="color: yellow">{{__("You haven't linked any subdomain")}}.</p>
+            @if(!$web_subdomains->count()) <p class="mb-2" style="color: yellow">{{__("You haven't linked any subdomain")}}.</p> @endif
             <div class="form-group mb-3">
                 <label for="web_subdomain_prefix">{{ __('Link a new subdomain') }}:</label>
                 <div class="custom-control p-0" style="display:flex; flex-direction:row;">
@@ -35,71 +40,70 @@
                     </select>
                     <select id="subdomain_web_port" style="width:auto" class="custom-select ml-2" name="web_port" required autocomplete="off">
                         <option value="" selected disabled style="color: #999;">{{__('Pick port')}}</option>
-                        @foreach($web_ports as $key => $op)
-                            <option value="{{$op}}">{{$op}}</option>
+                        @foreach($ports as $port)
+                            <option @if($nest_id==1&&$port==$main_port)disabled @endif value="{{$port}}">{{$port}}</option>
                         @endforeach
                     </select>
                 </div>
                 <div style="margin-top: 4px; margin-bottom: -8px">
-                    <small><strong id="web_subdomain_prefix_error" style="color: red"></strong></small>
+                    <small><strong id="web_subdomain_error" style="color: red"></strong></small>
                     <small><strong id="web_subdomain_availability"></strong></small>
                 </div>
             </div>
-            <div style="border: 1px; border-style: solid; border-color:dimgrey; border-radius: 5px; min-height:100px; font-size:14px" class="p-2 mt-2">
+            <div style="border: 1px; border-style: solid; border-color:dimgrey; border-radius: 5px; @if($web_subdomains->count()<2)min-height:126px;@endif font-size:14px" class="p-2 mt-2">
                 {{__('Here you can create your own subdomain for free. The subdomain will automatically setup itself and will be ready to use within 10 minutes.')}}
             </div>
             <button type="button" class="btn btn-primary mt-3" style="margin-bottom: -16px; float: right" onclick="web_linkSubdomain()"><i class="fa fa-link mr-2"></i>{{__('Link subdomain')}}</button>
-            @endif
         </div>
 
         <div class="col-md-6 col-12 p-3">
-            <h6 class="card-title"><i class="fas fa-map-signs mr-2"></i>{{ __('Your own web domain') }}:</h6><br>
-            @if($web_domain)
-            <div class="form-group mb-3">
-                <div class="custom-control p-0">
-                    <span class="btn badge badge-success mt-2 mr-1" style="font-size: 20px"><i class="fa fa-link mr-2"></i>
-                        <span onclick="web_onClickCopy('web_connected_domain')" style="cursor: pointer;" id="web_connected_domain">{{$web_domain->domain}}</span>
-                    </span>
-                    <button type="button" class="btn btn-danger badge mt-2" style="font-size: 20px" onclick="web_unlinkDomain()"><i class="fa fa-trash mr-2"></i>{{__('Unlink')}}</button>
-                </div>
+            <h6 class="card-title"><i class="fas fa-map-signs mr-2"></i>{{ __('Your own web domains') }}:</h6><br>
+            <div class="p-0">
+                @foreach($web_domains as $web_domain)
+                    <div class="form-group mb-1">
+                        <div class="custom-control p-0">
+                            <span class="btn badge {{['active'=>'badge-success', 'certificate generation pending' => 'badge-info', 'certificate generation failed' => 'badge-danger', 'deletion pending' => 'badge-secondary'][$web_domain->status]}} mt-2" style="font-size: 20px"><i class="fa fa-link mr-2"></i>
+                                <span onclick="web_onClickCopy('{{$web_domain->domain}}')" style="cursor: pointer;" id="web_connected_domain">{{$web_domain->domain}}</span>
+                            </span>
+                            <i class="fas fa-arrow-right mt-2" style="font-size: 20px"></i>
+                            <span class="btn badge {{['active'=>'badge-success', 'certificate generation pending' => 'badge-info', 'certificate generation failed' => 'badge-danger', 'deletion pending' => 'badge-secondary'][$web_domain->status]}} mt-2 mr-2" style="font-size: 21px">
+                                <span onclick="web_onClickCopy('{{$web_domain->node_domain . ':' . $web_domain->port}}')" style="cursor: pointer;" >{{explode('.', $web_domain->node_domain)[0] . ':' . $web_domain->port}}</span>
+                            </span>
+                            @if($web_domain->status!='deletion pending')<button type="button" class="btn btn-danger badge mt-2" style="font-size: 20px" onclick="web_unlinkDomain('{{$web_domain->domain}}')"><i class="fa fa-trash"></i></button>@endif
+                            <i data-toggle="popover" data-trigger="hover" data-html="true"
+                                data-content="
+                                {{__('This is your domain you have linked. You will need to set these records at your domain registrar')}}:<br>{{__('Type')}}: <b>CNAME</b><br>{{__('Name')}}: <b>{{$web_domain->domain}}</b><br>{{__('Target')}}: <b>{{$web_router_address}}</b><br><b>{{__('If you are using cloudflare, please set SSL to FULL.')}}</b><br>{{__('Status')}}: {{__($web_domain->status) . ($web_domain->status=='certificate generation failed'?'<br>' . __('next attempt') . ': ' . $web_domain->next_gen . '<br>' . __('deletion at') . ': ' . $web_domain->last_attempt :($web_domain->status=='certificate generation pending'?' - '. __('The certificate will be generated 5 minutes after creation.'):''))}}"
+                                style="font-size: 20px" class="fas fa-info-circle m-1">
+                            </i>
+                        </div>
+                    </div>
+                @endforeach
             </div>
-            <div style="border: 1px; border-style: solid; border-color:dimgrey; border-radius: 5px; min-height:100px; font-size:14px" class="p-2 mt-3">
-                {{__('This is your domain you have linked. You will need to set these records at your domain registrar')}}:<br>
-                <hr style="margin: 1px; padding: 0px; background-color:#696969">
-                CNAME {{$web_domain->domain}} {{$address}}
-
-            </div>
-            @else
-            <p class="mb-2" style="color: yellow">{{__("You haven't linked any domain")}}.</p>
+            @if(!$web_domains->count())<p class="mb-2" style="color: yellow">{{__("You haven't linked any domain")}}.</p>@endif
             <div class="form-group mb-3">
                 <label for="web_domain">{{ __('Link a new domain') }}:</label>
                 <div class="custom-control p-0" style="display:flex; flex-direction:row;">
-                    <input x-model="web_domain" id="web_domain" name="web_domain" type="text" required placeholder="{{__('example.com')}}" onchange="web_checkAvailability('domain');" oninput="document.getElementById('web_your_domain').innerText = this.value; document.getElementById('web_your_domain2').innerText = this.value; document.getElementById('web_your_domain3').innerText = this.value;"
+                    <input x-model="web_domain" id="web_domain" name="web_domain" type="text" required placeholder="{{__('example.com')}}" onchange="web_checkAvailability('domain');" oninput=" if(this.value)document.getElementById('web_your_domain').innerText = this.value; else document.getElementById('web_your_domain').innerText = '{{__('example.com')}}';"
                         class="form-control @error('web_domain') is-invalid @enderror">
                     <select id="domain_web_port" style="width:auto" class="custom-select ml-2" name="web_port" required autocomplete="off">
                         <option value="" selected disabled style="color: #999;">{{__('Pick port')}}</option>
-                        @foreach($web_ports as $key => $op)
-                            <option value="{{$op}}">{{$op}}</option>
+                        @foreach($ports as $port)
+                            <option @if($nest_id==1&&$port==$main_port)disabled @endif value="{{$port}}">{{$port}}</option>
                         @endforeach
                     </select>
                 </div>
                 <div style="margin-top: 4px; margin-bottom: -8px">
-                    <small><strong id="web_domain_field_error" style="color: red"></strong></small>
+                    <small><strong id="web_domain_error" style="color: red"></strong></small>
                     <small><strong id="web_domain_availability"></strong></small>
                 </div>
             </div>
-            <div style="border: 1px; border-style: solid; border-color:dimgrey; border-radius: 5px; min-height:100px; font-size:14px" class="p-2 mt-2">
+            <div style="border: 1px; border-style: solid; border-color:dimgrey; border-radius: 5px; font-size:14px" class="p-2 mt-2">
                 {{__('Here you can link your own domain (if you have one). You will need to set these records at your domain registrar')}}:<br>
                 <hr style="margin: 1px; padding: 0px; background-color:#696969">
-                CNAME <span id="web_your_domain3">{{__('example.com')}}</span> {{($web_domain&&$web_domain->bungee_active)?env('BUNGEECORD_ADDRESS'):$address}}
-
+                <span style="margin-bottom: 0px">{{__('Type')}}: CNAME<br>{{__('Name')}}: <b id="web_your_domain">{{__('example.com')}}</b><br>{{__('Target')}}: <b>{{$web_router_address}}</b><br><b>{{__('If you are using cloudflare, please set SSL to FULL.')}}</b></span>
             </div>
-            <span>
-                <small><strong id="web_domain_error" style="color: red"></strong></small>
-            </span>
             <!-- H !-->
             <button type="button" class="btn btn-primary mt-3" style="margin-bottom: -16px; float: right" onclick="web_linkDomain()"><i class="fa fa-link mr-2"></i>{{__('Link domain')}}</button>
-            @endif
         </div>
         <div class="col-xl-5 col-md-7 col-12 p-3" style="margin:0 auto; padding-bottom: 0px !important;">
             <div style="border: solid gray 1px; border-radius: 1rem; padding: 1rem; padding-bottom: 0px;">
@@ -121,14 +125,14 @@
         function web_linkSubdomain(){
             web_sendPost(`{{route('subdomain.web.link')}}`, {subdomain_prefix: document.getElementById('web_subdomain_prefix').value, subdomain_suffix: document.getElementById('web_subdomain_suffix').value, web_port: document.getElementById('subdomain_web_port').value, server_id: `{{$server->identifier}}`});
         }
-        function web_unlinkSubdomain(){
-            web_sendPost(`{{route('subdomain.web.unlink')}}`, {subdomain_prefix: document.getElementById('web_connected_subdomain_prefix').innerText, subdomain_suffix: document.getElementById('web_connected_subdomain_suffix').innerText, server_id: `{{$server->identifier}}`});
+        function web_unlinkSubdomain(subdomain_prefix, subdomain_suffix){
+            web_sendPost(`{{route('subdomain.web.unlink')}}`, {subdomain_prefix: subdomain_prefix, subdomain_suffix: subdomain_suffix, server_id: `{{$server->identifier}}`});
         }
         function web_linkDomain(){
             web_sendPost(`{{route('domain.web.link')}}`, {domain: document.getElementById('web_domain').value, web_port: document.getElementById('domain_web_port').value, server_id: `{{$server->identifier}}`});
         }
-        function web_unlinkDomain(){
-            web_sendPost(`{{route('domain.web.unlink')}}`, {domain: document.getElementById('web_connected_domain').innerText, server_id: `{{$server->identifier}}`});
+        function web_unlinkDomain(domain){
+            web_sendPost(`{{route('domain.web.unlink')}}`, {domain: domain, server_id: `{{$server->identifier}}`});
         }
         
         async function web_sendPost(url, body, show_info=true){
@@ -143,8 +147,9 @@
                 }
             });
             let json = await res.json();
-            if(!'{{$web_subdomain?1:0}}')document.getElementById('web_subdomain_availability').innerHTML = "";
-            if(!'{{$web_domain?1:0}}') document.getElementById('web_domain_availability').innerHTML = "";
+            //chybí závorky php proměnné
+            //if(!'$web_subdomain?1:0')document.getElementById('web_subdomain_availability').innerHTML = "";
+            //if(!'$web_domain?1:0') document.getElementById('web_domain_availability').innerHTML = "";
             if(show_info==true){
                 showStatus(res.status);
                 if(res.status==200) location.reload();
@@ -217,9 +222,9 @@
                 }
             });
         }
-        function web_onClickCopy(element) {
+        function web_onClickCopy(text) {
             if(navigator.clipboard) {
-                navigator.clipboard.writeText(document.getElementById('web_' + element + '_prefix').innerText + document.getElementById('web_' + element + '_suffix').innerText).then(() => {
+                navigator.clipboard.writeText(text).then(() => {
                     Swal.fire({
                         icon: 'success',
                         title: '{{ __("URL copied to clipboard")}}',
