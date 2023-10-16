@@ -153,9 +153,9 @@
                 }
             });
         }
-        function minecraft_onClickCopy(element) {
+        function minecraft_onClickCopy(text) {
             if(navigator.clipboard) {
-                navigator.clipboard.writeText(document.getElementById('minecraft_' + element + '_prefix').innerText + document.getElementById('minecraft_' + element + '_suffix').innerText).then(() => {
+                navigator.clipboard.writeText(text).then(() => {
                     Swal.fire({
                         icon: 'success',
                         title: '{{ __("URL copied to clipboard")}}',
