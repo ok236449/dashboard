@@ -675,5 +675,6 @@
     "If you are using cloudflare, please set SSL to FULL.": "Používáte-li cloudflare, SSL musí být nastaveno na FULL.",
     "Domain is already taken": "Doména je již zabraná",
     "The certificate will be generated 5 minutes after creation.": "Certifikát bude vygenerován 5 minut po vytvoření.",
-    "The certificate will be generated 2 minutes after creation.": "Certifikát bude vygenerován 2 minuty po vytvoření."
+    "The certificate will be generated 2 minutes after creation.": "Certifikát bude vygenerován 2 minuty po vytvoření.",
+    "Blacklisted subdomain. If you think this is incorrect, contact support.": "Zakázaná doména. Pokud se domníváte, že tomu tak není, kontaktujte podporu."
 }

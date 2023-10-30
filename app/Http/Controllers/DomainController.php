@@ -176,11 +176,24 @@ class DomainController extends Controller
         $server = Server::where('identifier', $request->server_id)->first();
         //perform the nescesarry checks
         if(!$request->web_port) return response()->json(['errors' => ['web_subdomain' => __('No port specified.')]], 422);
-        if(!preg_match("/^[a-zA-Z0-9]+$/", $request->subdomain_prefix)) return response()->json(['errors' => ['web_subdomain' => __('Special characters are not allowed. Please use only letters and numbers.')]], 422);
+        $request->subdomain_prefix = strtolower($request->subdomain_prefix);
+        if(!preg_match("/^[a-z0-9]+$/", $request->subdomain_prefix)) return response()->json(['errors' => ['web_subdomain' => __('Special characters are not allowed. Please use only letters and numbers.')]], 422);
         if(!$server||$server->user_id!=Auth::user()->id|| //server does not exist or user is not the owner
             !in_array($request->subdomain_suffix, $this->availableSubdomains('web', true))|| //unknown base for subdomain
             !$request->web_port||!preg_match("/^[0-9]+$/", $request->web_port)
         ) return response()->json(['errors' => ['web_subdomain' => __('Wrong data.')]], 422);
+
+        /*if(in_array($request->subdomain_prefix, [
+            'vagonbrei'
+        ]))*/
+
+        //blacklist harmful names
+        foreach([
+            'kokot', 'pica', 'debil', 'curak', 'pero', 'kunda', 'dement', 'idiot', 'magor', 'hovno',
+            'vagonbrei', 'atropol', 'gamerhost', 'vagon', 'prejvi', 'ardemit', 'barracuda', 'stikosek', 'pear', 'hostify', 'hicoria'
+        ] as $blacklisted_subdomain_prefix){
+            if(str_contains($request->subdomain_prefix, $blacklisted_subdomain_prefix)) return response()->json(['errors' => ['web_subdomain' => __('Blacklisted subdomain. If you think this is incorrect, contact support.')]], 422);
+        }
 
         if(!$request->subdomain_prefix||!$request->subdomain_suffix||strlen($request->subdomain_prefix)<3||strlen($request->subdomain_prefix)>30) return response()->json(['errors' => ['web_subdomain' => __('Subdomain must be 3-30 characters long.')]], 422);
         if(Domain::where('server_id', $server->identifier)->where('type', 'subdomain')->where('target', 'web')->count()>=5) return response()->json(['errors' => ['web_subdomain' => __('The server has reached the limit of linked domains.')]], 422);
@@ -267,7 +280,8 @@ class DomainController extends Controller
         
         //perform the nescesarry checks
         if(!$request->web_port) return response()->json(['errors' => ['web_domain' => __('No port specified.')]], 422);
-        if(!preg_match("/^[a-zA-Z0-9.]+$/", $request->domain)) return response()->json(['errors' => ['web_domain' => __('Special characters are not allowed. Please use only letters and numbers.')]], 422);
+        $request->domain = strtolower($request->domain);
+        if(!preg_match("/^[a-z0-9.]+$/", $request->domain)) return response()->json(['errors' => ['web_domain' => __('Special characters are not allowed. Please use only letters and numbers.')]], 422);
         if(substr_count($request->domain, '.')<1) return response()->json(['errors' => ['web_domain' => __('Invalid domain.')]], 422);
         //server does not exist or user is not the owner
         if(!$server||$server->user_id!=Auth::user()->id) return response()->json(['errors' => ['web_domain' => __('Wrong data.')]], 422);
