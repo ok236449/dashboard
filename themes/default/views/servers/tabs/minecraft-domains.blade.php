@@ -49,7 +49,7 @@
                 </div>
             </div>
             <div style="border: 1px; border-style: solid; border-color:dimgrey; border-radius: 5px; min-height:100px; font-size:14px" class="p-2 mt-2">
-                {{__('Here you can create your own subdomain for free. The subdomain will automatically setup itself and will be ready to use within 10 minutes.')}}
+                {{__('Here you can create your own subdomain for free. The subdomain will automatically setup itself and will be ready to use in just a moment.')}}
             </div>
             <button type="button" class="btn btn-primary mt-3" style="margin-bottom: -20px; float: right" onclick="minecraft_linkSubdomain()"><i class="fa fa-link mr-2"></i>{{__('Link subdomain')}}</button>
             
