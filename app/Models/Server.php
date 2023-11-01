@@ -85,6 +85,13 @@ class Server extends Model
                     //check cloudflare response
                     if(!$cf||!isset($cf['success'])||$cf['success']!=true) throw new Exception($cf);
                 }
+                else{
+                    //delete the custom hostname record on cloudflare
+                    $cf = Cloudflare::deleteCustomHostname($domain->cf_id);
+        
+                    //check cloudflare response
+                    if(!$cf||!isset($cf['success'])||$cf['success']!=true) throw new Exception($cf);
+                }
                 //success
                 if($domain->target=='web'){
                     $domain->status = 'deletion pending';
