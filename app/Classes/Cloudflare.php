@@ -86,13 +86,14 @@ class Cloudflare{
     }
     public static function createCustomHostname($name, $zone_id = "06caf79d8d0a268e8aafe0c21c4cb67d"){
         try {
-            $response = self::client()->post('/zones/' . $zone_id . '/custom_hostnames', [
-                'hostname' => $name,
+            $response = self::client()->withHeaders(['X-Auth-Email' => 'ok236449@email.cz'])->post('/zones/' . $zone_id . '/custom_hostnames', [
+                "hostname" => $name,
                 'ssl' => [
-                    'method' => 'http'
-                    
+                    'method' => 'http',
+                    'type' => 'dv'
                 ]
             ]);
+            //dd($response);
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }

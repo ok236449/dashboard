@@ -322,13 +322,6 @@ class DomainController extends Controller
         if(!in_array($request->web_port, $web_ports)) return response()->json(['errors' => ['web_domain' => __('Wrong data.')]], 422);
         $domain->port = $request->web_port;
 
-        /*//generate certificate
-        if($this->getDomainCertificate($request->subdomain_prefix . $request->subdomain_suffix)!=1) return response()->json(['errors' => ['web_subdomain' => __('An error occured while generating the certificate.') . ' ' . __('Please make sure your domain records are set correctly. Some domain registrators may need up to 12 hours for the records to take effect.')]], 422);
-
-        //create nginx config file
-        if(!$this->writeNginxConfigFile($request->domain, $domain->node_domain, $domain->port))
-            return response()->json(['errors' => ['web_domain' => __('Could not create the web config file.')]], 422);*/
-
         //create the custom hostname record on cloudflare
         $cf = Cloudflare::createCustomHostname($request->domain);
         
