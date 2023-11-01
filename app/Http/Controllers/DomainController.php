@@ -288,7 +288,7 @@ class DomainController extends Controller
         if(!$server||$server->user_id!=Auth::user()->id) return response()->json(['errors' => ['web_domain' => __('Wrong data.')]], 422);
 
         if(!$request->domain||strlen($request->domain)<6||strlen($request->domain)>40) return response()->json(['errors' => ['web_domain' => __('Domain must be 6-40 characters long.')]], 422);
-        if(Domain::where('server_id', $server->identifier)->where('type', 'domain')->where('target', 'web')->count()>=5) return response()->json(['errors' => ['web_domain' => __('The server has reached the limit of linked domains.')]], 422);
+        if(Domain::where('server_id', $server->identifier)->where('type', 'domain')->where('target', 'web')->count()>=3) return response()->json(['errors' => ['web_domain' => __('The server has reached the limit of linked domains.')]], 422);
         if(Domain::where('domain', $request->domain)->where('target', 'web')->first()) return response()->json(['errors' => ['web_domain' => __('Domain is already taken.') . '.']], 422);
 
         //check for blacklisted domains

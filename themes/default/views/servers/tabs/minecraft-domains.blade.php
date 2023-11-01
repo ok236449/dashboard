@@ -17,7 +17,7 @@
                             <button type="button" class="btn btn-danger badge mt-2" style="font-size: 20px" onclick="minecraft_unlinkSubdomain('{{$minecraft_subdomain->subdomain_prefix}}', '{{$minecraft_subdomain->subdomain_suffix}}')"><i class="fa fa-trash"></i></button>
                             <i data-toggle="popover" data-trigger="hover" data-html="true"
                                 data-content="
-                                {{__('This is your subdomain you have linked. It will be setup automatically.')}}<br><br>{{__('Status')}}: {{__($minecraft_subdomain->status) . ($minecraft_subdomain->status=='certificate generation failed'?'<br>' . __('next attempt') . ': ' . $minecraft_subdomain->next_gen . '<br>' . __('deletion at') . ': ' . $minecraft_subdomain->last_attempt :'')}}"
+                                {{__('This is your subdomain you have linked. It will be setup automatically.')}}"
                                 style="font-size: 20px" class="fas fa-info-circle m-1">
                             </i>
                         </div>
