@@ -178,7 +178,7 @@ class DomainController extends Controller
         //perform the nescesarry checks
         if(!$request->web_port) return response()->json(['errors' => ['web_subdomain' => __('No port specified.')]], 422);
         $request->subdomain_prefix = strtolower($request->subdomain_prefix);
-        if(!preg_match("/^[a-z0-9]+$/", $request->subdomain_prefix)) return response()->json(['errors' => ['web_subdomain' => __('Special characters are not allowed. Please use only letters and numbers.')]], 422);
+        if(!preg_match("/^[a-z0-9-]+$/", $request->subdomain_prefix)) return response()->json(['errors' => ['web_subdomain' => __('Special characters are not allowed. Please use only letters and numbers.')]], 422);
         if(!$server||$server->user_id!=Auth::user()->id|| //server does not exist or user is not the owner
             !in_array($request->subdomain_suffix, $this->availableSubdomains('web', true))|| //unknown base for subdomain
             !$request->web_port||!preg_match("/^[0-9]+$/", $request->web_port)
@@ -282,7 +282,7 @@ class DomainController extends Controller
         //perform the nescesarry checks
         if(!$request->web_port) return response()->json(['errors' => ['web_domain' => __('No port specified.')]], 422);
         $request->domain = strtolower($request->domain);
-        if(!preg_match("/^[a-z0-9.]+$/", $request->domain)) return response()->json(['errors' => ['web_domain' => __('Special characters are not allowed. Please use only letters and numbers.')]], 422);
+        if(!preg_match("/^[a-z0-9.-]+$/", $request->domain)) return response()->json(['errors' => ['web_domain' => __('Special characters are not allowed. Please use only letters and numbers.')]], 422);
         if(substr_count($request->domain, '.')<1) return response()->json(['errors' => ['web_domain' => __('Invalid domain.')]], 422);
         //server does not exist or user is not the owner
         if(!$server||$server->user_id!=Auth::user()->id) return response()->json(['errors' => ['web_domain' => __('Wrong data.')]], 422);
