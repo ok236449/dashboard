@@ -81,12 +81,13 @@ class DomainController extends Controller
         $server = Server::where('identifier', $request->server_id)->first();
         
         //perform the nescesarry checks
-        if(!preg_match("/^[a-zA-Z0-9]+$/", $request->subdomain_prefix)) return response()->json(['errors' => ['minecraft_subdomain' => __('Special characters are not allowed. Please use only letters and numbers.')]], 422);
+        if(!$request->subdomain_prefix||!$request->subdomain_suffix||strlen($request->subdomain_prefix)<3||strlen($request->subdomain_prefix)>30) return response()->json(['errors' => ['minecraft_subdomain' => __('Subdomain must be 3-30 characters long.')]], 422);
+        $request->subdomain_prefix = strtolower($request->subdomain_prefix);
+        if(!preg_match("/^[a-z0-9]+$/", $request->subdomain_prefix)) return response()->json(['errors' => ['minecraft_subdomain' => __('Special characters are not allowed. Please use only letters and numbers.')]], 422);
         if(!$server||$server->user_id!=Auth::user()->id|| //server does not exist or user is not the owner
             !in_array($request->subdomain_suffix, $this->availableSubdomains('minecraft', true)) //unknown base for subdomain
         ) return response()->json(['errors' => ['minecraft_subdomain' => __('Wrong data.')]], 422);
 
-        if(!$request->subdomain_prefix||!$request->subdomain_suffix||strlen($request->subdomain_prefix)<3||strlen($request->subdomain_prefix)>30) return response()->json(['errors' => ['minecraft_subdomain' => __('Subdomain must be 3-30 characters long.')]], 422);
         if(Domain::where('subdomain_prefix', $request->subdomain_prefix)->where('subdomain_suffix', $request->subdomain_suffix)->where('target', 'minecraft')->first()) return response()->json(['errors' => ['minecraft_subdomain' => __('Domain is already taken') . '.']], 422);
         if(Domain::where('server_id', $server->identifier)->where('type', 'subdomain')->where('target', 'minecraft')->count()>=5) return response()->json(['errors' => ['minecraft_subdomain' => __('The server has reached the limit of linked domains.')]], 422);
 
@@ -328,6 +329,15 @@ class DomainController extends Controller
         if(!$this->writeNginxConfigFile($request->domain, $domain->node_domain, $domain->port))
             return response()->json(['errors' => ['web_domain' => __('Could not create the web config file.')]], 422);*/
 
+        //create the custom hostname record on cloudflare
+        $cf = Cloudflare::createCustomHostname($request->domain);
+        
+        //check cloudflare response
+        if(!$cf||!isset($cf['success'])||$cf['success']!=true) return response()->json(['errors' => ['web_domain' => __('Could not create the cloudflare record.'), 'cloudflare_errors' => $cf]], 422);
+        
+        //cloudflare success
+        $domain -> cf_id = $cf['result']['id'];
+
         //success
         $domain->status = "certificate generation pending";
         $domain -> save();
@@ -348,6 +358,12 @@ class DomainController extends Controller
 
         /*//delete config file without checking
         $this->deleteNginxConfig($domain->domain);*/
+        
+        //delete the custom hostname record on cloudflare
+        $cf = Cloudflare::deleteCustomHostname($domain->cf_id);
+        
+        //check cloudflare response
+        if(!$cf||!isset($cf['success'])||$cf['success']!=true) return response()->json(['errors' => ['web_domain' => __('Could not delete the cloudflare record.'), 'cloudflare_errors' => $cf]], 422);
 
         //success
         $domain->status = "deletion pending";
