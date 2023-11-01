@@ -84,5 +84,26 @@ class Cloudflare{
         }
         return $response->json();
     }
-
+    public static function createCustomHostname($name, $zone_id = "06caf79d8d0a268e8aafe0c21c4cb67d"){
+        try {
+            $response = self::client()->post('/zones/' . $zone_id . '/custom_hostnames', [
+                'hostname' => $name,
+                'ssl' => [
+                    'method' => 'http'
+                    
+                ]
+            ]);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+        return $response->json();
+    }
+    public static function deleteCustomHostname($id, $zone_id = "06caf79d8d0a268e8aafe0c21c4cb67d"){
+        try {
+            $response = self::client()->delete('/zones/' . $zone_id . '/custom_hostnames/' . $id, []);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+        return $response->json();
+    }
 }
