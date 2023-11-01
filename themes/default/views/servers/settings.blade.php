@@ -386,7 +386,7 @@ select{
 
 
         </div>
-        @if(in_array(Auth::user()->role, ['admin', 'moderator']))
+        @if(in_array(Auth::user()->role, ['admin', 'moderator', 'client']))
         <p class="ml-3 mb-1" style="color: yellow">{{__("The section below is still in beta. If you encounter any issues, please report them on our Discord.")}}</p>
 
         @if(($nest_id==1&&in_array($egg_id, [2, 3, 22, 58]))|| //minecraft
