@@ -7,6 +7,7 @@
                 @foreach($web_subdomains as $web_subdomain)
                     <div class="form-group mb-1">
                         <div class="custom-control p-0">
+                            @if($web_subdomain->status=='certificate generation pending')<i class="fas fa-clock mr-2" style="font-size: 20px"></i>@endif
                             <span class="btn badge {{['active'=>'badge-success', 'certificate generation pending' => 'badge-info', 'certificate generation failed' => 'badge-danger', 'deletion pending' => 'badge-secondary'][$web_subdomain->status]}} mt-2" style="font-size: 20px"><i class="fa fa-link mr-2"></i>
                                 <span onclick="web_onClickCopy('{{$web_subdomain->subdomain_prefix . $web_subdomain->subdomain_suffix}}')" style="cursor: pointer;" id="web_connected_domain">{{$web_subdomain->subdomain_prefix . $web_subdomain->subdomain_suffix}}</span>
                             </span>
@@ -62,6 +63,7 @@
                 @foreach($web_domains as $web_domain)
                     <div class="form-group mb-1">
                         <div class="custom-control p-0">
+                            @if($web_domain->status=='certificate generation pending')<i class="fas fa-clock mr-2" style="font-size: 20px"></i>@endif
                             <span class="btn badge {{['active'=>'badge-success', 'certificate generation pending' => 'badge-info', 'certificate generation failed' => 'badge-danger', 'deletion pending' => 'badge-secondary'][$web_domain->status]}} mt-2" style="font-size: 20px"><i class="fa fa-link mr-2"></i>
                                 <span onclick="web_onClickCopy('{{$web_domain->domain}}')" style="cursor: pointer;" id="web_connected_domain">{{$web_domain->domain}}</span>
                             </span>
