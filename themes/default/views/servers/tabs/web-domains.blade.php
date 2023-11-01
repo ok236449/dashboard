@@ -51,7 +51,7 @@
                 </div>
             </div>
             <div style="border: 1px; border-style: solid; border-color:dimgrey; border-radius: 5px; @if($web_subdomains->count()<2)min-height:126px;@endif font-size:14px" class="p-2 mt-2">
-                {{__('Here you can create your own subdomain for free. The subdomain will automatically setup itself and will be ready to use within 10 minutes.')}}
+                {{__('Here you can create your own subdomain for free. The subdomain will automatically setup itself and will be ready to use in just a moment.')}}
             </div>
             <button type="button" class="btn btn-primary mt-3" style="margin-bottom: -16px; float: right" onclick="web_linkSubdomain()"><i class="fa fa-link mr-2"></i>{{__('Link subdomain')}}</button>
         </div>
@@ -100,7 +100,7 @@
             <div style="border: 1px; border-style: solid; border-color:dimgrey; border-radius: 5px; font-size:14px" class="p-2 mt-2">
                 {{__('Here you can link your own domain (if you have one). You will need to set these records at your domain registrar')}}:<br>
                 <hr style="margin: 1px; padding: 0px; background-color:#696969">
-                <span style="margin-bottom: 0px">{{__('Type')}}: CNAME<br>{{__('Name')}}: <b id="web_your_domain">{{__('example.com')}}</b><br>{{__('Target')}}: <b>{{$web_router_address}}</b><br><b>{{__('If you are using cloudflare, please set SSL to FULL.')}}</b></span>
+                <span style="margin-bottom: 0px">{{__('Type')}}: CNAME<br>{{__('Name')}}: <b id="web_your_domain">{{__('example.com')}}</b><br>{{__('Target')}}: <b>{{$web_router_address}}</b><br><b>{{__('If you are using cloudflare, please disable proxy (DNS-only).')}}</b></span>
             </div>
             <!-- H !-->
             <button type="button" class="btn btn-primary mt-3" style="margin-bottom: -16px; float: right" onclick="web_linkDomain()"><i class="fa fa-link mr-2"></i>{{__('Link domain')}}</button>
