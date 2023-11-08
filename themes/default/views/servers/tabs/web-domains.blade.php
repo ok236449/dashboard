@@ -74,7 +74,7 @@
                             @if($web_domain->status!='deletion pending')<button type="button" class="btn btn-danger badge mt-2" style="font-size: 20px" onclick="web_unlinkDomain('{{$web_domain->domain}}')"><i class="fa fa-trash"></i></button>@endif
                             <i data-toggle="popover" data-trigger="hover" data-html="true"
                                 data-content="
-                                {{__('This is your domain you have linked. You will need to set these records at your domain registrar')}}:<br>{{__('Type')}}: <b>CNAME</b><br>{{__('Name')}}: <b>{{$web_domain->domain}}</b><br>{{__('Target')}}: <b>{{$web_router_address}}</b><br><b>{{__('If you are using cloudflare, please disable proxy (DNS-only).')}}</b><br>{{__('Status')}}: {{__($web_domain->status) . ($web_domain->status=='certificate generation failed'?'<br>' . __('next attempt') . ': ' . $web_domain->next_gen . '<br>' . __('deletion at') . ': ' . $web_domain->last_attempt :($web_domain->status=='certificate generation pending'?' - '. __('The certificate will be generated 5 minutes after creation.'):''))}}"
+                                {{__('This is your domain you have linked. You will need to set these records at your domain registrar')}}:<br>{{__('Type')}}: <b>CNAME</b><br>{{__('Name')}}: <b>{{$web_domain->domain}}</b><br>{{__('Target')}}: <b>{{$web_router_address}}</b><br><b>{{__('To link your domain, you must use Cloudflare. Please disable proxy for the DNS record (DNS only).')}}</b><br>{{__('Status')}}: {{__($web_domain->status) . ($web_domain->status=='certificate generation failed'?'<br>' . __('next attempt') . ': ' . $web_domain->next_gen . '<br>' . __('deletion at') . ': ' . $web_domain->last_attempt :($web_domain->status=='certificate generation pending'?' - '. __('The certificate will be generated 5 minutes after creation.'):''))}}"
                                 style="font-size: 20px" class="fas fa-info-circle m-1">
                             </i>
                         </div>
@@ -102,7 +102,7 @@
             <div style="border: 1px; border-style: solid; border-color:dimgrey; border-radius: 5px; font-size:14px" class="p-2 mt-2">
                 {{__('Here you can link your own domain (if you have one). You will need to set these records at your domain registrar')}}:<br>
                 <hr style="margin: 1px; padding: 0px; background-color:#696969">
-                <span style="margin-bottom: 0px">{{__('Type')}}: CNAME<br>{{__('Name')}}: <b id="web_your_domain">{{__('example.com')}}</b><br>{{__('Target')}}: <b>{{$web_router_address}}</b><br><b>{{__('If you are using cloudflare, please disable proxy (DNS-only).')}}</b></span>
+                <span style="margin-bottom: 0px">{{__('Type')}}: CNAME<br>{{__('Name')}}: <b id="web_your_domain">{{__('example.com')}}</b><br>{{__('Target')}}: <b>{{$web_router_address}}</b><br><b>{{__('To link your domain, you must use Cloudflare. Please disable proxy for the DNS record (DNS only).')}}</b></span>
             </div>
             <!-- H !-->
             <button type="button" class="btn btn-primary mt-3" style="margin-bottom: -16px; float: right" onclick="web_linkDomain()"><i class="fa fa-link mr-2"></i>{{__('Link domain')}}</button>

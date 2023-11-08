@@ -202,7 +202,7 @@
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body py-0 pb-2">
-                            @if((config('SETTINGS::REFERRAL::ALLOWED') == "client" && Auth::user()->role != "member") || config('SETTINGS::REFERRAL::ALLOWED') == "everyone")
+                            @if($paymentMade||(config('SETTINGS::REFERRAL::ALLOWED') == "client" && Auth::user()->role != "member") || config('SETTINGS::REFERRAL::ALLOWED') == "everyone")
                                 <div class="row">
                                     <div class="mt-3 col-md-8">
                                         <span class="badge badge-success" style="font-size: 14px">

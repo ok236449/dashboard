@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PartnerDiscount;
+use App\Models\Payment;
 use App\Models\UsefulLink;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -118,6 +119,7 @@ class HomeController extends Controller
             'numberOfReferrals' => DB::table('user_referrals')->where('referral_id', '=', Auth::user()->id)->count(),
             'partnerDiscount' => PartnerDiscount::where('user_id', Auth::user()->id)->first(),
             'myDiscount' => PartnerDiscount::getDiscount(),
+            "paymentMade" => (PartnerDiscount::where('user_id', Auth::user()->id)->first()||Payment::where('user_id', Auth::user()->id)->first())?true:false
         ]);
     }
 }

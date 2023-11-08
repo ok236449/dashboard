@@ -9,6 +9,7 @@ use App\Classes\Settings\Payments;
 use App\Classes\Settings\System;
 use App\Console\Commands\ChargeForVPS;
 use App\Console\Commands\LogPLayersCommand;
+use App\Console\Commands\SyncClientDiscordRoles;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\ApplicationApiController;
 use App\Http\Controllers\Admin\InvoiceController;
@@ -298,6 +299,8 @@ Route::prefix('api')->name('api.')->group(function(){
     Route::get('favourites', [Pricing::class, 'favourites']);
     Route::get('stats', [PlayerLog::class, 'index']);
 });
+
+//Route::get('/dcsync', [SyncClientDiscordRoles::class, 'handle']);
 
 //require __DIR__ . '/extensions_web.php';
 

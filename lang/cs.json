@@ -672,9 +672,10 @@
     "Target": "Cíl",
     "If you happen to have your own domain, you can link it to your minecraft server. All you need to do is set a domain record like this at your domain registrar": "Pokud máte vlastní doménu, můžete ji propojit s vaším Minecraft serverem. Jediné, co je třeba udělat je nastavení následujícího záznamu u vašeho registrátora domény",
     "Linking your own Minecraft domain": "Propojení vlastní Minecraft domény",
-    "If you are using cloudflare, please disable proxy (DNS-only).": "Používáte-li cloudflare, vypněte prosím proxy (DNS-only).",
+    "To link your domain, you must use Cloudflare. Please disable proxy for the DNS record (DNS only).": "Pro propojení domény je nutné používat Cloudflare. U záznamu prosím vypněte proxy (DNS only).",
     "Domain is already taken": "Doména je již zabraná",
     "The certificate will be generated 5 minutes after creation.": "Certifikát bude vygenerován 5 minut po vytvoření.",
     "The certificate will be generated 2 minutes after creation.": "Certifikát bude vygenerován 2 minuty po vytvoření.",
-    "Blacklisted subdomain. If you think this is incorrect, contact support.": "Zakázaná doména. Pokud se domníváte, že tomu tak není, kontaktujte podporu."
+    "Blacklisted subdomain. If you think this is incorrect, contact support.": "Zakázaná doména. Pokud se domníváte, že tomu tak není, kontaktujte podporu.",
+    "Discord account already linked to another account!": "Tento Discord už je propojený k jinému účtu!"
 }

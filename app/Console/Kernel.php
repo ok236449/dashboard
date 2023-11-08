@@ -21,7 +21,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('payments:open:clear')->daily();
         $schedule->command('VPS:charge')->hourly();
 
-        $schedule->command('playerLogger:log')->everyMinute();
+        //$schedule->command('playerLogger:log')->everyMinute();
+
+        $schedule->command('discord:client-role-sync')->dailyAt("1:00");
 
         //log cronjob activity
         $schedule->call(function () {
