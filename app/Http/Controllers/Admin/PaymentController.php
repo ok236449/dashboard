@@ -273,25 +273,23 @@ class PaymentController extends Controller
                                 ->causedBy($ref_user)
                                 ->log('gained '. $increment.' '.config("SETTINGS::SYSTEM:CREDITS_DISPLAY_NAME").' for commission-referral of '.$user->name.' (ID:'.$user->id.')');
                         }
-
                     }
+                }
 
-                    //give client discord role
-                    $discord = Socialite::driver('discord')->user();
-                    $botToken = config('SETTINGS::DISCORD:BOT_TOKEN');
-                    $guildId = config('SETTINGS::DISCORD:GUILD_ID');
-                    if (! empty($clientRoleId)&&$discord) {
-                        $response = Http::withHeaders(
-                            [
-                                'Authorization' => 'Bot '.$botToken,
-                                'Content-Type' => 'application/json',
-                            ]
-                        )->put(
-                            "https://discord.com/api/guilds/{$guildId}/members/{$discord->id}/roles/{$clientRoleId}",
-                            ['access_token' => $discord->token]
-                        );
-                    }
-
+                //give client discord role
+                $discord = Socialite::driver('discord')->user();
+                $botToken = config('SETTINGS::DISCORD:BOT_TOKEN');
+                $guildId = config('SETTINGS::DISCORD:GUILD_ID');
+                if (! empty($clientRoleId)&&$discord) {
+                    $response = Http::withHeaders(
+                        [
+                            'Authorization' => 'Bot '.$botToken,
+                            'Content-Type' => 'application/json',
+                        ]
+                    )->put(
+                        "https://discord.com/api/guilds/{$guildId}/members/{$discord->id}/roles/{$clientRoleId}",
+                        ['access_token' => $discord->token]
+                    );
                 }
 
                 //store payment
@@ -444,25 +442,23 @@ class PaymentController extends Controller
                                 ->causedBy($ref_user)
                                 ->log('gained '. $increment.' '.config("SETTINGS::SYSTEM:CREDITS_DISPLAY_NAME").' for commission-referral of '.$user->name.' (ID:'.$user->id.')');
                         }
-
                     }
+                }
 
-                    //give client discord role
-                    $discord = Socialite::driver('discord')->user();
-                    $botToken = config('SETTINGS::DISCORD:BOT_TOKEN');
-                    $guildId = config('SETTINGS::DISCORD:GUILD_ID');
-                    if (! empty($clientRoleId)&&$discord) {
-                        $response = Http::withHeaders(
-                            [
-                                'Authorization' => 'Bot '.$botToken,
-                                'Content-Type' => 'application/json',
-                            ]
-                        )->put(
-                            "https://discord.com/api/guilds/{$guildId}/members/{$discord->id}/roles/{$clientRoleId}",
-                            ['access_token' => $discord->token]
-                        );
-                    }
-
+                //give client discord role
+                $discord = Socialite::driver('discord')->user();
+                $botToken = config('SETTINGS::DISCORD:BOT_TOKEN');
+                $guildId = config('SETTINGS::DISCORD:GUILD_ID');
+                if (! empty($clientRoleId)&&$discord) {
+                    $response = Http::withHeaders(
+                        [
+                            'Authorization' => 'Bot '.$botToken,
+                            'Content-Type' => 'application/json',
+                        ]
+                    )->put(
+                        "https://discord.com/api/guilds/{$guildId}/members/{$discord->id}/roles/{$clientRoleId}",
+                        ['access_token' => $discord->token]
+                    );
                 }
 
                 //store paid payment
@@ -580,25 +576,23 @@ class PaymentController extends Controller
                                 ->causedBy($ref_user)
                                 ->log('gained '. $increment.' '.config("SETTINGS::SYSTEM:CREDITS_DISPLAY_NAME").' for commission-referral of '.$user->name.' (ID:'.$user->id.')');
                         }
-
                     }
+                }
 
-                    //give client discord role
-                    $discord = Socialite::driver('discord')->user();
-                    $botToken = config('SETTINGS::DISCORD:BOT_TOKEN');
-                    $guildId = config('SETTINGS::DISCORD:GUILD_ID');
-                    if (! empty($clientRoleId)&&$discord) {
-                        $response = Http::withHeaders(
-                            [
-                                'Authorization' => 'Bot '.$botToken,
-                                'Content-Type' => 'application/json',
-                            ]
-                        )->put(
-                            "https://discord.com/api/guilds/{$guildId}/members/{$discord->id}/roles/{$clientRoleId}",
-                            ['access_token' => $discord->token]
-                        );
-                    }
-
+                //give client discord role
+                $discord = Socialite::driver('discord')->user();
+                $botToken = config('SETTINGS::DISCORD:BOT_TOKEN');
+                $guildId = config('SETTINGS::DISCORD:GUILD_ID');
+                if (! empty($clientRoleId)&&$discord) {
+                    $response = Http::withHeaders(
+                        [
+                            'Authorization' => 'Bot '.$botToken,
+                            'Content-Type' => 'application/json',
+                        ]
+                    )->put(
+                        "https://discord.com/api/guilds/{$guildId}/members/{$discord->id}/roles/{$clientRoleId}",
+                        ['access_token' => $discord->token]
+                    );
                 }
 
                 //update payment db entry status
@@ -865,23 +859,22 @@ class PaymentController extends Controller
                                 ->log('gained '. $increment.' '.config("SETTINGS::SYSTEM:CREDITS_DISPLAY_NAME").' for commission-referral of '.$user->name.' (ID:'.$user->id.')');
                         }
                     }
+                }
 
-                    //give client discord role
-                    $discord = Socialite::driver('discord')->user();
-                    $botToken = config('SETTINGS::DISCORD:BOT_TOKEN');
-                    $guildId = config('SETTINGS::DISCORD:GUILD_ID');
-                    if (! empty($clientRoleId)&&$discord) {
-                        $response = Http::withHeaders(
-                            [
-                                'Authorization' => 'Bot '.$botToken,
-                                'Content-Type' => 'application/json',
-                            ]
-                        )->put(
-                            "https://discord.com/api/guilds/{$guildId}/members/{$discord->id}/roles/{$clientRoleId}",
-                            ['access_token' => $discord->token]
-                        );
-                    }
-
+                //give client discord role
+                $discord = Socialite::driver('discord')->user();
+                $botToken = config('SETTINGS::DISCORD:BOT_TOKEN');
+                $guildId = config('SETTINGS::DISCORD:GUILD_ID');
+                if (! empty($clientRoleId)&&$discord) {
+                    $response = Http::withHeaders(
+                        [
+                            'Authorization' => 'Bot '.$botToken,
+                            'Content-Type' => 'application/json',
+                        ]
+                    )->put(
+                        "https://discord.com/api/guilds/{$guildId}/members/{$discord->id}/roles/{$clientRoleId}",
+                        ['access_token' => $discord->token]
+                    );
                 }
 
                 //store payment
