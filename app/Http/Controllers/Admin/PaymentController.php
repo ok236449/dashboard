@@ -280,6 +280,7 @@ class PaymentController extends Controller
                 $discord = Socialite::driver('discord')->user();
                 $botToken = config('SETTINGS::DISCORD:BOT_TOKEN');
                 $guildId = config('SETTINGS::DISCORD:GUILD_ID');
+                $clientRoleId = config('SETTINGS::DISCORD:CLIENT_ROLE_ID');
                 if (! empty($clientRoleId)&&$discord) {
                     $response = Http::withHeaders(
                         [
@@ -449,6 +450,7 @@ class PaymentController extends Controller
                 $discord = Socialite::driver('discord')->user();
                 $botToken = config('SETTINGS::DISCORD:BOT_TOKEN');
                 $guildId = config('SETTINGS::DISCORD:GUILD_ID');
+                $clientRoleId = config('SETTINGS::DISCORD:CLIENT_ROLE_ID');
                 if (! empty($clientRoleId)&&$discord) {
                     $response = Http::withHeaders(
                         [
@@ -583,6 +585,7 @@ class PaymentController extends Controller
                 $discord = Socialite::driver('discord')->user();
                 $botToken = config('SETTINGS::DISCORD:BOT_TOKEN');
                 $guildId = config('SETTINGS::DISCORD:GUILD_ID');
+                $clientRoleId = config('SETTINGS::DISCORD:CLIENT_ROLE_ID');
                 if (! empty($clientRoleId)&&$discord) {
                     $response = Http::withHeaders(
                         [
@@ -865,6 +868,7 @@ class PaymentController extends Controller
                 $discord = Socialite::driver('discord')->user();
                 $botToken = config('SETTINGS::DISCORD:BOT_TOKEN');
                 $guildId = config('SETTINGS::DISCORD:GUILD_ID');
+                $clientRoleId = config('SETTINGS::DISCORD:CLIENT_ROLE_ID');
                 if (! empty($clientRoleId)&&$discord) {
                     $response = Http::withHeaders(
                         [
