@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Events\UserUpdateCreditsEvent;
 use App\Http\Controllers\Controller;
+use App\Models\DiscordUser;
 use App\Models\InvoiceSettings;
 use App\Models\PartnerDiscount;
 use App\Models\Payment;
@@ -16,7 +17,6 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -37,7 +37,6 @@ use Symfony\Component\Intl\Currencies;
 use GoPay\Definition\Payment\PaymentInstrument;
 use GoPay\Definition\Payment\PaymentItemType;
 use Illuminate\Support\Facades\Http;
-use Laravel\Socialite\Facades\Socialite;
 
 require_once base_path() . '/vendor/autoload.php';
 
@@ -277,19 +276,18 @@ class PaymentController extends Controller
                 }
 
                 //give client discord role
-                $discord = Socialite::driver('discord')->user();
+                $discordUser = DiscordUser::where('user_id', $user->id)->first();
                 $botToken = config('SETTINGS::DISCORD:BOT_TOKEN');
                 $guildId = config('SETTINGS::DISCORD:GUILD_ID');
                 $clientRoleId = config('SETTINGS::DISCORD:CLIENT_ROLE_ID');
-                if (! empty($clientRoleId)&&$discord) {
+                if (! empty($clientRoleId)&&$discordUser) {
                     $response = Http::withHeaders(
                         [
                             'Authorization' => 'Bot '.$botToken,
                             'Content-Type' => 'application/json',
                         ]
                     )->put(
-                        "https://discord.com/api/guilds/{$guildId}/members/{$discord->id}/roles/{$clientRoleId}",
-                        ['access_token' => $discord->token]
+                        "https://discord.com/api/guilds/{$guildId}/members/{$discordUser->id}/roles/{$clientRoleId}"
                     );
                 }
 
@@ -447,19 +445,18 @@ class PaymentController extends Controller
                 }
 
                 //give client discord role
-                $discord = Socialite::driver('discord')->user();
+                $discordUser = DiscordUser::where('user_id', $user->id)->first();
                 $botToken = config('SETTINGS::DISCORD:BOT_TOKEN');
                 $guildId = config('SETTINGS::DISCORD:GUILD_ID');
                 $clientRoleId = config('SETTINGS::DISCORD:CLIENT_ROLE_ID');
-                if (! empty($clientRoleId)&&$discord) {
+                if (! empty($clientRoleId)&&$discordUser) {
                     $response = Http::withHeaders(
                         [
                             'Authorization' => 'Bot '.$botToken,
                             'Content-Type' => 'application/json',
                         ]
                     )->put(
-                        "https://discord.com/api/guilds/{$guildId}/members/{$discord->id}/roles/{$clientRoleId}",
-                        ['access_token' => $discord->token]
+                        "https://discord.com/api/guilds/{$guildId}/members/{$discordUser->id}/roles/{$clientRoleId}"
                     );
                 }
 
@@ -582,19 +579,18 @@ class PaymentController extends Controller
                 }
 
                 //give client discord role
-                $discord = Socialite::driver('discord')->user();
+                $discordUser = DiscordUser::where('user_id', $user->id)->first();
                 $botToken = config('SETTINGS::DISCORD:BOT_TOKEN');
                 $guildId = config('SETTINGS::DISCORD:GUILD_ID');
                 $clientRoleId = config('SETTINGS::DISCORD:CLIENT_ROLE_ID');
-                if (! empty($clientRoleId)&&$discord) {
+                if (! empty($clientRoleId)&&$discordUser) {
                     $response = Http::withHeaders(
                         [
                             'Authorization' => 'Bot '.$botToken,
                             'Content-Type' => 'application/json',
                         ]
                     )->put(
-                        "https://discord.com/api/guilds/{$guildId}/members/{$discord->id}/roles/{$clientRoleId}",
-                        ['access_token' => $discord->token]
+                        "https://discord.com/api/guilds/{$guildId}/members/{$discordUser->id}/roles/{$clientRoleId}"
                     );
                 }
 
@@ -865,19 +861,18 @@ class PaymentController extends Controller
                 }
 
                 //give client discord role
-                $discord = Socialite::driver('discord')->user();
+                $discordUser = DiscordUser::where('user_id', $user->id)->first();
                 $botToken = config('SETTINGS::DISCORD:BOT_TOKEN');
                 $guildId = config('SETTINGS::DISCORD:GUILD_ID');
                 $clientRoleId = config('SETTINGS::DISCORD:CLIENT_ROLE_ID');
-                if (! empty($clientRoleId)&&$discord) {
+                if (! empty($clientRoleId)&&$discordUser) {
                     $response = Http::withHeaders(
                         [
                             'Authorization' => 'Bot '.$botToken,
                             'Content-Type' => 'application/json',
                         ]
                     )->put(
-                        "https://discord.com/api/guilds/{$guildId}/members/{$discord->id}/roles/{$clientRoleId}",
-                        ['access_token' => $discord->token]
+                        "https://discord.com/api/guilds/{$guildId}/members/{$discordUser->id}/roles/{$clientRoleId}"
                     );
                 }
 
