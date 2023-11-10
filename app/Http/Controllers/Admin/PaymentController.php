@@ -281,7 +281,7 @@ class PaymentController extends Controller
                 $guildId = config('SETTINGS::DISCORD:GUILD_ID');
                 $clientRoleId = config('SETTINGS::DISCORD:CLIENT_ROLE_ID');
                 if (! empty($clientRoleId)&&$discordUser) {
-                    $response = Http::withHeaders(
+                    Http::withHeaders(
                         [
                             'Authorization' => 'Bot '.$botToken,
                             'Content-Type' => 'application/json',
@@ -450,7 +450,7 @@ class PaymentController extends Controller
                 $guildId = config('SETTINGS::DISCORD:GUILD_ID');
                 $clientRoleId = config('SETTINGS::DISCORD:CLIENT_ROLE_ID');
                 if (! empty($clientRoleId)&&$discordUser) {
-                    $response = Http::withHeaders(
+                    Http::withHeaders(
                         [
                             'Authorization' => 'Bot '.$botToken,
                             'Content-Type' => 'application/json',
@@ -584,7 +584,7 @@ class PaymentController extends Controller
                 $guildId = config('SETTINGS::DISCORD:GUILD_ID');
                 $clientRoleId = config('SETTINGS::DISCORD:CLIENT_ROLE_ID');
                 if (! empty($clientRoleId)&&$discordUser) {
-                    $response = Http::withHeaders(
+                    Http::withHeaders(
                         [
                             'Authorization' => 'Bot '.$botToken,
                             'Content-Type' => 'application/json',
@@ -866,7 +866,7 @@ class PaymentController extends Controller
                 $guildId = config('SETTINGS::DISCORD:GUILD_ID');
                 $clientRoleId = config('SETTINGS::DISCORD:CLIENT_ROLE_ID');
                 if (! empty($clientRoleId)&&$discordUser) {
-                    $response = Http::withHeaders(
+                    Http::withHeaders(
                         [
                             'Authorization' => 'Bot '.$botToken,
                             'Content-Type' => 'application/json',
