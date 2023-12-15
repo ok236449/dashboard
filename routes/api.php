@@ -43,8 +43,8 @@ Route::middleware('api.token')->group(function () {
 Route::get("event/get_user", function(Request $request){
     if (!$request->bearerToken()||$request->bearerToken()!=env("EVENT_API_BEARER")) return response("Forbidden", 403);
     
-    $user = User::select("id")->where("email", json_decode($request->getContent())->email)->first();
-    if ($user) return response(json_encode(["success" => true, "id" => $user->id]));
+    $user = User::select("id", "role")->where("email", json_decode($request->getContent())->email)->first();
+    if ($user) return response(json_encode(["success" => true, "id" => $user->id, "client" => $user->role!="member"]));
     else return response(json_encode(["success" => false, "reason" => "user_not_found"]));
 });
 
@@ -56,7 +56,8 @@ Route::post("event/give_credits", function(Request $request){
 
     $user = User::where("id", $json->id)->first();
     if(!$user) return response(json_encode(["success" => false, "reason" => "user_not_found"]));
-    
+    if($user->role=="member") return response(json_encode(["success" => false, "reason" => "user_not_client"]));
+
     $user->increment("credits", $json->amount);
     return response(json_encode(["success" => true]));
 });
