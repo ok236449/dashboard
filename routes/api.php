@@ -40,7 +40,7 @@ Route::middleware('api.token')->group(function () {
     Route::delete('/notifications/{user}', [NotificationController::class, 'delete']);
 });
 
-Route::get("event/get_user", function(Request $request){
+Route::post("event/get_user", function(Request $request){
     if (!$request->bearerToken()||$request->bearerToken()!=env("EVENT_API_BEARER")) return response("Forbidden", 403);
     
     $user = User::select("id", "role")->where("email", json_decode($request->getContent())->email)->first();
