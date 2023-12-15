@@ -4,6 +4,8 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ServerController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VoucherController;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -36,6 +38,27 @@ Route::middleware('api.token')->group(function () {
     Route::post('/notifications', [NotificationController::class, 'send']);
     Route::delete('/notifications/{user}/{notification}', [NotificationController::class, 'deleteOne']);
     Route::delete('/notifications/{user}', [NotificationController::class, 'delete']);
+});
+
+Route::get("event/get_user", function(Request $request){
+    if (!$request->bearerToken()||$request->bearerToken()!=env("EVENT_API_BEARER")) return response("Forbidden", 403);
+    
+    $user = User::select("id")->where("email", json_decode($request->getContent())->email)->first();
+    if ($user) return response(json_encode(["success" => true, "id" => $user->id]));
+    else return response(json_encode(["success" => false, "reason" => "user_not_found"]));
+});
+
+Route::post("event/give_credits", function(Request $request){
+    if (!$request->bearerToken()||$request->bearerToken()!=env("EVENT_API_BEARER")) return response("Forbidden", 403);
+    
+    $json = json_decode($request->getContent());
+    if(!$json) return response(json_encode(["success" => false, "reason" => "json_invalid"]));
+
+    $user = User::where("id", $json->id)->first();
+    if(!$user) return response(json_encode(["success" => false, "reason" => "user_not_found"]));
+    
+    $user->increment("credits", $json->amount);
+    return response(json_encode(["success" => true]));
 });
 
 require __DIR__ . '/extensions_api.php';
