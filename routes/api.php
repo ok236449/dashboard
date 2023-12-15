@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VoucherController;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,8 +43,11 @@ Route::middleware('api.token')->group(function () {
 
 Route::post("event/get_user", function(Request $request){
     if (!$request->bearerToken()||$request->bearerToken()!=env("EVENT_API_BEARER")) return response("Forbidden", 403);
+
+    $json = json_decode($request->getContent());
+    if(!$json||!$json->email) return response(json_encode(["success" => false, "reason" => "json_invalid"]));
     
-    $user = User::select("id", "role")->where("email", json_decode($request->getContent())->email)->first();
+    $user = User::select("id", "role")->where("email", $json->email)->first();
     if ($user) return response(json_encode(["success" => true, "id" => $user->id, "client" => $user->role!="member"]));
     else return response(json_encode(["success" => false, "reason" => "user_not_found"]));
 });
@@ -52,13 +56,14 @@ Route::post("event/give_credits", function(Request $request){
     if (!$request->bearerToken()||$request->bearerToken()!=env("EVENT_API_BEARER")) return response("Forbidden", 403);
     
     $json = json_decode($request->getContent());
-    if(!$json) return response(json_encode(["success" => false, "reason" => "json_invalid"]));
+    if(!$json||!$json->id||!$json->amount) return response(json_encode(["success" => false, "reason" => "json_invalid"]));
 
     $user = User::where("id", $json->id)->first();
     if(!$user) return response(json_encode(["success" => false, "reason" => "user_not_found"]));
     if($user->role=="member") return response(json_encode(["success" => false, "reason" => "user_not_client"]));
 
     $user->increment("credits", $json->amount);
+    Log::info("User " . $user->name . " (id: " . $user->id . ") was given " . $json->amount . "credits.");
     return response(json_encode(["success" => true]));
 });
 
