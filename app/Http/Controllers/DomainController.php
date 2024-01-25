@@ -218,7 +218,7 @@ class DomainController extends Controller
             if($network['attributes']['is_default'])
             {
                 $domain->node_domain = $network['attributes']['ip_alias'];
-                if($serverAttributes['nest']==8) $web_ports[] = $network['attributes']['port'];
+                if($serverAttributes['nest']==8 || $serverAttributes['nest']==12) $web_ports[] = $network['attributes']['port'];
             }
             else $web_ports[] = $network['attributes']['port'];
         }
@@ -313,7 +313,7 @@ class DomainController extends Controller
             if($network['attributes']['is_default'])
             {
                 $domain->node_domain = $network['attributes']['ip_alias'];
-                if($serverAttributes['nest']==8) $web_ports[] = $network['attributes']['port'];
+                if($serverAttributes['nest']==8 || $serverAttributes['nest']==12) $web_ports[] = $network['attributes']['port'];
             }
             else $web_ports[] = $network['attributes']['port'];
         }
