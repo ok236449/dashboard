@@ -352,6 +352,7 @@ class ServerController extends Controller
             case 2://minecraft eggs
             case 3:
             case 22:
+            case 26:
             case 58:
                 //show all tabs
             //    [$tabs[0], $tabs[3]] = [$tabs[3], $tabs[0]];
