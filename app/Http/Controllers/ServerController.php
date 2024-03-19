@@ -349,7 +349,8 @@ class ServerController extends Controller
 
         //swap tabs
         switch($serverAttributes['egg']){
-            case 2://minecraft eggs
+            case 1://minecraft eggs
+            case 2:
             case 3:
             case 22:
             case 26:
