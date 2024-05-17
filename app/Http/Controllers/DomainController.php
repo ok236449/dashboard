@@ -25,15 +25,15 @@ class DomainController extends Controller
         'czmc.cz' => [
             'cf_token' => '319696931950f2accdb2adf30c22a93e',
             'available_for' => ['minecraft', 'web']
-        ],
+        ]//,
         /*'czmc.online' => [
             'cf_token' => '828f41e1760de9e481c9594cd8cdde28',
             'available_for' => ['minecraft', 'web']
-        ],*/
+        ],
         'hraj.xyz' => [
             'cf_token' => '5c0b482aab8b76c58ece61515bf39d90',
             'available_for' => ['minecraft', 'web']
-        ]
+        ]*/
     ];
     //public function toFirstLevel
     public static function availableSubdomains($target = '', $dotOnStart = false){ //returns array of available domains if target is provided or array domain_name=>[available_for]
