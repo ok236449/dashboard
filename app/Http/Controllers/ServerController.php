@@ -367,6 +367,7 @@ class ServerController extends Controller
             case 98:
             case 31://discord.js
             case 61://discord.py
+            case 80: // fivem
                 //show only web tabs
                 /*foreach([0, 1, 2] as $i){
                     unset($tabs[$i]);
