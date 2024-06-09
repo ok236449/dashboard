@@ -392,7 +392,8 @@ select{
         @if(($nest_id==1&&in_array($egg_id, [1, 2, 3, 22, 26, 58]))|| //minecraft
             $nest_id==8||//web
             ($nest_id==12&&in_array($egg_id, [31, 61]))|| //discord.js, discord.py
-            $egg_id==80
+            $egg_id==80||
+            $egg_id==65
             )
           <div class="container-fluid">
             <div class="card">
