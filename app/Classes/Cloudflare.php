@@ -32,12 +32,10 @@ class Cloudflare{
                 'comment' => 'Created with API'
             ]);
             else if($type=="SRV") $response = self::client()->post('/zones/' . $zone_id . '/dns_records', [
+                'name' => "_minecraft._tcp." . $name,
                 'data' => [
-                    'name' => $name,
                     'port' => $port,
                     'priority' => 10,
-                    'proto' => "_tcp",
-                    'service' => "_minecraft",
                     'target' => $content,
                     'weight' => 10
                 ],
